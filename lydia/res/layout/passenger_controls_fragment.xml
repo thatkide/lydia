@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+	<!-- the window buttons are registered in the "homescreenfragment" -->
+	<Button android:id="@+id/passenger_window_up"
+	        android:text="@string/window_up"
+	        style="@style/ControlRoundTopLeft"
+			/>
+	<Button android:id="@+id/passenger_window_down"
+	        android:text="@string/window_down"
+	        style="@style/ControlButtons"
+			/>
+	<Button android:id="@+id/passenger_seat_heat"
+	        android:text="@string/seat_heat"
+	        style="@style/ControlButtons"
+			/>
+	<Button android:id="@+id/passenger_more"
+	        android:text="@string/more"
+	        style="@style/ControlRoundBottomLeft"
+			/>
+</LinearLayout>

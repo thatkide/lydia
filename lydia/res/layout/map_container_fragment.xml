@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:orientation="horizontal"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent">
+
+	<fragment
+		android:id="@+id/map_controls"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:name="ca.efriesen.lydia.fragments.MapControlsFragment" />
+
+	<View	android:layout_weight="1"
+			android:layout_height="match_parent"
+			android:layout_width="0dip"/>
+
+	<fragment
+		android:id="@+id/map_fragment"
+		android:layout_width="match_parent"
+		android:layout_marginTop="10dip"
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="160dip"
+		android:layout_height="365dip"
+		android:name="ca.efriesen.lydia.fragments.MyMapFragment" />
+
+</LinearLayout>

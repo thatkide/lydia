@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+		xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+			android:title="@string/bluetooth">
+		<SwitchPreference
+			android:key="useBluetooth"
+			android:defaultValue="false"
+			android:title="Use bluetooth" />
+		<Preference
+			android:key="bluetooth_phone_address"
+			android:title="@string/phone"
+			android:summary="Pair a new phone">
+			<intent android:action=".activities.DeviceListActivity"/>
+		</Preference>
+		<EditTextPreference
+			android:key="phone_address"
+			android:title="@string/address"
+			android:summary="Address of phone currently paired"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/music">
+		<SwitchPreference
+			android:key="useLastFm"
+		    android:defaultValue="true"
+			android:title="@string/lastfm_use" />
+		<EditTextPreference
+				android:key="lastFmUsername"
+				android:title="@string/lastfm_username" />
+		<EditTextPreference
+				android:key="lastFmPassword"
+				android:title="@string/lastfm_password"
+				android:inputType="textPassword"/>
+	</PreferenceCategory>
+	<PreferenceCategory
+			android:title="@string/external_light_sensor">
+		<EditTextPreference
+			android:key="minLight"
+			android:title="@string/min_light"
+			android:numeric="integer"
+			android:summary="@string/current_value" />
+		<EditTextPreference
+			android:key="maxLight"
+			android:title="@string/max_light"
+			android:numeric="integer"
+			android:summary="@string/current_value"/>
+	</PreferenceCategory>
+</PreferenceScreen>

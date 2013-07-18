@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:gravity="center_horizontal|top"
+		>
+	<!-- Main buttons in the middle of the screen -->
+	<Button
+			android:id="@+id/contacts"
+			android:text="@string/contacts"
+			android:drawableTop="@drawable/contacts"
+			style="@style/DashboardRoundTopLeft"/>
+	<Button
+			android:id="@+id/videos"
+			android:text="@string/videos"
+			android:drawableTop="@drawable/movie_reel"
+			android:layout_toRightOf="@id/contacts"
+			style="@style/DashboardControls"/>
+	<Button
+			android:id="@+id/test"
+			android:text=""
+			android:layout_toRightOf="@id/videos"
+			style="@style/DashboardRoundTopRight"/>
+	<Button
+			android:id="@+id/status"
+			android:text="@string/status"
+			android:drawableTop="@drawable/status"
+			android:layout_below="@id/contacts"
+			style="@style/DashboardRoundBottomLeft"/>
+	<Button
+			android:id="@+id/test2"
+			android:text=""
+			android:layout_below="@id/test"
+			android:layout_toRightOf="@id/status"
+			style="@style/DashboardControls"/>
+	<Button
+			android:id="@+id/settings"
+			android:text="@string/settings"
+			android:drawableTop="@drawable/settings"
+			android:layout_below="@id/test"
+			android:layout_toRightOf="@id/test2"
+			style="@style/DashboardRoundBottomRight"/>
+</RelativeLayout>

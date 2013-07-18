@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:orientation="vertical">
+	<TextView	android:layout_weight="1"
+			android:layout_height="0dip"
+			android:layout_width="wrap_content"/>
+
+	<LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="vertical">
+		<Button android:id="@+id/map_search"
+				style="@style/ControlRoundTopRight"
+				android:text="@string/search" />
+		<Button android:id="@+id/toggle_traffic"
+				style="@style/ControlButtons"
+				android:text="@string/toggle_traffic" />
+		<Button	android:id="@+id/clear_map"
+				style="@style/ControlButtons"
+				android:text="@string/clear" />
+		<Button
+				style="@style/ControlRoundBottomRight"
+				android:text="@string/search" />
+	</LinearLayout>
+	<TextView	android:layout_weight="1"
+			android:layout_height="0dip"
+			android:layout_width="wrap_content"/>
+</LinearLayout>

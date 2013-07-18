@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+	<Button android:id="@+id/rear_window_defrost"
+	        android:text="@string/rear_defroster"
+	        style="@style/ControlRoundTopLeft"
+			/>
+	<!-- this button will change in code from more to back -->
+	<Button android:id="@+id/passenger_back"
+	        android:text="@string/back"
+	        style="@style/ControlRoundBottomLeft"
+			/>
+</LinearLayout>

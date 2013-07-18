@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+	<!-- more group -->
+	<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+		<Button android:id="@+id/wiper_toggle"
+		        android:text="@string/wipers"
+		        style="@style/ControlButtonsSquare" />
+		<Button android:id="@+id/wipe"
+		        android:text="@string/wipe"
+		        style="@style/ControlButtonsSquare" />
+	</LinearLayout>
+	<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+		<ImageButton
+				android:id="@+id/wiper_delay_less"
+				android:src="@drawable/navigation_expand"
+				style="@style/ControlButtonsSquare" />
+		<ImageButton
+				android:id="@+id/wiper_delay_more"
+				android:src="@drawable/navigation_collapse"
+				style="@style/ControlButtonsSquare" />
+	</LinearLayout>
+	<!-- this button will change in code from more to back -->
+	<Button android:id="@+id/driver_back"
+	        android:text="@string/back"
+	        style="@style/ControlRoundBottomRight"
+			/>
+</LinearLayout>
