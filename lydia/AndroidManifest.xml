@@ -58,7 +58,8 @@
 					android:resource="@xml/device_filter"/>
 		</activity>
 
-		<activity android:name=".activities.DeviceListActivity">
+		<activity android:name=".activities.DeviceListActivity"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
 			<intent-filter>
 				<action android:name=".activities.DeviceListActivity"/>
 				<category android:name="android.intent.category.DEFAULT"/>
