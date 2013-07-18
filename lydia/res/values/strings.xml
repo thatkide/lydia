@@ -38,6 +38,7 @@
 	<string name="lastfm_use">Use last.fm to scrobble songs</string>
 	<string name="lastfm_username">last.fm Username</string>
 	<string name="lastfm_password">last.fm Password</string>
+	<string name="launcher_error">Failed to laucn application</string>
 	<string name="light_sensor">Light Sensor</string>
 	<string name="loading">Loading...</string>
 	<string name="loading_address">Loading address...</string>
