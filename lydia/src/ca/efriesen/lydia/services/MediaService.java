@@ -294,7 +294,8 @@ public class MediaService extends Service implements
 	public void play() {
 		if (getState() == State.Dead) {
 			initMediaPlayer();
-			shuffleAll();
+			// set the playlist and such
+			playAll();
 		} else if (getState() == State.Paused) {
 			mMediaPlayer.start();
 		} else {
@@ -481,7 +482,7 @@ public class MediaService extends Service implements
 		sendBroadcast(new Intent(Intents.MEDIASTATE).putExtra(Intents.MEDIASTATE, state));
 	}
 
-	public void shuffleAll() {
+	public void playAll() {
 		// run this in a new thread as not to block
 		Thread shuffle = new Thread(new Runnable() {
 			@Override
@@ -492,12 +493,19 @@ public class MediaService extends Service implements
 				album.setName(getString(R.string.all_songs));
 				// get a list of all the songs
 				ArrayList<Song> allSongs = getAllSongsInAlbum(album);
-				// set the start position to a random place in the list
-				Random rand = new Random();
-				// set the playlist
-				setPlaylist(allSongs, rand.nextInt(allSongs.size()));
-				// ensure shuffle is on
-				setShuffle(true);
+				if (getShuffle()) {
+					// set the start position to a random place in the list
+					Random rand = new Random();
+					// set the playlist
+					setPlaylist(allSongs, rand.nextInt(allSongs.size()));
+					// ensure shuffle is on
+					setShuffle(true);
+				} else {
+					// start at the beginning
+					setPlaylist(allSongs, 0);
+					// ensure shuffle is off
+					setShuffle(false);
+				}
 				// and play
 				play();
 				// as soon as we're done, stop the thread
@@ -512,6 +520,10 @@ public class MediaService extends Service implements
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putBoolean(Constants.REPEATALL, repeatAll).commit();
+	}
+
+	public boolean getShuffle() {
+		return shuffle;
 	}
 
 	public void setShuffle(boolean shuffle) {

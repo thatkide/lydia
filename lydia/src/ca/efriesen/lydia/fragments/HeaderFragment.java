@@ -179,7 +179,8 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public boolean onLongClick(View v) {
 				Toast.makeText(activity.getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-				mediaService.shuffleAll();
+				mediaService.setShuffle(true);
+				mediaService.play();
 				// we return true, saying we've handled this.. don't let anybody else do anything
 				return true;
 			}
