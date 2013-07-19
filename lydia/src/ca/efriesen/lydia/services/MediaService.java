@@ -294,9 +294,8 @@ public class MediaService extends Service implements
 	public void play() {
 		if (getState() == State.Dead) {
 			initMediaPlayer();
-		}
-
-		if (getState() == State.Paused) {
+			shuffleAll();
+		} else if (getState() == State.Paused) {
 			mMediaPlayer.start();
 		} else {
 			setSong(playlist.get(playlistPosition));
