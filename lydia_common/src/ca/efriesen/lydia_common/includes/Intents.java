@@ -45,7 +45,4 @@ public class Intents {
 	public static final String SMSRECEIVED = "ca.efriesen.lydia.SMSReceived";
 	public static final String SMSREPLY = "ca.efriesen.lydia.SMSReply";
 
-	// intents for other process stuff
-	public static final String DRAWMARKER = "ca.efriesen.lydia.DrawMarker";
-	public static final String GETDIRECTIONS = "ca.efriesen.lydia.GetDirections";
 }

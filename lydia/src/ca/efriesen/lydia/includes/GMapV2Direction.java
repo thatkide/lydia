@@ -3,6 +3,7 @@ package ca.efriesen.lydia.includes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,17 +25,42 @@ import com.google.android.gms.maps.model.LatLng;
 import android.util.Log;
 
 public class GMapV2Direction {
-	public final static String MODE_DRIVING = "driving";
-	public final static String MODE_WALKING = "walking";
+	private static final String TAG = "map directions";
 
-	public GMapV2Direction() { }
+	public final static int MODE_DRIVING = 0;
+	public final static int MODE_WALKING = 1;
+	public final static int MODE_BICYCLING = 2;
+	public final static int MODE_TRANSIT = 3;
 
-	public Document getDocument(LatLng start, LatLng end, String mode) {
-		String url = "http://maps.googleapis.com/maps/api/directions/xml?"
-				+ "origin=" + start.latitude + "," + start.longitude
-				+ "&destination=" + end.latitude + "," + end.longitude
-				+ "&sensor=false&units=metric&mode=" + mode;
+	public static ArrayList<String> modes = new ArrayList<String>();
 
+	public static ArrayList<String> getModes() {
+		// ensure we have our modes set
+		setModes();
+		return modes;
+	}
+
+	private static void setModes() {
+		modes.clear();
+		modes.add(MODE_DRIVING, "Driving");
+		modes.add(MODE_WALKING, "Walking");
+		modes.add(MODE_BICYCLING, "Bicycling");
+		modes.add(MODE_TRANSIT, "Transit");
+	}
+
+	public GMapV2Direction() {
+		setModes();
+	}
+
+	public Document getDocument(LatLng start, LatLng end, int mode) {
+		String url = "http://maps.googleapis.com/maps/api/directions/xml?" +
+				"origin=" + start.latitude + "," + start.longitude + "&" +
+				"destination=" + end.latitude + "," + end.longitude + "&" +
+				"departure_time=" + System.currentTimeMillis()/1000 + "&" +
+				"sensor=true&" +
+				"units=metric&" +
+				"mode=" + modes.get(mode).toLowerCase();
+	Log.d(TAG, url);
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpContext localContext = new BasicHttpContext();
@@ -45,7 +71,7 @@ public class GMapV2Direction {
 			Document doc = builder.parse(in);
 			return doc;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, "Get document error", e);
 		}
 		return null;
 	}

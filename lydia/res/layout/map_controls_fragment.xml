@@ -18,9 +18,9 @@
 		<Button	android:id="@+id/clear_map"
 				style="@style/ControlButtons"
 				android:text="@string/clear" />
-		<Button
+		<Button android:id="@+id/map_directions_mode"
 				style="@style/ControlRoundBottomRight"
-				android:text="@string/search" />
+				android:text="@string/navigation_mode" />
 	</LinearLayout>
 	<TextView	android:layout_weight="1"
 			android:layout_height="0dip"

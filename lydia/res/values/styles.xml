@@ -3,6 +3,11 @@
 		<item name="android:windowBackground">@drawable/bg_selector</item>
 		<item name="android:textColor">@color/white</item>
 	</style>
+
+	<style name="ControlTextSize">
+		<item name="android:textSize">18dip</item>
+	</style>
+
 	<style name="SmallText">
 		<item name="android:textSize">20dip</item>
 		<item name="android:layout_height">wrap_content</item>
@@ -39,7 +44,7 @@
 		<item name="android:background">@drawable/button_bg_round_top_right</item>
 	</style>
 
-	<style name="ControlButtons">
+	<style name="ControlButtons" parent="ControlTextSize">
 		<item name="android:layout_width">161dip</item>
 		<item name="android:layout_height">80dip</item>
 		<item name="android:layout_marginLeft">0.5dip</item>
@@ -62,7 +67,6 @@
 	<style name="ControlRoundBottomLeft" parent="ControlButtons">
 		<item name="android:background">@drawable/button_bg_round_bottom_left</item>
 	</style>
-
 
 	<style name="DashboardControls" parent="MediumText">
 		<item name="android:layout_height">160dp</item>

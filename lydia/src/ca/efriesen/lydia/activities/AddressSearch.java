@@ -48,7 +48,7 @@ public class AddressSearch extends Activity implements
 	private EditText address;
 	private ListView listView;
 
-	private static final String TAG = "lydia address search";
+	private static final String TAG = "lydia map address search";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,7 +91,6 @@ public class AddressSearch extends Activity implements
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 		Address address = (Address) adapterView.getAdapter().getItem(position);
-		Log.d(TAG, "addess clicked " + address.getFeatureName());
 		GetPlaceDetails getPlaceDetails = new GetPlaceDetails();
 		getPlaceDetails.execute(address.getUrl());
 	}
@@ -106,9 +105,9 @@ public class AddressSearch extends Activity implements
 		protected void onPostExecute(ArrayList<Address> result) {
 			try {
 				// make a new intent with the address, and send it to the map fragment
-				Intent drawMarker = new Intent(Intents.DRAWMARKER);
-				drawMarker.putExtra("address", result.get(0));
-				sendBroadcast(drawMarker);
+				Intent addressIntent = new Intent();
+				addressIntent.putExtra("address", result.get(0));
+				setResult(RESULT_OK, addressIntent);
 				// close ourself
 				finish();
 			} catch (Exception e) {
@@ -121,9 +120,6 @@ public class AddressSearch extends Activity implements
 		@Override
 		// three dots is java for an array of strings
 		protected ArrayList<Address> doInBackground(String... search) {
-
-			Log.d("gottaGo", "doInBackground");
-
 			return MapHelpers.getLocationsFromString(getApplicationContext(), search[0], currentLocation);
 		}
 

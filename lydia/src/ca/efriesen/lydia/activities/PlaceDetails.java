@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia_common.includes.Intents;
 
 /**
  * Created by eric on 2013-07-14.
@@ -50,7 +49,9 @@ public class PlaceDetails extends Activity {
 	private View.OnClickListener directionsClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			sendBroadcast(new Intent(Intents.GETDIRECTIONS).putExtra("address", address));
+			Intent detailsIntent = new Intent();
+			detailsIntent.putExtra("address", address);
+			setResult(RESULT_OK, detailsIntent);
 			finish();
 		}
 	};

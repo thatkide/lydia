@@ -89,6 +89,9 @@
 		<activity android:name=".activities.PlaceDetails"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
+		<activity android:name=".activities.NavigationMode"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+
 		<service android:name=".services.HardwareManagerService" android:process="ca.efriesen.lydia.hardwareManager"/>
 
 		<service android:name=".services.MediaService" />
