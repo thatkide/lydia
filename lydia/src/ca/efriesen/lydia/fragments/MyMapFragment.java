@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.includes.GMapV2Direction;
@@ -212,6 +213,10 @@ public class MyMapFragment extends MapFragment implements
 	public void clearMap() {
 		map.clear();
 		navigating = false;
+		TextView distance = (TextView) activity.findViewById(R.id.map_directions_mode);
+		TextView time = (TextView) activity.findViewById(R.id.map_travel_time);
+		distance.setText("");
+		time.setText("");
 	}
 
 	// set the directions mode
@@ -243,18 +248,23 @@ public class MyMapFragment extends MapFragment implements
 	}
 
 	// this will get our directions from our current position to the specified address and draw them on the map
-	private class NavigationTask extends AsyncTask<Address, Void, Address> {
+	private class NavigationTask extends AsyncTask<Address, Void, NavObject> {
 		@Override
-		protected Address doInBackground(Address... addresses) {
+		protected NavObject doInBackground(Address... addresses) {
+			NavObject navObject = new NavObject();
 			Address address = addresses[0];
+			navObject.setAddress(address);
+
 			// get the lat long points from the address
 			LatLng fromPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 			// set the poly line options
 			rectline = new PolylineOptions().width(10).color(Color.RED);//Color.rgb(51, 181, 229));
 
 			GMapV2Direction md = new GMapV2Direction();
+			navObject.setgMapV2Direction(md);
 			// get the directions
-			Document doc = md.getDocument(fromPosition, new LatLng(address.getLatitude(), address.getLongitude()), mode);
+			Document doc = md.getDocument(getActivity(), fromPosition, new LatLng(address.getLatitude(), address.getLongitude()), mode);
+			navObject.setDocument(doc);
 
 			// get the directions array and loop over each point
 			for (LatLng latLng : md.getDirection(doc)) {
@@ -262,11 +272,25 @@ public class MyMapFragment extends MapFragment implements
 				rectline.add(latLng);
 			}
 			// return the address, this gets passed to onpostexecute
-			return address;
+			return navObject;
 		}
 
 		@Override
-		protected void onPostExecute(Address address) {
+		protected void onPostExecute(NavObject navObject) {
+			Address address = navObject.getAddress();
+			Document document = navObject.getDocument();
+			GMapV2Direction md = navObject.getgMapV2Direction();
+
+			TextView distance = (TextView) activity.findViewById(R.id.map_travel_distance);
+			TextView time = (TextView) activity.findViewById(R.id.map_travel_time);
+			TextView endAddress = (TextView) activity.findViewById(R.id.map_end_address);
+
+			String end_address = (address.getAddressLine(0) != null ? address.getAddressLine(0) : md.getEndAddress(document));
+
+			time.setText(md.getDurationText(document));
+			distance.setText(" (" + md.getDistanceText(document) +")");
+			endAddress.setText(" to " + end_address);
+
 			// create a new latlng builder, this will keep the points displayed on the map
 			LatLngBounds.Builder builder = new LatLngBounds.Builder();
 			// include both current lcoation and location we're headed
@@ -287,14 +311,49 @@ public class MyMapFragment extends MapFragment implements
 		}
 	}
 
+	// since we need multiple objects to be passed from doinbackground to onpostexecute, it's easiest to make a custom object and add everything indo that
+	private class NavObject {
+		private GMapV2Direction gMapV2Direction;
+		private Document document;
+		private Address address;
+
+		public void setgMapV2Direction(GMapV2Direction gMapV2Direction) {
+			this.gMapV2Direction = gMapV2Direction;
+		}
+
+		public void setDocument(Document document) {
+			this.document = document;
+		}
+
+		public void setAddress(Address address) {
+			this.address = address;
+		}
+
+		public GMapV2Direction getgMapV2Direction() {
+			return gMapV2Direction;
+		}
+
+		public Document getDocument() {
+			return document;
+		}
+
+		public Address getAddress() {
+			return address;
+		}
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		// check the codes
 		switch (requestCode) {
 			case PLACE_DETAILS: {
-				Address address = intent.getParcelableExtra("address");
-				map.clear();
-				navigating = true;
-				new NavigationTask().execute(address);
+				try {
+					Address address = intent.getParcelableExtra("address");
+					map.clear();
+					navigating = true;
+					new NavigationTask().execute(address);
+				} catch (Exception e) {
+					Log.e(TAG, "place details", e);
+				}
 			}
 		}
 	}

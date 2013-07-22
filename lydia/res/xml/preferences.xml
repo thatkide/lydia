@@ -45,4 +45,11 @@
 			android:numeric="integer"
 			android:summary="@string/current_value"/>
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/maps">
+		<SwitchPreference
+			android:key="mapUseMetric"
+			android:title="@string/map_use_metric"
+			android:defaultValue="true" />
+
+		</PreferenceCategory>
 </PreferenceScreen>

@@ -26,6 +26,8 @@
 	<string name="delay">Delay</string>
 	<string name="dial">Dial</string>
 	<string name="dialer">Dialer</string>
+	<string name="distance">Distance</string>
+	<string name="duration">Duration</string>
 	<string name="external_light_sensor">External Light Sensor</string>
 	<string name="fast_forward">Fast Forward</string>
     <string name="google">Google</string>
@@ -42,6 +44,7 @@
 	<string name="light_sensor">Light Sensor</string>
 	<string name="loading">Loading...</string>
 	<string name="loading_address">Loading address...</string>
+	<string name="map_use_metric">Use Metric</string>
 	<string name="maps">Maps</string>
 	<string name="max_light">Max Light Before Switching</string>
 	<string name="media_button_padding">6dp</string>
@@ -87,6 +90,7 @@
 	<string name="stop">Stop</string>
 	<string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Devices</string>
+	<string name="time">Time</string>
 	<string name="toggle_traffic">Toggle Traffic</string>
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>

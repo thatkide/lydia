@@ -12,6 +12,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -52,15 +53,19 @@ public class GMapV2Direction {
 		setModes();
 	}
 
-	public Document getDocument(LatLng start, LatLng end, int mode) {
+	public Document getDocument(Context context, LatLng start, LatLng end, int mode) {
+		// should we use metric or imperial?
+		String unit = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("mapUseMetric", true) ? "metric" : "imperial";
+
+		// make the url
 		String url = "http://maps.googleapis.com/maps/api/directions/xml?" +
 				"origin=" + start.latitude + "," + start.longitude + "&" +
 				"destination=" + end.latitude + "," + end.longitude + "&" +
 				"departure_time=" + System.currentTimeMillis()/1000 + "&" +
 				"sensor=true&" +
-				"units=metric&" +
+				"units=" + unit + "&" +
 				"mode=" + modes.get(mode).toLowerCase();
-	Log.d(TAG, url);
+		// try to get the json from google
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpContext localContext = new BasicHttpContext();
@@ -77,8 +82,9 @@ public class GMapV2Direction {
 	}
 
 	public String getDurationText (Document doc) {
+		// this gets all instances of "duration".  we only want the last one, not the ones in the "step" elements
 		NodeList nl1 = doc.getElementsByTagName("duration");
-		Node node1 = nl1.item(0);
+		Node node1 = nl1.item(nl1.getLength()-1);
 		NodeList nl2 = node1.getChildNodes();
 		Node node2 = nl2.item(getNodeIndex(nl2, "text"));
 		Log.i("DurationText", node2.getTextContent());
@@ -87,7 +93,7 @@ public class GMapV2Direction {
 
 	public int getDurationValue (Document doc) {
 		NodeList nl1 = doc.getElementsByTagName("duration");
-		Node node1 = nl1.item(0);
+		Node node1 = nl1.item(nl1.getLength()-1);
 		NodeList nl2 = node1.getChildNodes();
 		Node node2 = nl2.item(getNodeIndex(nl2, "value"));
 		Log.i("DurationValue", node2.getTextContent());
@@ -96,7 +102,7 @@ public class GMapV2Direction {
 
 	public String getDistanceText (Document doc) {
 		NodeList nl1 = doc.getElementsByTagName("distance");
-		Node node1 = nl1.item(0);
+		Node node1 = nl1.item(nl1.getLength()-1);
 		NodeList nl2 = node1.getChildNodes();
 		Node node2 = nl2.item(getNodeIndex(nl2, "text"));
 		Log.i("DistanceText", node2.getTextContent());
@@ -105,7 +111,7 @@ public class GMapV2Direction {
 
 	public int getDistanceValue (Document doc) {
 		NodeList nl1 = doc.getElementsByTagName("distance");
-		Node node1 = nl1.item(0);
+		Node node1 = nl1.item(nl1.getLength()-1);
 		NodeList nl2 = node1.getChildNodes();
 		Node node2 = nl2.item(getNodeIndex(nl2, "value"));
 		Log.i("DistanceValue", node2.getTextContent());
