@@ -1,6 +1,7 @@
 package ca.efriesen.lydia.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia_common.includes.Intents;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -48,11 +50,41 @@ public class ContactView extends Activity {
 
 			// don't have valid info... quit
 			if (!contact.moveToFirst()) {
+				contact.close();
 				finish();
 			}
 
 			TextView displayNameView = (TextView) findViewById(R.id.contact_display_name);
 			displayNameView.setText(contact.getString(contact.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
+
+			Cursor addresses = getContentResolver().query(
+					ContactsContract.Data.CONTENT_URI,
+					new String[]{
+							ContactsContract.CommonDataKinds.StructuredPostal.STREET,
+							ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS
+					},
+					ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.CommonDataKinds.StructuredPostal.MIMETYPE + "=?",
+					new String[] {
+							String.valueOf(contactId), ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+					}, null);
+
+			if (addresses != null && addresses.moveToFirst()) {
+				Log.d(TAG, "got address");
+				TextView formattedAddress = (TextView) findViewById(R.id.formatted_address);
+				final String addressString = addresses.getString(addresses.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
+				formattedAddress.setText(addressString);
+				formattedAddress.setClickable(true);
+				formattedAddress.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Log.d(TAG, "address " + addressString);
+						Intent showOnMap = new Intent(Intents.SHOWONMAP);
+						showOnMap.putExtra("formattedAddress", addressString);
+						sendBroadcast(showOnMap);
+						finish();
+					}
+				});
+			}
 
 			Cursor photo = null;
 			try {

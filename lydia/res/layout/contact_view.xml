@@ -31,6 +31,11 @@
 					android:layout_height="wrap_content" />
 		</LinearLayout>
 
+		<LinearLayout android:id="@+id/address_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
+			<TextView android:text="@string/address" style="@style/MediumText" />
+			<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+			<TextView android:id="@+id/formatted_address" style="@style/MediumText" />
+		</LinearLayout>
 	</LinearLayout>
 	<!-- can't get the proper width without this empty list... -->
 	<ListView android:layout_height="match_parent" android:layout_width="match_parent"/>

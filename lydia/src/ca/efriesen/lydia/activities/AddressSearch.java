@@ -3,9 +3,7 @@ package ca.efriesen.lydia.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,23 +14,12 @@ import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.includes.MapHelpers;
-import ca.efriesen.lydia_common.includes.Intents;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by eric on 2013-07-12.
@@ -68,8 +55,15 @@ public class AddressSearch extends Activity implements
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-				GetPlaces getPlaces = new GetPlaces();
-				getPlaces.execute(address.getText().toString());
+				try {
+					ArrayList<Address> addresses = new MapHelpers.GetLocationsFromStringTask(getApplicationContext(), currentLocation).execute(address.getText().toString()).get();
+					adapter = new AddressViewAdapter(addresses, AddressSearch.this);
+					listView.setAdapter(adapter);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -91,45 +85,23 @@ public class AddressSearch extends Activity implements
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 		Address address = (Address) adapterView.getAdapter().getItem(position);
-		GetPlaceDetails getPlaceDetails = new GetPlaceDetails();
-		getPlaceDetails.execute(address.getUrl());
-	}
 
-	private class GetPlaceDetails extends AsyncTask<String, Void, ArrayList<Address>> {
-		@Override
-		protected ArrayList<Address> doInBackground(String... search) {
-			return MapHelpers.getDetailsFromReference(getApplicationContext(), search[0]);
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<Address> result) {
-			try {
-				// make a new intent with the address, and send it to the map fragment
-				Intent addressIntent = new Intent();
-				addressIntent.putExtra("address", result.get(0));
-				setResult(RESULT_OK, addressIntent);
-				// close ourself
-				finish();
-			} catch (Exception e) {
-				Log.e(TAG, "draw marker failed", e);
-			}
+		try {
+			ArrayList<Address> addresses = new MapHelpers.GetDetailsFromReferenceTask(getApplicationContext()).execute(address.getUrl()).get();
+			// make a new intent with the address, and send it to the map fragment
+			Intent addressIntent = new Intent();
+			addressIntent.putExtra("address", addresses.get(0));
+			setResult(RESULT_OK, addressIntent);
+			// close ourself
+			finish();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			Log.e(TAG, "draw marker failed", e);
 		}
 	}
-
-	private class GetPlaces extends AsyncTask<String, Void, ArrayList<Address>> {
-		@Override
-		// three dots is java for an array of strings
-		protected ArrayList<Address> doInBackground(String... search) {
-			return MapHelpers.getLocationsFromString(getApplicationContext(), search[0], currentLocation);
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<Address> result) {
-			adapter = new AddressViewAdapter(result, AddressSearch.this);
-			listView.setAdapter(adapter);
-		}
-	}
-
 
 	class AddressViewAdapter extends BaseAdapter implements ListAdapter {
 		private final List<Address> content;

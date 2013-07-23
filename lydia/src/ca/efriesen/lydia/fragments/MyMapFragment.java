@@ -2,6 +2,7 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.*;
 import android.graphics.Color;
 import android.location.Address;
@@ -16,12 +17,16 @@ import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.includes.GMapV2Direction;
 import ca.efriesen.lydia.includes.MapHelpers;
+import ca.efriesen.lydia_common.includes.Intents;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import org.w3c.dom.Document;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * User: eric
@@ -78,6 +83,8 @@ public class MyMapFragment extends MapFragment implements
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		}
+
+		activity.registerReceiver(mapAddressReceiver, new IntentFilter(Intents.SHOWONMAP));
 	}
 
 	@Override
@@ -150,9 +157,18 @@ public class MyMapFragment extends MapFragment implements
 //	make poly line change color after we've pased in in driving
 
 	public void drawMarker(Location location) {
-		// get the address info for where we are
-		Address address = MapHelpers.getAddressFromLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-		drawMarker(address);
+		try {
+			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+			Address address =  new MapHelpers.GetAddressFromLatLngTask().execute(latLng).get();
+			// draw the marker
+			drawMarker(address);
+			// move the camera to that spot
+			map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, cameraZoom));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void drawMarker(Address address, CameraUpdate cameraUpdate) {
@@ -195,11 +211,17 @@ public class MyMapFragment extends MapFragment implements
 
 		// get the address from the latlng pressed
 		// this is an async task and will replace the loading marker drawn above
-		Address address = MapHelpers.getAddressFromLatLng(latLng);
-		// draw the marker
-		drawMarker(address);
-		// move the camera to that spot
-		map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), cameraZoom));
+		try {
+			Address address =  new MapHelpers.GetAddressFromLatLngTask().execute(latLng).get();
+			// draw the marker
+			drawMarker(address);
+			// move the camera to that spot
+			map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), cameraZoom));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// toggle if traffic is displayed or not
@@ -213,10 +235,8 @@ public class MyMapFragment extends MapFragment implements
 	public void clearMap() {
 		map.clear();
 		navigating = false;
-		TextView distance = (TextView) activity.findViewById(R.id.map_directions_mode);
-		TextView time = (TextView) activity.findViewById(R.id.map_travel_time);
-		distance.setText("");
-		time.setText("");
+		TextView travel_info = (TextView) activity.findViewById(R.id.map_travel_info);
+		travel_info.setText("");
 	}
 
 	// set the directions mode
@@ -281,15 +301,13 @@ public class MyMapFragment extends MapFragment implements
 			Document document = navObject.getDocument();
 			GMapV2Direction md = navObject.getgMapV2Direction();
 
-			TextView distance = (TextView) activity.findViewById(R.id.map_travel_distance);
-			TextView time = (TextView) activity.findViewById(R.id.map_travel_time);
-			TextView endAddress = (TextView) activity.findViewById(R.id.map_end_address);
+			TextView travel_info = (TextView) activity.findViewById(R.id.map_travel_info);
 
 			String end_address = (address.getAddressLine(0) != null ? address.getAddressLine(0) : md.getEndAddress(document));
 
-			time.setText(md.getDurationText(document));
-			distance.setText(" (" + md.getDistanceText(document) +")");
-			endAddress.setText(" to " + end_address);
+			travel_info.setText(md.getDurationText(document));
+			travel_info.append(" (" + md.getDistanceText(document) +")");
+			travel_info.append(" to " + end_address);
 
 			// create a new latlng builder, this will keep the points displayed on the map
 			LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -357,5 +375,37 @@ public class MyMapFragment extends MapFragment implements
 			}
 		}
 	}
+
+	private BroadcastReceiver mapAddressReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String address = intent.getStringExtra("formattedAddress");
+
+			try {
+				ArrayList<Address> addresses = new MapHelpers.GetLocationsFromStringTask(activity, currentLocation).execute(address).get();
+				drawMarker(addresses.get(0));
+				FragmentManager manager = getFragmentManager();
+				// replace the 'dashboard_container' fragment with a new 'settings fragment'
+				FragmentTransaction transaction = getFragmentManager().beginTransaction();
+				transaction.show(manager.findFragmentById(R.id.home_screen_container_fragment))
+						.hide(manager.findFragmentById(R.id.settings_fragment))
+						.hide(manager.findFragmentById(R.id.home_screen_fragment))
+						.hide(manager.findFragmentById(R.id.home_screen_fragment_two))
+						.hide(manager.findFragmentById(R.id.music_fragment))
+						.show(manager.findFragmentById(R.id.map_container_fragment))
+						.show(manager.findFragmentById(R.id.map_fragment))
+						.hide(manager.findFragmentById(R.id.phone_fragment))
+						.hide(manager.findFragmentById(R.id.launcher_fragment))
+
+						.addToBackStack(null)
+						.commit();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+
+		}
+	};
 
 }

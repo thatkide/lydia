@@ -28,9 +28,7 @@
 				android:name="ca.efriesen.lydia.fragments.MyMapFragment" />
 
 			<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="horizontal">
-				<TextView android:id="@+id/map_travel_time" style="@style/SmallText" />
-				<TextView android:id="@+id/map_travel_distance" style="@style/SmallText" />
-				<TextView android:id="@+id/map_end_address" style="@style/SmallText" />
+				<TextView android:id="@+id/map_travel_info" style="@style/SmallText" />
 				<View android:layout_weight="1" android:layout_height="wrap_content" android:layout_width="wrap_content" />
 			</LinearLayout>
 

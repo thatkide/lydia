@@ -45,4 +45,6 @@ public class Intents {
 	public static final String SMSRECEIVED = "ca.efriesen.lydia.SMSReceived";
 	public static final String SMSREPLY = "ca.efriesen.lydia.SMSReply";
 
+	// map and nav
+	public static final String SHOWONMAP = "ca.efriesn.lydia.SHOWONMAP";
 }
