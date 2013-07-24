@@ -395,14 +395,17 @@ public class MediaService extends Service implements
 		ArrayList<Artist> artists = MediaUtils.cursorToArray(Artist.class, getApplicationContext(), cursor);
 		cursor.close();
 
-		// since the db won't ignore "the" when sorting, we set the artist name to move "the" to the end, and then resort
-		Collections.sort(artists, new Comparator<Artist>() {
-			@Override
-			public int compare(Artist artist, Artist artist2) {
-				return artist.getSortName().compareToIgnoreCase(artist2.getSortName());
-			}
-		});
-
+		try {
+			// since the db won't ignore "the" when sorting, we set the artist name to move "the" to the end, and then resort
+			Collections.sort(artists, new Comparator<Artist>() {
+				@Override
+				public int compare(Artist artist, Artist artist2) {
+					return artist.getSortName().compareToIgnoreCase(artist2.getSortName());
+				}
+			});
+		} catch (NullPointerException e) {
+			Log.e(TAG, e.toString());
+		}
 		return artists;
 	}
 
