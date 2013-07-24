@@ -1,10 +1,7 @@
 package ca.efriesen.lydia.fragments;
 
 import android.app.*;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +11,7 @@ import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.SMSConversation;
 import ca.efriesen.lydia.databases.MessagesDataSource;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.includes.PhoneBaseAdapter;
 import ca.efriesen.lydia.includes.SMSBaseAdapter;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -53,6 +51,10 @@ public class PhoneFragment extends Fragment {
 
 		activity.registerReceiver(smsReceivedReceeiver, new IntentFilter(Intents.SMSRECEIVED));
 		activity.registerReceiver(phoneCallReceivedReceiver, new IntentFilter(Intents.INCOMINGCALL));
+		// sms receiver listener
+		activity.registerReceiver(smsReceiver, new IntentFilter(Intents.SMSRECEIVED));
+		// phone call listener
+		activity.registerReceiver(incomingCallReceiver, new IntentFilter(Intents.INCOMINGCALL));
 	}
 
 	@Override
@@ -90,6 +92,16 @@ public class PhoneFragment extends Fragment {
 		} catch (Exception e) {
 			Log.w(TAG, e);
 		}
+		try {
+			activity.unregisterReceiver(smsReceiver);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			activity.unregisterReceiver(incomingCallReceiver);
+		} catch (Exception e) {
+			Log.w(TAG, e);
+		}
 	}
 
 	public boolean onBackPressed() {
@@ -116,4 +128,59 @@ public class PhoneFragment extends Fragment {
 			recentCallsView.setAdapter(new PhoneBaseAdapter(activity.getApplicationContext(), dataSource.getAllPhonecalls()));
 		}
 	};
+
+	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			final String phoneNumber = intent.getStringExtra("phoneNumber");
+			final String message = intent.getStringExtra("message");
+
+			final EditText reply = new EditText(activity);
+
+			new AlertDialog.Builder(
+					activity).setTitle(Helpers.getContactDisplayNameByNumber(activity, phoneNumber))
+					.setMessage(message)
+					.setView(reply)
+					.setCancelable(false)
+					.setNegativeButton(getString(R.string.close), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							dialogInterface.cancel();
+						}
+					})
+					.setPositiveButton(getString(R.string.reply), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+//							Log.d(TAG, replyMessage);
+							activity.sendBroadcast(new Intent(Intents.SMSREPLY).putExtra("message", reply.getText().toString()).putExtra("phoneNumber", phoneNumber));
+							dialogInterface.cancel();
+						}
+					}).create().show();
+		}
+	};
+
+	public BroadcastReceiver incomingCallReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			new AlertDialog.Builder(activity).setTitle(getString(R.string.incoming_call))
+					.setMessage(Helpers.getContactDisplayNameByNumber(activity, intent.getStringExtra("number")))
+					.setCancelable(false)
+					.setPositiveButton(getText(R.string.answer), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							// answer call
+							dialogInterface.cancel();
+						}
+					})
+					.setNegativeButton(getText(R.string.ignore), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							// ignore call
+							dialogInterface.cancel();
+						}
+					}).create().show();
+		}
+	};
+
 }

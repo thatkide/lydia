@@ -120,10 +120,6 @@ public class Dashboard extends Activity {
 		// listen for battery broadcasts
 		registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-		// sms receiver listener
-		registerReceiver(smsReceiver, new IntentFilter(Intents.SMSRECEIVED));
-		// phone call listener
-		registerReceiver(incomingCallReceiver, new IntentFilter(Intents.INCOMINGCALL));
 	}
 
 	@Override
@@ -140,17 +136,6 @@ public class Dashboard extends Activity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			unregisterReceiver(smsReceiver);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			unregisterReceiver(incomingCallReceiver);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
-
 	}
 
 	@Override
@@ -223,59 +208,6 @@ public class Dashboard extends Activity {
 		}
 	};
 
-	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			final String phoneNumber = intent.getStringExtra("phoneNumber");
-			final String message = intent.getStringExtra("message");
-
-			final EditText reply = new EditText(Dashboard.this);
-
-			new AlertDialog.Builder(
-					Dashboard.this).setTitle(Helpers.getContactDisplayNameByNumber(getApplicationContext(), phoneNumber))
-					.setMessage(message)
-					.setView(reply)
-					.setCancelable(false)
-					.setNegativeButton(getString(R.string.close), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-							dialogInterface.cancel();
-						}
-					})
-					.setPositiveButton(getString(R.string.reply), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-//							Log.d(TAG, replyMessage);
-							sendBroadcast(new Intent(Intents.SMSREPLY).putExtra("message", reply.getText().toString()).putExtra("phoneNumber", phoneNumber));
-							dialogInterface.cancel();
-						}
-					}).create().show();
-		}
-	};
-
-	public BroadcastReceiver incomingCallReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			new AlertDialog.Builder(Dashboard.this).setTitle(getString(R.string.incoming_call))
-				.setMessage(Helpers.getContactDisplayNameByNumber(getApplicationContext(), intent.getStringExtra("number")))
-				.setCancelable(false)
-				.setPositiveButton(getText(R.string.answer), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						// answer call
-						dialogInterface.cancel();
-					}
-				})
-				.setNegativeButton(getText(R.string.ignore), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						// ignore call
-						dialogInterface.cancel();
-					}
-				}).create().show();
-		}
-	};
 
 
 /* ------------------ End Broadcast Receivers and Service Connections ------------------ */

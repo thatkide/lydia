@@ -29,39 +29,14 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="lydia" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="lydia " />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="DEBUG" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/includes/Constants.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/includes/Intents.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/Dashboard.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/Dashboard.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Defroster.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Defroster.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/DeviceListActivity.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/DeviceListActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/DriverControlsFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/DriverControlsFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/DriverControlsMoreFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/DriverControlsMoreFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/FooterFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/FooterFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/services/HardwareManagerService.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/services/HardwareManagerService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/HeaderFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/HeaderFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/HomeScreenFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/HomeScreenFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/plugins/LastFM.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/plugins/LastFM.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/services/MediaService.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/services/MediaService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/MusicSearch.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/activities/MusicSearch.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PassengerControlsFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PassengerControlsFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PassengerControlsMoreFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PassengerControlsMoreFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PhoneFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/PhoneFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/SettingsFragment.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/fragments/SettingsFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/TemperatureSensor.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/TemperatureSensor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Windows.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Windows.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Wipers.java" afterPath="$PROJECT_DIR$/../lydia/src/ca/efriesen/lydia/devices/Wipers.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../lydia/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lydia_common/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../lydia_common/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" name="Default" comment="" />
     <ignored path="lydia_phone.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" time="1373514849538" ignored="false" />
+    <file path="/Dummy.txt" changelist="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" time="1374688016487" ignored="false" />
     <file path="/a.java" changelist="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" time="1370031586794" ignored="false" />
     <file path="/fragment.java" changelist="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" time="1373257758909" ignored="false" />
     <file path="/Dashboard.java" changelist="d0fcef1a-b9bf-48b2-adda-5f83cb580ae3" time="1370124962406" ignored="false" />
@@ -199,10 +174,8 @@
       <file leaf-file-name="MediaControlsFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/fragments/MediaControlsFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="116" column="0" selection-start="3519" selection-end="3780" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state line="117" column="31" selection-start="3824" selection-end="3824" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -210,8 +183,10 @@
       <file leaf-file-name="BluetoothService.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/BluetoothService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="255" column="0" selection-start="7462" selection-end="7462" vertical-scroll-proportion="0.548718">
-              <folding />
+            <state line="205" column="52" selection-start="6083" selection-end="6083" vertical-scroll-proportion="-0.3463158">
+              <folding>
+                <element signature="e#0#10594#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -219,10 +194,8 @@
       <file leaf-file-name="ManagerService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/ManagerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="0" selection-start="2583" selection-end="2583" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state line="60" column="56" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -282,9 +255,9 @@
         <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/includes/Media/Media.java" />
         <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/includes/Media/MediaUtils.java" />
         <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/includes/Media/Song.java" />
-        <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/BluetoothService.java" />
         <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/ManagerService.java" />
         <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/fragments/MediaControlsFragment.java" />
+        <option value="$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/BluetoothService.java" />
       </list>
     </option>
   </component>
@@ -304,7 +277,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectReloadState">
-    <option name="STATE" value="2" />
+    <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -319,7 +292,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -393,10 +365,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="lydia_phone" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="receivers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -536,6 +504,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -557,18 +526,18 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="Template Data Languages" />
     <property name="recentsLimit" value="5" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../lydia_common" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="AndroidLayoutSelectedEditor" value="text-editor" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="AndroidTargetDevices" value="007145790fd555c3" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="MemberChooser.showClasses" value="true" />
+    <property name="AndroidTargetDevices" value="007145790fd555c3" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -764,7 +733,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14247599" sideWeight="0.7417747" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14247599" sideWeight="0.80658025" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25822532" sideWeight="0.99080884" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -843,29 +812,19 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/layout/media_controls_fragment.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="52" selection-start="347" selection-end="347" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/BluetoothService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="72" column="0" selection-start="2692" selection-end="2692" vertical-scroll-proportion="0.0">
-          <folding />
+          <folding>
+            <element signature="e#0#10594#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/ManagerService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="172" column="16" selection-start="5960" selection-end="5960" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -961,26 +920,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/ManagerService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="2583" selection-end="2583" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="60" column="56" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/fragments/MediaControlsFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="0" selection-start="3519" selection-end="3780" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="117" column="31" selection-start="3824" selection-end="3824" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/android-sdk-macosx/platforms/android-17/android.jar!/android/os/Handler.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="36" selection-start="1135" selection-end="1135" vertical-scroll-proportion="0.33333334">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ca/efriesen/lydia_phone/services/BluetoothService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="255" column="0" selection-start="7462" selection-end="7462" vertical-scroll-proportion="0.548718">
-          <folding />
+        <state line="205" column="52" selection-start="6083" selection-end="6083" vertical-scroll-proportion="-0.3463158">
+          <folding>
+            <element signature="e#0#10594#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

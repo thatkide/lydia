@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * Time: 3:02 PM
  */
 public class HardwareManagerService extends Service {
-	public static final String TAG = "Hardware Manager";
+	public static final String TAG = "lydia Hardware Manager";
 	private final IBinder mBinder = new HardwareManagerBinder();
 
 	// Bluetooth settings
@@ -292,6 +292,7 @@ public class HardwareManagerService extends Service {
 			dataSource.createMessage(message, phoneNumber, ca.efriesen.lydia.databases.Message.TYPE_SMS, true);
 			// send over bluetooth
 			String replyMessage = "SMS" + BluetoothService.MESSAGE_DELIMETER + phoneNumber + BluetoothService.MESSAGE_DELIMETER + message;
+			Log.d(TAG, "sending " + replyMessage);
 			bluetoothService.write(replyMessage.getBytes());
 		}
 	};
