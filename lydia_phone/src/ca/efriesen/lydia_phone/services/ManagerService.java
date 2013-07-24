@@ -8,10 +8,16 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import ca.efriesen.lydia_common.messages.PhoneCall;
+import ca.efriesen.lydia_common.messages.SMS;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia_phone.R;
 import ca.efriesen.lydia_phone.activities.Lydia;
 import includes.Intents;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  * User: eric
@@ -20,7 +26,6 @@ import includes.Intents;
  */
 public class ManagerService extends Service {
 	public static final String TAG = "Lydia Phone Manager Service";
-	public final String SMS_EXTRA_NAME = "pdus";
 	private BluetoothAdapter mBluetoothAdapter;
 	private BluetoothService mBluetoothService;
 	private static final int ONGOING_NOTIFICATION = 1;
@@ -82,9 +87,11 @@ public class ManagerService extends Service {
 		public void onCallStateChanged(int state, String incomingNumber) {
 			switch (state) {
 				case TelephonyManager.CALL_STATE_RINGING: {
-					String message = "INCOMINGCALL" + BluetoothService.MESSAGE_DELIMETER + incomingNumber;
+					PhoneCall call = new PhoneCall();
+					call.setFromNumber(incomingNumber);
+					call.setState(TelephonyManager.CALL_STATE_RINGING);
 					// send to tablet
-					mBluetoothService.write(message.getBytes());
+					mBluetoothService.write(BluetoothService.objectToByteArray(call));
 					break;
 				}
 				case TelephonyManager.CALL_STATE_OFFHOOK: {
@@ -105,20 +112,28 @@ public class ManagerService extends Service {
 	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "Got text");
+			// create a new internal sms object
+			SMS sms = new SMS();
+
 			// get the sms from the intent
 			Bundle extras = intent.getExtras();
 
 			if (extras != null) {
 				// get received SMS array
-				Object[] smsExtra = (Object[]) extras.get(SMS_EXTRA_NAME);
+				Object[] pdus = (Object[]) extras.get("pdus");
+				StringBuilder builder = new StringBuilder();
 
-				for (int i = 0; i < smsExtra.length; i++) {
-					SmsMessage sms = SmsMessage.createFromPdu((byte[]) smsExtra[i]);
-					String message = "SMS" + BluetoothService.MESSAGE_DELIMETER + sms.getOriginatingAddress() + BluetoothService.MESSAGE_DELIMETER + sms.getMessageBody();
-					Log.d(TAG, message);
-					mBluetoothService.write(message.getBytes());
+				// loop over the pdus
+				for (int i = 0; i < pdus.length; i++) {
+					// create a new message from the pdu
+					SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
+					builder.append(smsMessage.getMessageBody());
+					sms.setFromNumber(smsMessage.getOriginatingAddress());
 				}
+
+				// add the message
+				sms.setMessage(builder.toString());
+				mBluetoothService.write(BluetoothService.objectToByteArray(sms));
 			}
 		}
 	};
@@ -131,11 +146,13 @@ public class ManagerService extends Service {
 				case BluetoothService.MESSAGE_READ: {
 					Log.d(TAG, "handler");
 					if (msg.obj instanceof Song) {
-						Song song = (Song) msg.obj;
-
 						Intent updateMedia = new Intent(Intents.UPDATEMEDIAINFO);
-						updateMedia.putExtra("ca.efriesen.Song", song);
+						updateMedia.putExtra("ca.efriesen.Song", (Song)msg.obj);
 						sendBroadcast(updateMedia);
+					} else if (msg.obj instanceof SMS) {
+						Intent smsReceived = new Intent(Intents.SMSRECEIVED);
+						smsReceived.putExtra("ca.efriesen.SMS", (SMS)msg.obj);
+						sendBroadcast(smsReceived);
 					}
 
 //					byte[] readBuf = (byte[]) msg.obj;
@@ -145,25 +162,6 @@ public class ManagerService extends Service {
 //					String command[] = readMessage.split(BluetoothService.MESSAGE_DELIMETER);
 
 //					if (msg.obj
-//					if ("SMS".equalsIgnoreCase(command[0])) {
-//						String phoneNumber = command[1];
-//						String message = command[2];
-//						Log.d(TAG, phoneNumber);
-//						Log.d(TAG, message);
-//						SmsManager sms = SmsManager.getDefault();
-//						try {
-//							ArrayList<String> msgStringArray = sms.divideMessage(message);
-//							// send the text via cell radio
-//							sms.sendMultipartTextMessage(phoneNumber, null, msgStringArray, null, null);
-//
-//							ContentValues values = new ContentValues();
-//							values.put("address", phoneNumber);
-//							values.put("body", message);
-//							// insert into the sms conversation send list
-//							getContentResolver().insert(Uri.parse("content://sms/sent"), values);
-//						} catch (IllegalArgumentException e) {
-//							Log.d(TAG, "Text failed " + e);
-//						}
 //					} else if ("PHONE".equalsIgnoreCase(command[0])) {
 //						String phoneNumber = command[1];
 //						Log.d(TAG, phoneNumber);
@@ -171,37 +169,6 @@ public class ManagerService extends Service {
 //						Intent call = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
 //						call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //						startActivity(call);
-//					} else if("MEDIAINFO".equalsIgnoreCase(command[0])) {
-//						try {
-//							Log.d(TAG, command[1]);
-//
-//							byte[] buff = Arrays.copyOfRange(readBuf, command[0].length(), readBuf.length);
-//							Log.d(TAG, "read buff " + readBuf);
-//							Log.d(TAG, "buff " + buff);
-//							ByteArrayInputStream bis = new ByteArrayInputStream(buff);
-//							ObjectInputStream in = new ObjectInputStream(bis);
-//							Song song = (Song) in.readObject();
-//							in.close();
-//
-//							Log.d(TAG, "song name" + song.getName());
-////							String uri = command[1];
-////							Intent mediaInfo = Intent.parseUri(uri, 0);
-////							sendBroadcast(mediaInfo);
-////						} catch (URISyntaxException e) {
-////							Log.d(TAG, "Invalid URI Intent");
-////							Log.d(TAG, e.toString());
-//						} catch (NullPointerException e) {
-//							Log.e(TAG, e.toString());
-//						} catch (StreamCorruptedException e) {
-//							Log.e(TAG, e.toString());
-//							e.printStackTrace();
-//						} catch (IOException e) {
-//							Log.e(TAG, e.toString());
-//						} catch (ClassNotFoundException e) {
-//							Log.e(TAG, e.toString());
-//						}
-//					}
-//					break;
 				}
 				case BluetoothService.MESSAGE_CONNECTED: {
 					Log.d(TAG, "connected, sending broadcast");
@@ -228,13 +195,13 @@ public class ManagerService extends Service {
 	private BroadcastReceiver sendMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// get the key and value from the intent
-			String key = intent.getStringExtra("key");
-			String value = intent.getStringExtra("value");
-			// combine them, and delineate
-			String message = key + BluetoothService.MESSAGE_DELIMETER + value;
-			// send via bluetooth
-			mBluetoothService.write(message.getBytes());
+//			// get the key and value from the intent
+//			String key = intent.getStringExtra("key");
+//			String value = intent.getStringExtra("value");
+//			// combine them, and delineate
+//			String message = key + BluetoothService.MESSAGE_DELIMETER + value;
+//			// send via bluetooth
+//			mBluetoothService.write(message.getBytes());
 		}
 	};
 }

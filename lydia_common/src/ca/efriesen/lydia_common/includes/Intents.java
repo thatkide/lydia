@@ -41,7 +41,7 @@ public class Intents {
 	public static final String BLUEOOTHCONNECTED = "ca.efriesen.lydia.BluetoothConnected";
 	public static final String BLUEOOTHDISCONNECTED = "ca.efriesen.lydia.BluetoothDisconnected";
 	public static final String BLUETOOTHTOGGLE = "ca.efriesen.lydia.BluetoothToggle";
-	public static final String INCOMINGCALL = "ca.efriesen.lydia.IncomingCall";
+	public static final String PHONECALL = "ca.efriesen.lydia.PhoneCall";
 	public static final String SMSRECEIVED = "ca.efriesen.lydia.SMSReceived";
 	public static final String SMSREPLY = "ca.efriesen.lydia.SMSReply";
 

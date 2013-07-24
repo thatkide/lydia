@@ -4,7 +4,6 @@ import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.*;
-import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -13,6 +12,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
+import ca.efriesen.lydia_common.messages.PhoneCall;
+import ca.efriesen.lydia_common.messages.SMS;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
@@ -24,6 +25,7 @@ import ca.efriesen.lydia.devices.Device;
 import ca.efriesen.lydia.devices.TemperatureSensor;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
@@ -157,47 +159,39 @@ public class HardwareManagerService extends Service {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case BluetoothService.MESSAGE_READ: {
-					byte[] readBuf = (byte[]) msg.obj;
-					// construct a string from the valid bytes in the buffer
-					String readMessage = new String(readBuf, 0, msg.arg1);
-					// split on the delimiter
-					String command[] = readMessage.split(BluetoothService.MESSAGE_DELIMETER);
-
-					if (command[0].equalsIgnoreCase("SMS")) {
-						String message = command[2];
-						String phoneNumber = command[1];
-
-						// store message in db
-						dataSource.createMessage(message, phoneNumber, ca.efriesen.lydia.databases.Message.TYPE_SMS, false);
-
-						// send a broadcast to display it on screen
-						sendBroadcast(new Intent(Intents.SMSRECEIVED).putExtra("message", message).putExtra("phoneNumber", phoneNumber));
-					} else if (command[0].equalsIgnoreCase("INCOMINGCALL")) {
-						String incomingNumber = command[1];
-						// store in db
-						dataSource.createMessage("", incomingNumber, ca.efriesen.lydia.databases.Message.TYPE_PHONE, false);
-						sendBroadcast(new Intent(Intents.INCOMINGCALL).putExtra("number", incomingNumber));
-					} else if (command[0].equalsIgnoreCase("MEDIA")) {
-						// value will me play, pause, next, etc
-						// The value is set from the globally available intent class.  the same on client and server
-						String value = command[1];
-						sendBroadcast(new Intent(value));
-					} else if(command[0].equalsIgnoreCase("VOLUME")) {
-						AudioManager mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-						if (command[1].equalsIgnoreCase("DOWN")) {
-							// decrease the volume by 1
-							int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume - 1, 0);
-						} else {
-							// increase the volume by 1
-							int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume + 1, 0);
-						}
+					if (msg.obj instanceof SMS) {
+						Intent smsReceived = new Intent(Intents.SMSRECEIVED);
+						smsReceived.putExtra("ca.efriesen.SMS", (SMS)msg.obj);
+						sendBroadcast(smsReceived);
+					} else if(msg.obj instanceof PhoneCall) {
+						Intent phoneCall = new Intent(Intents.PHONECALL);
+						phoneCall.putExtra(Intents.PHONECALL, (PhoneCall)msg.obj);
+						sendBroadcast(phoneCall);
 					}
-
-//					Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_LONG).show();
 					break;
 				}
+//					} else if (command[0].equalsIgnoreCase("INCOMINGCALL")) {
+//						String incomingNumber = command[1];
+//						sendBroadcast(new Intent(Intents.INCOMINGCALL).putExtra("number", incomingNumber));
+//					} else if (command[0].equalsIgnoreCase("MEDIA")) {
+//						// value will me play, pause, next, etc
+//						// The value is set from the globally available intent class.  the same on client and server
+//						String value = command[1];
+//						sendBroadcast(new Intent(value));
+//					} else if(command[0].equalsIgnoreCase("VOLUME")) {
+//						AudioManager mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+//						if (command[1].equalsIgnoreCase("DOWN")) {
+//							// decrease the volume by 1
+//							int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume - 1, 0);
+//						} else {
+//							// increase the volume by 1
+//							int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume + 1, 0);
+//						}
+//					}
+
+//					Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_LONG).show();
 				case BluetoothService.MESSAGE_WRITE: {
 					break;
 				}
@@ -286,37 +280,21 @@ public class HardwareManagerService extends Service {
 	private BroadcastReceiver smsReplyReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String message = intent.getStringExtra("message");
-			String phoneNumber = intent.getStringExtra("phoneNumber");
+			SMS sms = (SMS) intent.getSerializableExtra("ca.efriesen.SMS");
+
 			// store message in db
-			dataSource.createMessage(message, phoneNumber, ca.efriesen.lydia.databases.Message.TYPE_SMS, true);
-			// send over bluetooth
-			String replyMessage = "SMS" + BluetoothService.MESSAGE_DELIMETER + phoneNumber + BluetoothService.MESSAGE_DELIMETER + message;
-			Log.d(TAG, "sending " + replyMessage);
-			bluetoothService.write(replyMessage.getBytes());
+			dataSource.createMessage(sms.getMessage(), sms.getToNumber(), ca.efriesen.lydia.databases.Message.TYPE_SMS, true);
+
+			bluetoothService.write(BluetoothService.objectToByteArray(sms));
 		}
 	};
 
 	private BroadcastReceiver mediaInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				Log.d(TAG, intent.toString());
-				Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
+			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
 
-				Log.d(TAG, song.getName());
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(bos);
-				out.writeObject(song);
-				out.reset();
-				out.close();
-
-//				String message = "MEDIAINFO" + BluetoothService.MESSAGE_DELIMETER;
-//				bluetoothService.write(message.getBytes());
-				bluetoothService.write(bos.toByteArray());
-			} catch (Exception e) {
-				Log.d(TAG, e.toString());
-			}
+			bluetoothService.write(BluetoothService.objectToByteArray(song));
 		}
 	};
 

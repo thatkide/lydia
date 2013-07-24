@@ -16,9 +16,7 @@
 
 package ca.efriesen.lydia.services;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
@@ -63,8 +61,6 @@ public class BluetoothService {
 	public static final int MESSAGE_CONNECTED = 4;
 	public static final int MESSAGE_DISCONNECTED = 5;
 	public static final int MESSAGE_FAILED = 6;
-
-	public static final String MESSAGE_DELIMETER = "-~-";
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
@@ -318,18 +314,26 @@ public class BluetoothService {
 			byte[] buffer = new byte[1024];
 			int bytes;
 
+			// Keep listening to the InputStream while connected
 			while (true) {
-
 				try {
 					// Read from the InputStream
 					bytes = mmInStream.read(buffer);
 
+					ByteArrayInputStream bis = new ByteArrayInputStream(buffer);
+					ObjectInputStream in = new ObjectInputStream(bis);
+					Object object = in.readObject();
+					in.close();
+
+					Log.d(TAG, "got a message");
 					// Send the obtained bytes to the UI Activity
-					mHandler.obtainMessage(BluetoothService.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
-				} catch (Exception e) {
-					Log.w(TAG, "disconnected", e);
+					mHandler.obtainMessage(BluetoothService.MESSAGE_READ, bytes, -1, object).sendToTarget();
+				} catch (IOException e) {
+					Log.e(TAG, "disconnected", e);
 					connectionLost();
 					break;
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 				}
 			}
 		}
@@ -353,10 +357,29 @@ public class BluetoothService {
 		public void cancel() {
 			Log.d(TAG, "canceling connected thread");
 			try {
+				mmInStream.close();
+				mmOutStream.close();
 				mmSocket.close();
 			} catch (IOException e) {
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
 		}
 	}
+
+	public static byte[] objectToByteArray(Object object) {
+		// send over bluetooth
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(object);
+			out.reset();
+			out.close();
+			return bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return null;
+	}
+
 }

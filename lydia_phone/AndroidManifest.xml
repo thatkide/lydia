@@ -21,11 +21,18 @@
 	<application
 			android:label="@string/app_name"
 			android:icon="@drawable/ic_launcher">
-		<receiver android:name=".receivers.StartAfterBoot" android:enabled="true" android:exported="false">
+		<receiver android:name=".broadcastReceivers.StartAfterBoot" android:enabled="true" android:exported="false">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED"/>
 			</intent-filter>
 		</receiver>
+
+		<receiver android:name=".broadcastReceivers.SMSReceived">
+			<intent-filter>
+				<action android:name="ca.efriesen.lydia.SMSReceived" />
+			</intent-filter>
+		</receiver>
+
 		<activity android:name=".activities.Lydia" android:configChanges="orientation|screenSize">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>

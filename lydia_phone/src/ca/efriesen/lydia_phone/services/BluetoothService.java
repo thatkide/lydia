@@ -64,8 +64,6 @@ public class BluetoothService {
 	public static final int MESSAGE_DISCONNECTED = 5;
 	public static final int MESSAGE_FAILED = 6;
 
-	public static final String MESSAGE_DELIMETER = "-~-";
-
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
 	 *
@@ -367,10 +365,28 @@ public class BluetoothService {
 
 		public void cancel() {
 			try {
+				mmInStream.close();
+				mmOutStream.close();
 				mmSocket.close();
 			} catch (IOException e) {
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
 		}
+	}
+
+	public static byte[] objectToByteArray(Object object) {
+		// send over bluetooth
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(object);
+			out.reset();
+			out.close();
+			return bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return null;
 	}
 }

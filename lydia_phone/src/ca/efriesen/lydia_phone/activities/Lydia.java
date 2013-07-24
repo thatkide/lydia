@@ -3,6 +3,7 @@ package ca.efriesen.lydia_phone.activities;
 import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -10,10 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import ca.efriesen.lydia_phone.R;
+import ca.efriesen.lydia_phone.broadcastReceivers.SMSReceived;
 import ca.efriesen.lydia_phone.fragments.MediaControlsFragment;
 import ca.efriesen.lydia_phone.fragments.SettingsFragment;
 import ca.efriesen.lydia_phone.includes.TabsAdapter;
 import ca.efriesen.lydia_phone.services.ManagerService;
+import includes.Intents;
 
 /**
  * User: eric
@@ -52,6 +55,11 @@ public class Lydia extends FragmentActivity {
 			finish();
 			return;
 		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 
 	@Override

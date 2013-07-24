@@ -1,4 +1,4 @@
-package ca.efriesen.lydia_phone.receivers;
+package ca.efriesen.lydia_phone.broadcastReceivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
