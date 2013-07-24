@@ -12,32 +12,35 @@
 			  android:layout_height="wrap_content"
 			  style="@style/LargeText"/>
 	<ImageView android:id="@+id/contact_photo" android:layout_width="150dip" android:layout_height="150dip" android:layout_alignParentRight="true" />
-	<LinearLayout android:orientation="vertical" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_toLeftOf="@id/contact_photo" android:layout_below="@id/contact_display_name">
+	<ScrollView android:orientation="vertical" android:layout_height="match_parent" android:layout_width="match_parent" android:layout_toLeftOf="@id/contact_photo" android:layout_below="@id/contact_display_name">
 
-		<LinearLayout android:id="@+id/phone_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
-			<TextView android:text="@string/type_phone" style="@style/MediumText" />
-			<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
-			<ListView android:id="@+id/phone_numbers"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content" />
+		<LinearLayout android:orientation="vertical" android:layout_height="match_parent" android:layout_width="match_parent">
+			<LinearLayout android:id="@+id/phone_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
+				<TextView android:text="@string/type_phone" style="@style/MediumText" />
+				<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+				<ListView android:id="@+id/phone_numbers"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:focusable="false"
+						android:focusableInTouchMode="false"
+						android:clickable="false"/>
+			</LinearLayout>
+
+			<LinearLayout android:id="@+id/email_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
+				<TextView android:text="@string/type_email" style="@style/MediumText" />
+				<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+				<ListView android:id="@+id/emails"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content" />
+			</LinearLayout>
+
+			<LinearLayout android:id="@+id/address_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
+				<TextView android:text="@string/address" style="@style/MediumText" />
+				<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+				<TextView android:id="@+id/formatted_address" style="@style/MediumText"/>
+			</LinearLayout>
 		</LinearLayout>
-
-
-		<LinearLayout android:id="@+id/email_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
-			<TextView android:text="@string/type_email" style="@style/MediumText" />
-			<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
-			<ListView android:id="@+id/emails"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content" />
-		</LinearLayout>
-
-		<LinearLayout android:id="@+id/address_container" android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical">
-			<TextView android:text="@string/address" style="@style/MediumText" />
-			<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
-			<TextView android:id="@+id/formatted_address" style="@style/MediumText" />
-		</LinearLayout>
-	</LinearLayout>
+	</ScrollView>
 	<!-- can't get the proper width without this empty list... -->
-	<ListView android:layout_height="match_parent" android:layout_width="match_parent"/>
 
 </RelativeLayout>

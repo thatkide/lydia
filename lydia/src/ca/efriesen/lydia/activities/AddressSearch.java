@@ -87,10 +87,10 @@ public class AddressSearch extends Activity implements
 		Address address = (Address) adapterView.getAdapter().getItem(position);
 
 		try {
-			ArrayList<Address> addresses = new MapHelpers.GetDetailsFromReferenceTask(getApplicationContext()).execute(address.getUrl()).get();
+			address = new MapHelpers.GetDetailsFromReferenceTask(getApplicationContext()).execute(address.getUrl()).get();
 			// make a new intent with the address, and send it to the map fragment
 			Intent addressIntent = new Intent();
-			addressIntent.putExtra("address", addresses.get(0));
+			addressIntent.putExtra("address", address);
 			setResult(RESULT_OK, addressIntent);
 			// close ourself
 			finish();

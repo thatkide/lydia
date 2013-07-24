@@ -83,7 +83,7 @@ public class MapHelpers {
 		}
 	}
 
-	public static class GetDetailsFromReferenceTask extends AsyncTask<String, Void, ArrayList<Address>> {
+	public static class GetDetailsFromReferenceTask extends AsyncTask<String, Void, Address> {
 
 		private Context context;
 		public GetDetailsFromReferenceTask(Context context) {
@@ -91,8 +91,9 @@ public class MapHelpers {
 		}
 
 		@Override
-		protected ArrayList<Address> doInBackground(String... strings) {
-			ArrayList<Address> detailsArray = new ArrayList<Address>();
+		protected Address doInBackground(String... strings) {
+			Address address = new Address(Locale.CANADA);
+
 			try {
 				URL googlePlaces = new URL(
 						"https://maps.googleapis.com/maps/api/place/details/json?" +
@@ -114,14 +115,13 @@ public class MapHelpers {
 				JSONObject result = json.getJSONObject("result");
 				JSONObject geometry = result.getJSONObject("geometry");
 				JSONObject location = geometry.getJSONObject("location");
-				Address address = new Address(Locale.CANADA);
+
 				address.setLongitude(location.getDouble("lng"));
 				address.setLatitude(location.getDouble("lat"));
 				address.setFeatureName(result.getString("name"));
 				address.setAddressLine(0, (!result.isNull("formatted_address") ? result.getString("formatted_address") : ""));
 				address.setPhone((!result.isNull("formatted_phone_number") ? result.getString("formatted_phone_number") : ""));
 
-				detailsArray.add(address);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -129,7 +129,8 @@ public class MapHelpers {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			return detailsArray;		}
+			return address;
+		}
 	}
 
 	public static class GetAddressFromLatLngTask extends AsyncTask<LatLng, Void, Address> {

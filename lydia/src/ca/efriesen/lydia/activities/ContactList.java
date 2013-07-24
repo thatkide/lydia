@@ -56,7 +56,7 @@ public class ContactList extends Activity implements LoaderManager.LoaderCallbac
 			public void onItemClick(AdapterView<?> adapterView, View view, int positions, long id) {
 				Intent startContactView = new Intent(getApplicationContext(), ContactView.class);
 				startContactView.putExtra("contact_id", id);
-				startActivity(startContactView);
+				startActivityForResult(startContactView, 1);
 			}
 		});
 
@@ -83,7 +83,17 @@ public class ContactList extends Activity implements LoaderManager.LoaderCallbac
 		});
 	}
 
-	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		// check the codes
+		switch (requestCode) {
+			case 1: {
+				sendBroadcast(intent);
+				finish();
+			}
+		}
+	}
+
+				@Override
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 		return new CursorLoader(getApplicationContext(), ContactsContract.Contacts.CONTENT_URI, PROJECTION, SELECTION, null, ORDER);
 	}

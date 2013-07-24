@@ -11,19 +11,19 @@ import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
-
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by eric on 2013-05-31.
  */
-public class ContactView extends Activity {
+public class ContactView extends Activity implements AdapterView.OnItemClickListener {
 
 	private static final String TAG = "contact view";
 	private String[] PROJECTION;
@@ -73,15 +73,15 @@ public class ContactView extends Activity {
 				TextView formattedAddress = (TextView) findViewById(R.id.formatted_address);
 				final String addressString = addresses.getString(addresses.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
 				formattedAddress.setText(addressString);
-				formattedAddress.setClickable(true);
-				formattedAddress.setOnClickListener(new View.OnClickListener() {
+				formattedAddress.setOnTouchListener(new View.OnTouchListener() {
 					@Override
-					public void onClick(View view) {
+					public boolean onTouch(View view, MotionEvent motionEvent) {
 						Log.d(TAG, "address " + addressString);
 						Intent showOnMap = new Intent(Intents.SHOWONMAP);
 						showOnMap.putExtra("formattedAddress", addressString);
-						sendBroadcast(showOnMap);
+						setResult(RESULT_OK, showOnMap);
 						finish();
+						return false;
 					}
 				});
 			}
@@ -194,6 +194,10 @@ public class ContactView extends Activity {
 		email.close();
 	}
 
+	@Override
+	public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+		Log.d(TAG, "phone number clicked");
+	}
 }
 
 class ListViewEntry {

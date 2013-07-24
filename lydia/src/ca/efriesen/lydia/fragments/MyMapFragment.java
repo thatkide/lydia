@@ -1,6 +1,7 @@
 package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.*;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.includes.GMapV2Direction;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.includes.MapHelpers;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +59,7 @@ public class MyMapFragment extends MapFragment implements
 
 	private Location currentLocation;
 
+	private boolean showSelf = false;
 	private static final String TAG = "lydia map fragment";
 
 	@Override
@@ -83,6 +86,7 @@ public class MyMapFragment extends MapFragment implements
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		}
+		locationClient.connect();
 
 		activity.registerReceiver(mapAddressReceiver, new IntentFilter(Intents.SHOWONMAP));
 	}
@@ -111,6 +115,17 @@ public class MyMapFragment extends MapFragment implements
 						.commit();
 			}
 		});
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (showSelf) {
+			ArrayList<Fragment> fragments = new ArrayList<Fragment>();
+			fragments.add(getFragmentManager().findFragmentById(R.id.map_container_fragment));
+			Helpers.hideAllFragmentsBut(getFragmentManager(), fragments);
+			showSelf = false;
+		}
 	}
 
 	@Override
@@ -147,11 +162,10 @@ public class MyMapFragment extends MapFragment implements
 
 	// connect and disconnect on fragment hidden/visible
 	public void onFragmentVisible() {
-		locationClient.connect();
 	}
 
 	public void onFragmentHidden() {
-		locationClient.disconnect();
+//		locationClient.disconnect();
 	}
 
 //	make poly line change color after we've pased in in driving
@@ -379,26 +393,16 @@ public class MyMapFragment extends MapFragment implements
 	private BroadcastReceiver mapAddressReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String address = intent.getStringExtra("formattedAddress");
-
 			try {
-				ArrayList<Address> addresses = new MapHelpers.GetLocationsFromStringTask(activity, currentLocation).execute(address).get();
-				drawMarker(addresses.get(0));
-				FragmentManager manager = getFragmentManager();
-				// replace the 'dashboard_container' fragment with a new 'settings fragment'
-				FragmentTransaction transaction = getFragmentManager().beginTransaction();
-				transaction.show(manager.findFragmentById(R.id.home_screen_container_fragment))
-						.hide(manager.findFragmentById(R.id.settings_fragment))
-						.hide(manager.findFragmentById(R.id.home_screen_fragment))
-						.hide(manager.findFragmentById(R.id.home_screen_fragment_two))
-						.hide(manager.findFragmentById(R.id.music_fragment))
-						.show(manager.findFragmentById(R.id.map_container_fragment))
-						.show(manager.findFragmentById(R.id.map_fragment))
-						.hide(manager.findFragmentById(R.id.phone_fragment))
-						.hide(manager.findFragmentById(R.id.launcher_fragment))
+				// get a list of addresses that fit the search string
+				ArrayList<Address> addresses = new MapHelpers.GetLocationsFromStringTask(activity, currentLocation).execute(intent.getStringExtra("formattedAddress")).get();
+				// get the details of the first one
+				Address address = new MapHelpers.GetDetailsFromReferenceTask(activity).execute(addresses.get(0).getUrl()).get();
+				// draw a marker of it
+				LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+				drawMarker(address, CameraUpdateFactory.newLatLngZoom(latLng, cameraZoom));
 
-						.addToBackStack(null)
-						.commit();
+				showSelf = true;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (ExecutionException e) {

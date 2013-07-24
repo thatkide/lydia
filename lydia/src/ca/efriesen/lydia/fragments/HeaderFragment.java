@@ -16,10 +16,13 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
+
+import java.util.ArrayList;
 
 
 /**
@@ -107,20 +110,10 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		home.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentManager manager = getFragmentManager();
-				// replace the 'dashboard_container' fragment with a new 'settings fragment'
-				FragmentTransaction transaction = getFragmentManager().beginTransaction();
-				transaction.show(manager.findFragmentById(R.id.home_screen_container_fragment))
-				.hide(manager.findFragmentById(R.id.settings_fragment))
-				.show(manager.findFragmentById(R.id.home_screen_fragment))
-				.hide(manager.findFragmentById(R.id.home_screen_fragment_two))
-				.hide(manager.findFragmentById(R.id.music_fragment))
-				.hide(manager.findFragmentById(R.id.map_container_fragment))
-				.hide(manager.findFragmentById(R.id.phone_fragment))
-				.hide(manager.findFragmentById(R.id.launcher_fragment))
-
-				.addToBackStack(null)
-				.commit();
+				ArrayList<Fragment> fragments = new ArrayList<Fragment>();
+				fragments.add(getFragmentManager().findFragmentById(R.id.home_screen_container_fragment));
+				fragments.add(getFragmentManager().findFragmentById(R.id.home_screen_fragment));
+				Helpers.hideAllFragmentsBut(getFragmentManager(), fragments);
 			}
 		});
 

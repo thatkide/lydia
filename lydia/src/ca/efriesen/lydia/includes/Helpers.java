@@ -1,11 +1,15 @@
 package ca.efriesen.lydia.includes;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
+import ca.efriesen.lydia.R;
 
 import java.util.ArrayList;
 
@@ -36,6 +40,25 @@ public class Helpers {
 		return name;
 	}
 
+	public static void hideAllFragmentsBut(FragmentManager manager, ArrayList<Fragment> fragments) {
+		// replace the 'dashboard_container' fragment with a new 'settings fragment'
+		FragmentTransaction transaction = manager.beginTransaction();
+		transaction
+				.hide(manager.findFragmentById(R.id.home_screen_container_fragment))
+				.hide(manager.findFragmentById(R.id.settings_fragment))
+				.hide(manager.findFragmentById(R.id.home_screen_fragment))
+				.hide(manager.findFragmentById(R.id.home_screen_fragment_two))
+				.hide(manager.findFragmentById(R.id.music_fragment))
+				.hide(manager.findFragmentById(R.id.map_container_fragment))
+				.hide(manager.findFragmentById(R.id.phone_fragment))
+				.hide(manager.findFragmentById(R.id.launcher_fragment));
+		for (Fragment fragment : fragments) {
+			transaction.show(fragment);
+		}
+		transaction.addToBackStack(null);
+		transaction.commit();
+
+	}
 
 	public static void swapArrayElements(ArrayList list, int first, int second) {
 		Object temp = list.set(first, list.get(second));
