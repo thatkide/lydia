@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import ca.efriesen.lydia_phone.services.BluetoothService;
 import ca.efriesen.lydia_phone.services.ManagerService;
 
 /**

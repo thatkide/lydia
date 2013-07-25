@@ -92,11 +92,11 @@ public class MusicSearch extends ListActivity implements LoaderManager.LoaderCal
 		}
 
 //		data.close();
-		Intent setPlaylist = new Intent(Intents.PLAYLIST);
-		setPlaylist.putExtra("playlist", playlist);
-		setPlaylist.putExtra("position", position);
-		sendBroadcast(setPlaylist);
-		finish();
+//		Intent setPlaylist = new Intent(Intents.PLAYLIST);
+//		setPlaylist.putExtra("playlist", playlist);
+//		setPlaylist.putExtra("position", position);
+//		sendBroadcast(setPlaylist);
+//		finish();
 	}
 
 

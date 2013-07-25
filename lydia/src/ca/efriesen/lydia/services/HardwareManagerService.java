@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
+import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.messages.PhoneCall;
 import ca.efriesen.lydia_common.messages.SMS;
 import ca.efriesen.lydia_common.includes.Constants;
@@ -23,10 +24,6 @@ import ca.efriesen.lydia.interfaces.SerialIO;
 import ca.efriesen.lydia.devices.LightSensor;
 import ca.efriesen.lydia.devices.Device;
 import ca.efriesen.lydia.devices.TemperatureSensor;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -205,11 +202,8 @@ public class HardwareManagerService extends Service {
 					Log.d(TAG, "disconnected, sending broadcast");
 					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHDISCONNECTED));
 					Log.d(TAG, "starting connect thread");
-					startConnectBluetooth();
-					break;
-				}
-				case BluetoothService.MESSAGE_FAILED: {
 					bluetoothService.stop();
+					startConnectBluetooth();
 					break;
 				}
 			}
@@ -231,9 +225,7 @@ public class HardwareManagerService extends Service {
 			@Override
 			public void run() {
 			while (true) {
-				Log.d(TAG, "connect thread");
 				int state = bluetoothService.getState();
-				Log.d(TAG, "state " + state);
 				if (state != BluetoothService.STATE_CONNECTED && state != BluetoothService.STATE_CONNECTING) {
 					// Get the BluetoothDevice object
 					String address = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constants.PhoneAddress, null);

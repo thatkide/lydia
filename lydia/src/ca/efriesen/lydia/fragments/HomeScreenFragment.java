@@ -127,7 +127,7 @@ public class HomeScreenFragment extends Fragment {
 				switch (item.getItemId()) {
 					case RANDOM: {
 						Toast.makeText(getActivity().getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
+//						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
 						break;
 					}
 					case SEARCH: {

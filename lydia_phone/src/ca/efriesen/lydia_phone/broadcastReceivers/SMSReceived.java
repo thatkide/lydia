@@ -30,8 +30,16 @@ public class SMSReceived extends BroadcastReceiver {
 			ContentValues values = new ContentValues();
 			values.put("address", sms.getToNumber());
 			values.put("body", sms.getMessage());
+			// mark the reply as read
+			values.put("read", true);
 			// insert into the sms conversation send list
 			context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+
+			// also mark the original as read
+			values = new ContentValues();
+			values.put("read", true);
+			Log.d(TAG, "sms id " + sms.getId());
+			context.getContentResolver().update(Uri.parse("content://sms/inbox"), values, "_id=" + sms.getId(), null);
 		} catch (IllegalArgumentException e) {
 			Log.d(TAG, "Text failed " + e);
 		}

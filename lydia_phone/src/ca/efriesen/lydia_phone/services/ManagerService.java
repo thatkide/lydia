@@ -3,21 +3,20 @@ package ca.efriesen.lydia_phone.services;
 import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.*;
 import android.telephony.PhoneStateListener;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.messages.PhoneCall;
 import ca.efriesen.lydia_common.messages.SMS;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia_phone.R;
 import ca.efriesen.lydia_phone.activities.Lydia;
 import includes.Intents;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 /**
  * User: eric
@@ -29,7 +28,6 @@ public class ManagerService extends Service {
 	private BluetoothAdapter mBluetoothAdapter;
 	private BluetoothService mBluetoothService;
 	private static final int ONGOING_NOTIFICATION = 1;
-	private KeyguardManager.KeyguardLock lock;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -52,7 +50,7 @@ public class ManagerService extends Service {
 			if (mBluetoothService == null) {
 				mBluetoothService = new BluetoothService(mHandler);
 				// start the server portion
-				mBluetoothService.start();
+				mBluetoothService.startServer();
 			}
 		}
 
@@ -109,11 +107,14 @@ public class ManagerService extends Service {
 		}
 	};
 
+	// get the incoming sms from the other phone
 	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// create a new internal sms object
 			SMS sms = new SMS();
+			// URI for sms database
+			Uri uri = Uri.parse("content://sms/inbox");
 
 			// get the sms from the intent
 			Bundle extras = intent.getExtras();
@@ -129,6 +130,15 @@ public class ManagerService extends Service {
 					SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
 					builder.append(smsMessage.getMessageBody());
 					sms.setFromNumber(smsMessage.getOriginatingAddress());
+				}
+
+				Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+				cursor.moveToFirst();
+				while (cursor.moveToNext()) {
+					if ((cursor.getString(cursor.getColumnIndex("address")).equals(sms.getFromNumber())) && (cursor.getInt(cursor.getColumnIndex("read")) == 0)) {
+						sms.setId(cursor.getInt(cursor.getColumnIndex("_id")));
+						Log.d(TAG, "id is " + sms.getId());
+					}
 				}
 
 				// add the message
@@ -154,21 +164,7 @@ public class ManagerService extends Service {
 						smsReceived.putExtra("ca.efriesen.SMS", (SMS)msg.obj);
 						sendBroadcast(smsReceived);
 					}
-
-//					byte[] readBuf = (byte[]) msg.obj;
-//					// construct a string from the valid bytes in the buffer
-//					String readMessage = new String(readBuf, 0, msg.arg1);
-//					Log.d(TAG, readMessage);
-//					String command[] = readMessage.split(BluetoothService.MESSAGE_DELIMETER);
-
-//					if (msg.obj
-//					} else if ("PHONE".equalsIgnoreCase(command[0])) {
-//						String phoneNumber = command[1];
-//						Log.d(TAG, phoneNumber);
-//
-//						Intent call = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
-//						call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//						startActivity(call);
+					break;
 				}
 				case BluetoothService.MESSAGE_CONNECTED: {
 					Log.d(TAG, "connected, sending broadcast");
@@ -178,20 +174,15 @@ public class ManagerService extends Service {
 				case BluetoothService.MESSAGE_DISCONNECTED: {
 					Log.d(TAG, "disconnected, sending broadcast");
 					mBluetoothService.stop();
-					mBluetoothService.start();
+					mBluetoothService.startServer();
+					// sends an intent to the ui for display purposes
 					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHDISCONNECTED));
-					break;
-				}
-				case BluetoothService.MESSAGE_FAILED: {
-					mBluetoothService.stop();
-					mBluetoothService.start();
 					break;
 				}
 			}
 		}
 	};
 
-	// used for simple key->value pairs... like "media-~-stop" or "media-~-play"
 	private BroadcastReceiver sendMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
