@@ -2,8 +2,12 @@ package ca.efriesen.lydia_phone.activities;
 
 import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -55,6 +59,11 @@ public class Lydia extends FragmentActivity {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
 		// we support bluetooth, but it's off
@@ -62,8 +71,7 @@ public class Lydia extends FragmentActivity {
 			Intent enableBt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBt, REQUEST_ENABLE_BT);
 		} else {
-			Intent startManager = new Intent(this, ManagerService.class);
-			startService(startManager);
+			startService(new Intent(this, ManagerService.class));
 		}
 	}
 

@@ -20,5 +20,5 @@ local.properties
 .project
 
 # IntelliJ project files
-.idea
+*.idea/
 

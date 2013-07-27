@@ -94,6 +94,11 @@ public class MyMapFragment extends MapFragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		try {
+			activity.unregisterReceiver(mapAddressReceiver);
+		} catch (Exception e) {
+			Log.e(TAG, e.toString());
+		}
 	}
 
 	@Override
