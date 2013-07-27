@@ -84,14 +84,10 @@ public class PhoneFragment extends Fragment {
 		super.onStop();
 		try {
 			activity.unregisterReceiver(smsReceiver);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 		try {
 			activity.unregisterReceiver(incomingCallReceiver);
-		} catch (Exception e) {
-			Log.w(TAG, e);
-		}
+		} catch (Exception e) {}
 	}
 
 	public boolean onBackPressed() {
