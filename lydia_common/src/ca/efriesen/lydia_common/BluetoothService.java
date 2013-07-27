@@ -433,6 +433,9 @@ public class BluetoothService {
 					break;
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
+				} catch (Exception e) {
+					connectionFailed();
+					Log.e(TAG, e.toString());
 				}
 			}
 		}

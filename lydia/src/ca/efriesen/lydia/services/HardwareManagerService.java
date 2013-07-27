@@ -36,15 +36,18 @@ public class HardwareManagerService extends Service {
 	private final IBinder mBinder = new HardwareManagerBinder();
 
 	// Bluetooth settings
-	private BluetoothService bluetoothService;
+	private BluetoothService bluetoothService = null;
 	private BluetoothAdapter mBluetoothAdapter = null;
-	private Thread connectBluetooth;
+	private Thread connectBluetooth = null;
 
 	// message storage stuff
 	MessagesDataSource dataSource;
 
 	// list of devices
 	private ArrayList<Device> devices;
+
+	// other var
+	private boolean threadRunning = false;
 
 	// we bind to this service in the dashboard.java file.
 	// the reason i do this is because then we can force an update to be sent over serial to get info we need about the devices and such.
@@ -64,26 +67,11 @@ public class HardwareManagerService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		// setup bluetooth stuff
 		if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("useBluetooth", false)) {
-			// setup bluetooth stuff
-			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-			bluetoothService = new BluetoothService(mBluetoothHandler);
-
-			// only start the bluetooth stuff if bluetooth is on
-			if (mBluetoothAdapter.isEnabled()) {
-				// connect bluetooth to the phone
-				if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
-					try {
-						Log.d(TAG, "connecting devices");
-						startConnectBluetooth();
-					} catch (Exception e) {
-						Log.d(TAG, e.toString());
-					}
-				}
-			}
-
-			registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+			setupBluetooth();
 		}
+		registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
 		dataSource = new MessagesDataSource(this);
 		dataSource.open();
@@ -133,11 +121,13 @@ public class HardwareManagerService extends Service {
 		registerReceiver(toggleBluetoothReveiver, new IntentFilter(Intents.BLUETOOTHTOGGLE));
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
 		registerReceiver(mediaInfoReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		registerReceiver(bluetoothManagerReceiver, new IntentFilter(Intents.BLUETOOTHMANAGER));
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		killConnectBluetooth();
 		try {
 			unregisterReceiver(bluetoothStateReceiver);
 		} catch (Exception e) {}
@@ -145,12 +135,12 @@ public class HardwareManagerService extends Service {
 		for (Device s : devices) {
 			s.cleanUp();
 		}
-		bluetoothService.stop();
 		try {
 			unregisterReceiver(mediaInfoReceiver);
-		} catch (Exception e) {
-			Log.d(TAG, e.toString());
-		}
+		} catch (Exception e) {}
+		try {
+			unregisterReceiver(bluetoothManagerReceiver);
+		} catch (Exception e) {}
 	}
 
 
@@ -207,7 +197,7 @@ public class HardwareManagerService extends Service {
 					Log.d(TAG, "disconnected, sending broadcast");
 					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_NONE));
 					Log.d(TAG, "starting connect thread");
-					bluetoothService.stop();
+					killConnectBluetooth();
 					startConnectBluetooth();
 					break;
 				}
@@ -215,50 +205,76 @@ public class HardwareManagerService extends Service {
 		}
 	};
 
+	private void setupBluetooth() {
+		if (mBluetoothAdapter == null) {
+			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			mBluetoothAdapter.enable();
+		}
+
+		if (bluetoothService == null)
+			bluetoothService = new BluetoothService(mBluetoothHandler);
+
+		// only start the bluetooth stuff if bluetooth is on
+		if (mBluetoothAdapter.isEnabled()) {
+			// connect bluetooth to the phone
+			if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
+				try {
+					Log.d(TAG, "connecting devices");
+					startConnectBluetooth();
+				} catch (Exception e) {
+					Log.d(TAG, e.toString());
+				}
+			}
+		}
+	}
 
 	private void killConnectBluetooth() {
-		if (connectBluetooth != null) {
+		try {
 			Log.d(TAG, "killing connect thread");
 			connectBluetooth.interrupt();
 			connectBluetooth = null;
-		}
+		} catch (Exception e) {}
+		bluetoothService.stop();
 	}
 
 	private void startConnectBluetooth() {
 		Log.d(TAG, "starting bluetooth connect");
-		connectBluetooth = new Thread(new Runnable() {
-			@Override
-			public void run() {
-			while (true) {
-				int state = bluetoothService.getState();
-				if (state != BluetoothService.STATE_CONNECTED && state != BluetoothService.STATE_CONNECTING) {
-					// Get the BluetoothDevice object
-					String address = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constants.PhoneAddress, null);
-					Log.d(TAG, "saved address" + address);
-					if (!BluetoothAdapter.checkBluetoothAddress(address)) {
-						Log.d(TAG, "invalid bluetooth address, finishing");
-						return;
-					}
-					BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+		if (!threadRunning) {
+			connectBluetooth = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					while (true) {
+						int state = bluetoothService.getState();
+						if (state != BluetoothService.STATE_CONNECTED && state != BluetoothService.STATE_CONNECTING) {
+							// Get the BluetoothDevice object
+							String address = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constants.PhoneAddress, null);
+							Log.d(TAG, "saved address" + address);
+							if (!BluetoothAdapter.checkBluetoothAddress(address)) {
+								Log.d(TAG, "invalid bluetooth address, finishing");
+								return;
+							}
+							BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
-					if (device != null) {
-						Log.d(TAG, "connecting");
-						bluetoothService.connect(device);
+							if (device != null) {
+								Log.d(TAG, "connecting");
+								bluetoothService.connect(device);
+							}
+						}
+
+						try {
+							Log.d(TAG, "thread sleeping");
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							Log.d(TAG, "manager thread interrupted");
+							// I said DIE
+							threadRunning = false;
+						}
 					}
 				}
-
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// I said DIE
-					Thread.currentThread().interrupt();
-					// return, this ensures we quit
-					return;
-				}
-			}
-			}
-		});
-		connectBluetooth.start();
+			});
+			connectBluetooth.start();
+			threadRunning = true;
+		}
 	}
 
 	private BroadcastReceiver toggleBluetoothReveiver = new BroadcastReceiver() {
@@ -266,7 +282,7 @@ public class HardwareManagerService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			// connect bluetooth to the phone
 			if (bluetoothService.getState() != BluetoothService.STATE_NONE) {
-				bluetoothService.stop();
+				killConnectBluetooth();
 //				connectBluetooth.interrupt();
 			} else {
 //				connectBluetooth.start();
@@ -296,22 +312,35 @@ public class HardwareManagerService extends Service {
 	};
 
 
+	// system bluetooth setting
 	private BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-
+			Log.d(TAG, "broadcast received");
 			switch (state) {
 				case BluetoothAdapter.STATE_OFF: {
-					// kill the connect thread
-					connectBluetooth.interrupt();
-					// stop all bluetooth comms
-					bluetoothService.stop();
+					Log.d(TAG, "bluetooth off");
+					killConnectBluetooth();
 					break;
 				}
 				case BluetoothAdapter.STATE_ON: {
-					startConnectBluetooth();
+					Log.d(TAG, "bluetooth on");
+					setupBluetooth();
 				}
+			}
+		}
+	};
+
+	private BroadcastReceiver bluetoothManagerReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			boolean useBluetooth = intent.getBooleanExtra("useBluetooth", false);
+			if (useBluetooth) {
+				// ensure bluetooth is enabled
+				setupBluetooth();
+			} else {
+				killConnectBluetooth();
 			}
 		}
 	};

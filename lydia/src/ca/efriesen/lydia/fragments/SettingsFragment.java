@@ -22,7 +22,7 @@ import de.umass.lastfm.Caller;
  * Time: 1:09 PM
  */
 public class SettingsFragment extends PreferenceFragment {
-	public static final String TAG = "Settings Preference";
+	public static final String TAG = "lydia Settings Preference";
 
 	public SharedPreferences sharedPreferences;
 	// new listener for our preferences change
@@ -81,6 +81,9 @@ public class SettingsFragment extends PreferenceFragment {
 					});
 					thread.start();
 				}
+			} else if(s.equalsIgnoreCase("useBluetooth")) {
+				boolean useBluetooth = sharedPreferences.getBoolean("useBluetooth", false);
+				getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("useBluetooth", useBluetooth));
 			}
 		}
 	};
