@@ -11,12 +11,12 @@ import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import ca.efriesen.lydia_common.BluetoothService;
+import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.messages.PhoneCall;
 import ca.efriesen.lydia_common.messages.SMS;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia_phone.R;
 import ca.efriesen.lydia_phone.activities.Lydia;
-import includes.Intents;
 
 /**
  * User: eric
@@ -29,8 +29,16 @@ public class ManagerService extends Service {
 	private BluetoothService mBluetoothService;
 	private static final int ONGOING_NOTIFICATION = 1;
 
+	private final IBinder mBinder = new ManagerServiceBinder();
+
+	public class ManagerServiceBinder extends Binder {
+		public ManagerService getService() {
+			return ManagerService.this;
+		}
+	}
+
 	public IBinder onBind(Intent intent) {
-		return null;
+		return mBinder;
 	}
 
 	@Override
@@ -78,7 +86,16 @@ public class ManagerService extends Service {
 
 		startForeground(ONGOING_NOTIFICATION, notification);
 
-		registerReceiver(sendMessageReceiver, new IntentFilter(Intents.SENDMESSAGE));
+		registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+		registerReceiver(bluetoothGetStateReceiver, new IntentFilter(Intents.BLUETOOTHGETSTATE));
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		try {
+			unregisterReceiver(bluetoothStateReceiver);
+		} catch (Exception e) {}
 	}
 
 	private PhoneStateListener mPhoneListener = new PhoneStateListener() {
@@ -168,7 +185,7 @@ public class ManagerService extends Service {
 				}
 				case BluetoothService.MESSAGE_CONNECTED: {
 					Log.d(TAG, "connected, sending broadcast");
-					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHCONNECTED));
+					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_CONNECTED));
 					break;
 				}
 				case BluetoothService.MESSAGE_DISCONNECTED: {
@@ -176,23 +193,34 @@ public class ManagerService extends Service {
 					mBluetoothService.stop();
 					mBluetoothService.startServer();
 					// sends an intent to the ui for display purposes
-					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHDISCONNECTED));
+					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_NONE));
 					break;
 				}
 			}
 		}
 	};
 
-	private BroadcastReceiver sendMessageReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver bluetoothGetStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-//			// get the key and value from the intent
-//			String key = intent.getStringExtra("key");
-//			String value = intent.getStringExtra("value");
-//			// combine them, and delineate
-//			String message = key + BluetoothService.MESSAGE_DELIMETER + value;
-//			// send via bluetooth
-//			mBluetoothService.write(message.getBytes());
+			sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", mBluetoothService.getState()));
+		}
+	};
+
+	private BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+
+			switch (state) {
+				case BluetoothAdapter.STATE_OFF: {
+					mBluetoothService.stop();
+					break;
+				}
+				case BluetoothAdapter.STATE_ON: {
+					mBluetoothService.startServer();
+				}
+			}
 		}
 	};
 }

@@ -12,7 +12,6 @@ import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.*;
-import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.plugins.LastFM;
 import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia_common.includes.Intents;

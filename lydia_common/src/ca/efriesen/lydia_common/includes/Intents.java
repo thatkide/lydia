@@ -27,9 +27,8 @@ public class Intents {
 	public static final String UPDATEMEDIAINFO = "ca.efriesen.lydia.UPDATEINFO";
 
 	// intents for bluetooth comms
+	public static final String BLUETOOTHGETSTATE = "ca.efriesne.lydia.BluetoothGetState";
 	public static final String BLUETOOTHMANAGER = "ca.efriesen.lydia.BluetoothManager";
-	public static final String BLUEOOTHCONNECTED = "ca.efriesen.lydia.BluetoothConnected";
-	public static final String BLUEOOTHDISCONNECTED = "ca.efriesen.lydia.BluetoothDisconnected";
 	public static final String BLUETOOTHTOGGLE = "ca.efriesen.lydia.BluetoothToggle";
 	public static final String PHONECALL = "ca.efriesen.lydia.PhoneCall";
 	public static final String SMSRECEIVED = "ca.efriesen.lydia.SMSReceived";

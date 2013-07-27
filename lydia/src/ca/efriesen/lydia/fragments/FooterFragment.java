@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.includes.Intents;
 
 
@@ -254,12 +255,17 @@ public class FooterFragment extends Fragment {
 	private BroadcastReceiver bluetoothManager = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getStringExtra("state").equalsIgnoreCase(Intents.BLUEOOTHCONNECTED)) {
-				ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
-				btImage.setImageResource(R.drawable.device_access_bluetooth_connected);
-			} else if (intent.getStringExtra("state").equalsIgnoreCase(Intents.BLUEOOTHDISCONNECTED)) {
-				ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
-				btImage.setImageResource(R.drawable.device_access_bluetooth);
+			ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
+			int state = intent.getIntExtra("state", 0);
+			switch (state) {
+				case BluetoothService.STATE_CONNECTED: {
+					btImage.setImageResource(R.drawable.device_access_bluetooth_connected);
+					break;
+				}
+				case BluetoothService.STATE_NONE: {
+					btImage.setImageResource(R.drawable.device_access_bluetooth);
+					break;
+				}
 			}
 		}
 	};

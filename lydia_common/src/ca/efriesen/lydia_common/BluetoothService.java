@@ -99,11 +99,8 @@ public class BluetoothService {
 		if (D)
 			Log.d(TAG, "start");
 
-		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
-			mConnectedThread.cancel();
-			mConnectedThread = null;
-		}
+		// cancel all running threads
+		stop();
 
 		setState(STATE_LISTEN);
 
@@ -124,11 +121,9 @@ public class BluetoothService {
 			Log.d(TAG, "connect to: " + device);
 
 		// Cancel any thread attempting to make a connection
-		if (mState == STATE_CONNECTING) {
-			if (mConnectThread != null) {
-				mConnectThread.cancel();
-				mConnectThread = null;
-			}
+		if (mConnectThread != null) {
+			mConnectThread.cancel();
+			mConnectThread = null;
 		}
 
 		// Cancel any thread currently running a connection
@@ -148,17 +143,10 @@ public class BluetoothService {
 	 * Start the ConnectedThread to begin managing a Bluetooth connection
 	 *
 	 * @param socket The BluetoothSocket on which the connection was made
-	 * @param device The BluetoothDevice that has been connected
 	 */
-	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
+	public synchronized void connected(BluetoothSocket socket) {
 		if (D)
 			Log.d(TAG, "connected");
-
-		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
-			mConnectedThread.cancel();
-			mConnectedThread = null;
-		}
 
 		// Cancel the thread that completed the connection
 		if (mConnectThread != null) {
@@ -166,12 +154,11 @@ public class BluetoothService {
 			mConnectThread = null;
 		}
 
-		// Cancel the accept thread because we only want to connect to one device
-		if (mAcceptThread != null) {
-			mAcceptThread.cancel();
-			mAcceptThread = null;
+		// Cancel any thread currently running a connection
+		if (mConnectedThread != null) {
+			mConnectedThread.cancel();
+			mConnectedThread = null;
 		}
-
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(socket);
 		mConnectedThread.start();
@@ -226,17 +213,9 @@ public class BluetoothService {
 	}
 
 	/**
-	 * Indicate that the connection attempt failed and notify the UI Activity.
-	 */
-	private void connectionFailed() {
-		// Send a failure message back to the Activity
-		mHandler.sendMessage(mHandler.obtainMessage(BluetoothService.MESSAGE_DISCONNECTED));
-	}
-
-	/**
 	 * Indicate that the connection was lost and notify the UI Activity.
 	 */
-	private void connectionLost() {
+	private void connectionFailed() {
 		Log.d(TAG, "connection lost");
 		// Send a failure message back to the Activity
 		mHandler.obtainMessage(BluetoothService.MESSAGE_DISCONNECTED).sendToTarget();
@@ -259,6 +238,12 @@ public class BluetoothService {
 				tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
 			} catch (IOException e) {
 				Log.e(TAG, "listen() failed", e);
+				try {
+					mmServerSocket.close();
+					mmServerSocket = null;
+				} catch (IOException e1) {
+					Log.e(TAG, e1.toString());
+				}
 				connectionFailed();
 			}
 			mmServerSocket = tmp;
@@ -278,31 +263,32 @@ public class BluetoothService {
 					// successful connection or an exception
 					socket = mmServerSocket.accept();
 				} catch (IOException e) {
+					try {
+						socket.close();
+					} catch (IOException e1) {
+						Log.e(TAG, e1.toString());
+					}
+					connectionFailed();
 					Log.e(TAG, "accept() failed", e);
-					break;
-				} catch (NullPointerException e) {
 					break;
 				}
 
-				// If a connection was accepted
-				if (socket != null) {
-					synchronized (BluetoothService.this) {
-						switch (mState) {
-							case STATE_LISTEN:
-							case STATE_CONNECTING:
-								// Situation normal. Start the connected thread.
-								connected(socket, socket.getRemoteDevice());
-								break;
-							case STATE_NONE:
-							case STATE_CONNECTED:
-								// Either not ready or already connected. Terminate new socket.
-								try {
-									socket.close();
-								} catch (IOException e) {
-									Log.e(TAG, "Could not close unwanted socket", e);
-								}
-								break;
-						}
+				synchronized (BluetoothService.this) {
+					switch (mState) {
+						case STATE_LISTEN:
+						case STATE_CONNECTING:
+							// Situation normal. Start the connected thread.
+							connected(socket);
+							break;
+						case STATE_NONE:
+						case STATE_CONNECTED:
+							// Either not ready or already connected. Terminate new socket.
+							try {
+								socket.close();
+							} catch (IOException e) {
+								Log.e(TAG, "Could not close unwanted socket", e);
+							}
+							break;
 					}
 				}
 			}
@@ -331,10 +317,8 @@ public class BluetoothService {
 	 */
 	private class ConnectThread extends Thread {
 		private BluetoothSocket mmSocket;
-		private BluetoothDevice mmDevice;
 
 		public ConnectThread(BluetoothDevice device) {
-			mmDevice = device;
 			BluetoothSocket tmp = null;
 
 			// Get a BluetoothSocket for a connection with the
@@ -342,6 +326,7 @@ public class BluetoothService {
 			try {
 				tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 			} catch (IOException e) {
+				connectionFailed();
 				Log.e(TAG, "create() failed", e);
 			}
 			mmSocket = tmp;
@@ -366,7 +351,6 @@ public class BluetoothService {
 					Log.d(TAG, "io exception, close");
 					mmSocket.close();
 					mmSocket = null;
-					connectionLost();
 				} catch (IOException e2) {
 					Log.e(TAG, "unable to close() socket during connection failure", e2);
 				}
@@ -381,7 +365,7 @@ public class BluetoothService {
 			}
 
 			// Start the connected thread
-			connected(mmSocket, mmDevice);
+			connected(mmSocket);
 		}
 
 		public void cancel() {
@@ -416,7 +400,7 @@ public class BluetoothService {
 				tmpIn = socket.getInputStream();
 				tmpOut = socket.getOutputStream();
 			} catch (IOException e) {
-				connectionLost();
+				connectionFailed();
 				Log.e(TAG, "temp sockets not created", e);
 			}
 
@@ -445,10 +429,10 @@ public class BluetoothService {
 					mHandler.obtainMessage(BluetoothService.MESSAGE_READ, bytes, -1, object).sendToTarget();
 				} catch (IOException e) {
 					Log.e(TAG, "disconnected", e);
-					connectionLost();
+					connectionFailed();
 					break;
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+					e.printStackTrace();
 				}
 			}
 		}

@@ -10,8 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import ca.efriesen.lydia_common.BluetoothService;
+import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_phone.R;
-import includes.Intents;
 
 /**
  * User: eric
@@ -38,6 +39,12 @@ public class SettingsFragment extends Fragment {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHGETSTATE));
+	}
+
+	@Override
 	public void onStop() {
 		super.onStop();
 		try {
@@ -51,10 +58,16 @@ public class SettingsFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			TextView status = (TextView) getActivity().findViewById(R.id.bluetooth_status);
-			if (intent.getStringExtra("state").equals(Intents.BLUEOOTHCONNECTED)) {
-				status.setText("Connected");
-			} else if (intent.getStringExtra("state").equals(Intents.BLUEOOTHDISCONNECTED)) {
-				status.setText("Disconnected");
+			int state = intent.getIntExtra("state", 0);
+			switch (state) {
+				case BluetoothService.STATE_CONNECTED: {
+					status.setText("Connected");
+					break;
+				}
+				case BluetoothService.STATE_NONE: {
+					status.setText("Disconnected");
+					break;
+				}
 			}
 		}
 	};

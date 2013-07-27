@@ -81,6 +81,8 @@ public class HardwareManagerService extends Service {
 					}
 				}
 			}
+
+			registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 		}
 
 		dataSource = new MessagesDataSource(this);
@@ -136,6 +138,9 @@ public class HardwareManagerService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		try {
+			unregisterReceiver(bluetoothStateReceiver);
+		} catch (Exception e) {}
 		// tell each sensor to cleanup
 		for (Device s : devices) {
 			s.cleanUp();
@@ -194,13 +199,13 @@ public class HardwareManagerService extends Service {
 				}
 				case BluetoothService.MESSAGE_CONNECTED: {
 					Log.d(TAG, "connected, sending broadcast");
-					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHCONNECTED));
+					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_CONNECTED));
 					killConnectBluetooth();
 					break;
 				}
 				case BluetoothService.MESSAGE_DISCONNECTED: {
 					Log.d(TAG, "disconnected, sending broadcast");
-					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", Intents.BLUEOOTHDISCONNECTED));
+					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_NONE));
 					Log.d(TAG, "starting connect thread");
 					bluetoothService.stop();
 					startConnectBluetooth();
@@ -290,6 +295,26 @@ public class HardwareManagerService extends Service {
 		}
 	};
 
+
+	private BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+
+			switch (state) {
+				case BluetoothAdapter.STATE_OFF: {
+					// kill the connect thread
+					connectBluetooth.interrupt();
+					// stop all bluetooth comms
+					bluetoothService.stop();
+					break;
+				}
+				case BluetoothAdapter.STATE_ON: {
+					startConnectBluetooth();
+				}
+			}
+		}
+	};
 //	private BroadcastReceiver updateBrightnessReceiver = new BroadcastReceiver() {
 //		@Override
 //		public void onReceive(Context context, Intent intent) {
