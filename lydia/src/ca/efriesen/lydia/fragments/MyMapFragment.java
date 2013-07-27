@@ -53,6 +53,7 @@ public class MyMapFragment extends MapFragment implements
 	private boolean traffic = true;
 	private boolean navigating = false;
 	private float cameraZoom = 16; // default zoom level
+	private boolean firstRun = true;
 
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private LocationClient locationClient;
@@ -138,8 +139,12 @@ public class MyMapFragment extends MapFragment implements
 		// when the location provider is connected
 		// set the current location to the last known location
 		currentLocation = locationClient.getLastLocation();
-		// move the camera to that spot
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), cameraZoom));
+		// only do this when we first open the map
+		if (firstRun) {
+			// move the camera to that spot
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), cameraZoom));
+			firstRun = false;
+		}
 	}
 
 	@Override
@@ -167,10 +172,11 @@ public class MyMapFragment extends MapFragment implements
 
 	// connect and disconnect on fragment hidden/visible
 	public void onFragmentVisible() {
+		locationClient.connect();
 	}
 
 	public void onFragmentHidden() {
-//		locationClient.disconnect();
+		locationClient.disconnect();
 	}
 
 //	make poly line change color after we've pased in in driving
