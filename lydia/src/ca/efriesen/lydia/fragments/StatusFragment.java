@@ -20,8 +20,4 @@ public class StatusFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.status_fragment, container, false);
 	}
-
-	private void destroyFragment() {
-		getChildFragmentManager().beginTransaction().hide(this).commit();
-	}
 }

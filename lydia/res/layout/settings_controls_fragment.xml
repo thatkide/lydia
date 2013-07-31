@@ -4,16 +4,16 @@
 			  android:layout_width="wrap_content"
 			  android:layout_height="wrap_content"
 			  android:orientation="vertical">
-	<Button android:id="@+id/map_search"
+	<Button android:id="@+id/settigns_system"
 			style="@style/ControlRoundTopRight"
-			android:text="@string/search" />
-	<Button android:id="@+id/toggle_traffic"
+			android:text="System" />
+	<Button android:id="@+id/settings_media"
 			style="@style/ControlButtons"
-			android:text="@string/toggle_traffic" />
-	<Button	android:id="@+id/clear_map"
-			style="@style/ControlButtons"
-			android:text="@string/clear" />
-	<Button android:id="@+id/map_directions_mode"
+			android:text="@string/media" />
+	<Button	android:id="@+id/settings_sensors"
+			   style="@style/ControlButtons"
+			   android:text="Sensors" />
+	<Button android:id="@+id/settings_more"
 			style="@style/ControlRoundBottomRight"
-			android:text="@string/navigation_mode" />
+			android:text="@string/more" />
 </LinearLayout>

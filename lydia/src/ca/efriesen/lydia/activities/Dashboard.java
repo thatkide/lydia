@@ -24,6 +24,11 @@ public class Dashboard extends Activity {
 
 	// plugins
 	private LastFM lastFm;
+
+	private Class driverControlsClass;
+	private Class homeScreenClass;
+	private Class passengerControlsClass;
+
 	/**
 	 * Called when the activities is first created.
 	 */
@@ -31,6 +36,7 @@ public class Dashboard extends Activity {
 	public void onCreate(Bundle savedInstance) {
 		Log.d(TAG, "oncreate");
 		super.onCreate(savedInstance);
+
 
 		// set the entire view to a gesture overlay
 //		GestureOverlayView overlayView = new GestureOverlayView(this);
@@ -45,25 +51,29 @@ public class Dashboard extends Activity {
 //		overlayView.setUncertainGestureColor(Color.TRANSPARENT);
 		// set the content for the new overlay
 //		setContentView(overlayView);
-		setContentView(inflate);
+		setContentView(R.layout.dashboard);
+//		setContentView(inflate);
 
 		// start the hardware managerservice
 		startService(new Intent(this, HardwareManagerService.class));
 
 		// find the fragment container
-		if (findViewById(R.id.home_screen_fragment) != null) {
-			// if this is a resume, we'll have overlapping fragments
-			if (savedInstance != null) {
-				Log.d(TAG, "oncreate find view, return call");
-				return;
-			}
-		}
-
-		// add a listener to the back stack changed.  this allows for custom fragment callbacks
-		getFragmentManager().addOnBackStackChangedListener(getListener());
+//		if (findViewById(R.id.home_screen_fragment) != null) {
+//			// if this is a resume, we'll have overlapping fragments
+//			if (savedInstance != null) {
+//				Log.d(TAG, "oncreate find view, return call");
+//				return;
+//			}
+//		}
 
 		// initialize all plugins
 		lastFm = new LastFM(getApplicationContext());
+
+		getFragmentManager().beginTransaction()
+				.add(R.id.header_fragment, new HeaderFragment())
+				.add(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(), "homeScreenContainerFragment")
+				.add(R.id.footer_fragment, new FooterFragment())
+				.commit();
 
 		Log.d(TAG, "oncreate finished");
 	}
@@ -73,31 +83,6 @@ public class Dashboard extends Activity {
 		super.onResume();
 
 		checkGooglePlayServices();
-
-		FragmentManager manager = getFragmentManager();
-
-		final Fragment homeScreen = manager.findFragmentById(R.id.home_screen_fragment);
-		final Fragment homeScreenTwo = manager.findFragmentById(R.id.home_screen_fragment_two);
-
-		final Button homeScreenNext = (Button) findViewById(R.id.home_screen_next);
-		final Button homeScreenPrev = (Button) findViewById(R.id.home_screen_previous);
-
-		homeScreenNext.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getFragmentManager().beginTransaction()
-				.hide(homeScreen)
-				.show(homeScreenTwo).commit();
-			}
-		});
-
-		homeScreenPrev.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getFragmentManager().beginTransaction()
-				.hide(homeScreenTwo).show(homeScreen).commit();
-			}
-		});
 
 		// get bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -147,35 +132,50 @@ public class Dashboard extends Activity {
 		}
 	}
 
+	// set the home screen we came from.
+	// when transitioning from the home screen to a subscreen (screen two to settings for example), set the class to home screen two
+	public void setHomeScreenClass(Class homeScreenClass) {
+		this.homeScreenClass = homeScreenClass;
+	}
+
+	public void setDriverControlsClass(Class driverControlsClass) {
+		this.driverControlsClass = driverControlsClass;
+	}
+
+	public void setPassengerControlsClass(Class passengerControlsClass) {
+		this.passengerControlsClass = passengerControlsClass;
+	}
+
+
 	@Override
 	public void onBackPressed() {
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-		.hide(fragmentManager.findFragmentById(R.id.map_container_fragment))
-		.hide(fragmentManager.findFragmentById(R.id.settings_fragment))
-		.addToBackStack(null)
-		.commit();
+		MusicFragment musicFragment = (MusicFragment) getFragmentManager().findFragmentByTag("musicFragment");
+		// get the generic home screen fragment from the tag
+		Fragment homeScreenFragment = getFragmentManager().findFragmentByTag("homeScreenFragment");
+		Fragment driverControls = getFragmentManager().findFragmentByTag("driverControls");
 
-		HomeScreenTwoFragment homeScreenTwoFragment = (HomeScreenTwoFragment) fragmentManager.findFragmentById(R.id.home_screen_fragment_two);
-		MusicFragment musicFragment = (MusicFragment) fragmentManager.findFragmentById(R.id.music_fragment);
-		MapContainerFragment mapContainerFragment = (MapContainerFragment) fragmentManager.findFragmentById(R.id.map_container_fragment);
-		PhoneFragment phoneFragment = (PhoneFragment) fragmentManager.findFragmentById(R.id.phone_fragment);
-		SettingsFragment settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
-		LauncherFragment launcherFragment = (LauncherFragment) fragmentManager.findFragmentById(R.id.launcher_fragment);
-
-		// check all of our fragments for visibility, and execute the code contained within
-		if (musicFragment.isVisible()) {
+		// music fragment has special handling, check it first,
+		if (musicFragment != null && musicFragment.isVisible()) {
 			musicFragment.onBackPressed();
-		} else if (homeScreenTwoFragment.isVisible()) {
-			homeScreenTwoFragment.onBackPressed();
-		} else if (mapContainerFragment.isVisible()) {
-			mapContainerFragment.onBackPressed();
-		} else if (phoneFragment.isVisible()) {
-			phoneFragment.onBackPressed();
-		} else if (settingsFragment.isVisible()) {
-			settingsFragment.onBackPressed();
-		} else if(launcherFragment.isVisible()) {
-			launcherFragment.onBackPressed();
+		// if the controls fragment is visible, only replace the center portion
+		} else if (driverControls.isVisible() && !homeScreenFragment.isVisible()) {
+			try {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
+						.replace(R.id.home_screen_fragment, (Fragment)homeScreenClass.newInstance(), "homeScreenFragment")
+						.commit();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+		// check if the home screen is visible, if not, go back, passing in the class of the home screen we want (one, two, etc...)
+		} else if (!homeScreenFragment.isVisible()) {
+			getFragmentManager().beginTransaction()
+					.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+					.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(driverControlsClass, homeScreenClass, passengerControlsClass), "homeScreenContainerFragment") // pass in the selected home screen
+					.commit();
 		}
 	}
 
@@ -191,12 +191,12 @@ public class Dashboard extends Activity {
 
 		// use "float" to do the math, since it will be decimals.  convert back to integer by *100, this adds a ".0" to the end
 		float batteryPct = level / (float) scale * 100;
-		// find the text view
+//		find the text view
 		TextView battery = (TextView) findViewById(R.id.battery_pct);
-		// get the value of in string form, and update the view
+//		get the value of in string form, and update the view
 		battery.setText(String.valueOf((int)batteryPct) + "%");
 
-		// add some color if the battery is low
+//		add some color if the battery is low
 		if ((int)batteryPct < 10) {
 			battery.setTextColor(Color.RED);
 		} else if ((int)batteryPct < 25) {
@@ -211,15 +211,6 @@ public class Dashboard extends Activity {
 
 /* ------------------ End Broadcast Receivers and Service Connections ------------------ */
 /* ------------------ Start View Updaters ------------------ */
-
-//	// method to open the app drawer from the main menu
-//	public void allApplications(View view) {
-//		Intent allApps = new Intent(Intent.ACTION_MAIN);
-//		allApps.setComponent(ComponentName.unflattenFromString("JakedUp.AppDrawer/.Main"));
-//		allApps.addCategory(Intent.CATEGORY_LAUNCHER);
-//		startActivity(allApps);
-//	}
-
 	public void contacts(View view) {
 		Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 		while (phones.moveToNext()) {
@@ -274,38 +265,6 @@ public class Dashboard extends Activity {
 		}
 	};
 
-
-/* ------------------ Begin Fragment callbacks ------------------ */
-
-
-	// listener for when the fragment backstack is changed.
-	private FragmentManager.OnBackStackChangedListener getListener() {
-		return new FragmentManager.OnBackStackChangedListener() {
-			@Override
-			public void onBackStackChanged() {
-				// get the fragment manager
-				FragmentManager manager = getFragmentManager();
-
-				HomeScreenFragment homeScreenFragment = (HomeScreenFragment) manager.findFragmentById(R.id.home_screen_fragment);
-				HomeScreenTwoFragment homeScreenTwoFragment = (HomeScreenTwoFragment) manager.findFragmentById(R.id.home_screen_fragment_two);
-				MyMapFragment mapFragment = (MyMapFragment) manager.findFragmentById(R.id.map_fragment);
-				MapContainerFragment mapContainerFragment = (MapContainerFragment) manager.findFragmentById(R.id.map_container_fragment);
-
-				// for our homescreen fragment, if it's visible, execute the fragment visible callback
-				if (homeScreenFragment.isVisible() || homeScreenTwoFragment.isVisible()) {
-					homeScreenFragment.onFragmentVisible();
-				} else {
-					homeScreenFragment.onFragmentHidden();
-				}
-
-				if (mapContainerFragment.isVisible()) {
-					mapFragment.onFragmentVisible();
-				} else {
-					mapFragment.onFragmentHidden();
-				}
-			}
-		};
-	}
 
 /* ------------------ End Fragment callbacks ------------------ */
 /* ------------------ Begin Google Play Service Check ------------------ */

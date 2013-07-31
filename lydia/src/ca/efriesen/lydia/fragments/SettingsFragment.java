@@ -88,6 +88,7 @@ public class SettingsFragment extends PreferenceFragment {
 		}
 	};
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -111,39 +112,6 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
-		FragmentManager manager = getFragmentManager();
-
-		// make sure settings is hidden
-		manager.beginTransaction().hide(manager.findFragmentById(R.id.settings_fragment)).commit();
-
-		Button settings = (Button) getActivity().findViewById(R.id.settings);
-		settings.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// replace the 'dashboard_container' fragment with a new 'settings fragment'
-				FragmentManager fragmentManager = getFragmentManager();
-				fragmentManager.beginTransaction()
-						.hide(fragmentManager.findFragmentById(R.id.home_screen_container_fragment))
-						.hide(fragmentManager.findFragmentById(R.id.home_screen_fragment_two))
-						.hide(fragmentManager.findFragmentById(R.id.map_container_fragment))
-						.show(fragmentManager.findFragmentById(R.id.settings_fragment))
-						.addToBackStack(null)
-						.commit();
-			}
-		});
-	}
-
-	public boolean onBackPressed() {
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-				.show(fragmentManager.findFragmentById(R.id.home_screen_container_fragment))
-				.show(fragmentManager.findFragmentById(R.id.home_screen_fragment_two))
-				.hide(fragmentManager.findFragmentById(R.id.map_container_fragment))
-				.hide(fragmentManager.findFragmentById(R.id.settings_fragment))
-				.addToBackStack(null)
-				.commit();
-		return true;
 	}
 
 	private BroadcastReceiver lightValueReceiver = new BroadcastReceiver() {

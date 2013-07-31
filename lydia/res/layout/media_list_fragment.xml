@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
+<RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_width="630dip"
+		android:layout_height="320dip"
+		android:isScrollContainer="false" >
 
 	<EditText
 			android:id="@+id/filter"
@@ -15,11 +15,13 @@
 			/>
 
 	<ListView android:id="@id/android:list"
-	          android:layout_width="match_parent"
-	          android:layout_height="wrap_content"
-	          android:drawSelectorOnTop="false" />
-	<TextView android:id="@id/android:empty"
-	          android:layout_width="match_parent"
+	          android:layout_width="wrap_content"
 	          android:layout_height="match_parent"
-	          android:text="@string/loading" />
-</LinearLayout>
+	          android:drawSelectorOnTop="false"
+			android:layout_below="@id/filter"/>
+	<TextView android:id="@id/android:empty"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:text="@string/loading"
+			android:layout_below="@id/filter"/>
+</RelativeLayout>

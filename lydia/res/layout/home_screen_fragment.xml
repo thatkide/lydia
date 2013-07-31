@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
+<LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_weight="1"
-		android:gravity="center_horizontal|top"
-		>
-	<!-- Main buttons in the middle of the screen -->
-	<Button
-			android:id="@+id/navigation"
-			android:text="@string/navigation"
-			android:drawableTop="@drawable/compass"
-			style="@style/DashboardRoundTopLeft"/>
-	<Button
-			android:id="@+id/music"
-			android:text="@string/music"
-			android:drawableTop="@drawable/vinyl"
-			android:layout_toRightOf="@id/navigation"
-			style="@style/DashboardControls"/>
-	<Button
-			android:id="@+id/air_ride"
-			android:text="@string/air_ride"
-			android:drawableTop="@drawable/jet_engine"
-			android:layout_toRightOf="@id/music"
-			style="@style/DashboardRoundTopRight"/>
-	<Button
-			android:id="@+id/phone_controls"
-			android:text="@string/phone"
-			android:drawableTop="@drawable/phone"
-			android:layout_below="@id/navigation"
-			style="@style/DashboardRoundBottomLeft"/>
-	<Button
-			android:id="@+id/all_applications"
-			android:text="@string/all_apps"
-			android:layout_below="@id/music"
-			android:drawableTop="@drawable/android"
-			android:layout_toRightOf="@id/phone_controls"
-			style="@style/DashboardControls"/>
-	<Button
-			android:id="@+id/google"
-			android:text="@string/google"
-			android:drawableTop="@drawable/chrome"
-			android:layout_below="@id/air_ride"
-			android:layout_toRightOf="@id/all_applications"
-			style="@style/DashboardRoundBottomRight"/>
-</RelativeLayout>
+		android:orientation="horizontal">
+	<Button   android:id="@+id/home_screen_previous"
+			  style="@style/DashboardPrevious" />
+
+	<LinearLayout	android:layout_width="wrap_content"
+					 android:layout_height="wrap_content"
+					 android:orientation="vertical">
+		<LinearLayout	android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:orientation="horizontal">
+			<Button	android:id="@+id/navigation"
+					android:text="@string/navigation"
+					android:drawableTop="@drawable/compass"
+					style="@style/DashboardRoundTopLeft"/>
+			<Button android:id="@+id/music"
+					android:text="@string/music"
+					android:drawableTop="@drawable/vinyl"
+					style="@style/DashboardControls"/>
+			<Button android:id="@+id/air_ride"
+					android:text="@string/air_ride"
+					android:drawableTop="@drawable/jet_engine"
+					style="@style/DashboardRoundTopRight"/>
+		</LinearLayout>
+		<LinearLayout	android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:orientation="horizontal">
+			<Button android:id="@+id/phone_controls"
+					android:text="@string/phone"
+					android:drawableTop="@drawable/phone"
+					style="@style/DashboardRoundBottomLeft"/>
+			<Button android:id="@+id/all_applications"
+					android:text="@string/all_apps"
+					android:drawableTop="@drawable/android"
+					style="@style/DashboardControls"/>
+			<Button android:id="@+id/google"
+					android:text="@string/google"
+					android:drawableTop="@drawable/chrome"
+					style="@style/DashboardRoundBottomRight"/>
+		</LinearLayout>
+	</LinearLayout>
+	<Button   android:id="@+id/home_screen_next"
+			  style="@style/DashboardNext" />
+
+</LinearLayout>

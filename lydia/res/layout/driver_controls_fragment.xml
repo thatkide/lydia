@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:orientation="vertical">
 	<!-- left side menu controls -->
-	<!-- main window -->
 	<Button android:id="@+id/driver_window_up"
 	        android:text="@string/window_up"
 	        style="@style/ControlRoundTopRight"

@@ -7,7 +7,6 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.devices.Windows;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -33,20 +33,19 @@ public class PassengerControlsFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		final Activity activity = getActivity();
-		final FragmentManager manager = getFragmentManager();
 
 		// fragments and buttons
 		Button passengerWindowUp = (Button) activity.findViewById(R.id.passenger_window_up);
 		Button passengerWindowDown = (Button) activity.findViewById(R.id.passenger_window_down);
 
-		passengerWindowUp.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent) {
-				// get the window intent from the windows class.  we send a view, a motion event, and it will return an intent we can then broadcast
-				activity.sendBroadcast(Windows.sendWindowCommand(view, motionEvent));
-				return true;
-			}
-		});
+//		passengerWindowUp.setOnTouchListener(new View.OnTouchListener() {
+//			@Override
+//			public boolean onTouch(View view, MotionEvent motionEvent) {
+//				// get the window intent from the windows class.  we send a view, a motion event, and it will return an intent we can then broadcast
+//				activity.sendBroadcast(Windows.sendWindowCommand(view, motionEvent));
+//				return true;
+//			}
+//		});
 
 		passengerWindowDown.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -62,16 +61,11 @@ public class PassengerControlsFragment extends Fragment {
 		more.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// get the fragments
-				Fragment passengerControls = manager.findFragmentById(R.id.passenger_controls);
-				Fragment passengerControlsMore = manager.findFragmentById(R.id.passenger_controls_more);
-
-				// hide the main one and show the new one
-				manager.beginTransaction()
-				.hide(passengerControls)
-				.show(passengerControlsMore)
-				.addToBackStack(null)
-				.commit();
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.controls_slide_out_up, R.anim.controls_slide_in_up)
+						.replace(R.id.passenger_controls, new PassengerControlsMoreFragment())
+						.commit();
+				((Dashboard)getActivity()).setPassengerControlsClass(PassengerControlsMoreFragment.class);
 			}
 		});
 

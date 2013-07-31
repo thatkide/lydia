@@ -84,16 +84,18 @@ public class ContactList extends Activity implements LoaderManager.LoaderCallbac
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		// check the codes
-		switch (requestCode) {
-			case 1: {
-				sendBroadcast(intent);
-				finish();
+		try {
+			// check the codes
+			switch (requestCode) {
+				case 1: {
+					sendBroadcast(intent);
+					finish();
+				}
 			}
-		}
+		} catch (Exception e) {}
 	}
 
-				@Override
+	@Override
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 		return new CursorLoader(getApplicationContext(), ContactsContract.Contacts.CONTENT_URI, PROJECTION, SELECTION, null, ORDER);
 	}

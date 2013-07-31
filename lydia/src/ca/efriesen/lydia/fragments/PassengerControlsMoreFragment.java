@@ -11,12 +11,15 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.ContactList;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia_common.includes.Intents;
 
 public class PassengerControlsMoreFragment extends Fragment {
@@ -30,23 +33,17 @@ public class PassengerControlsMoreFragment extends Fragment {
 		super.onStart();
 
 		final Activity activity = getActivity();
-		final FragmentManager manager = getFragmentManager();
-
-		// hide our self
-		manager.beginTransaction().hide(manager.findFragmentById(R.id.passenger_controls_more)).commit();
 
 		Button back = (Button) activity.findViewById(R.id.passenger_back);
 		back.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Fragment passengerControls = manager.findFragmentById(R.id.passenger_controls);
-				Fragment passengerControlsMore = manager.findFragmentById(R.id.passenger_controls_more);
-
-				manager.beginTransaction()
-				.hide(passengerControlsMore)
-				.show(passengerControls)
-				.addToBackStack(null)
-				.commit();
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.controls_slide_in_down, R.anim.controls_slide_out_down)
+						.replace(R.id.passenger_controls, new PassengerControlsFragment())
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setPassengerControlsClass(PassengerControlsFragment.class);
 			}
 		});
 
@@ -78,6 +75,25 @@ public class PassengerControlsMoreFragment extends Fragment {
 				activity.sendBroadcast(defroster);
 			}
 		});
-
 	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// restore the button states
+		if (savedInstanceState != null) {
+			TextView defroster = (TextView) getActivity().findViewById(R.id.rear_window_defrost);
+			defroster.setTextColor(savedInstanceState.getInt("defroster"));
+		}
+	}
+
+//	@Override
+//	public void onSaveInstanceState(Bundle savedInstanceState) {
+//		super.onSaveInstanceState(savedInstanceState);
+//		Log.d("lydia", "on save instance in passenger");
+//		// save the states of all the buttons on screen
+//		TextView defroster = (TextView) getActivity().findViewById(R.id.rear_window_defrost);
+//		savedInstanceState.putInt("defroster", defroster.getCurrentTextColor());
+//	}
+
 }

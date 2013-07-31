@@ -37,16 +37,6 @@ public class MapControlsFragment extends Fragment {
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		final FragmentManager manager = getFragmentManager();
-		manager.beginTransaction()
-				// hide the map fragment
-				.hide(manager.findFragmentById(R.id.map_container_fragment))
-				.commit();
-	}
-
-	@Override
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 

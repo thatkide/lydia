@@ -34,7 +34,7 @@ public class LauncherFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 		super.onCreateView(inflater, container, savedInstance);
 		// hide ourself on create
-		getFragmentManager().beginTransaction().hide(getFragmentManager().findFragmentById(R.id.launcher_fragment)).commit();
+//		getFragmentManager().beginTransaction().hide(getFragmentManager().findFragmentById(R.id.launcher_fragment)).commit();
 		return inflater.inflate(R.layout.launcher_fragment, container, false);
 	}
 
@@ -49,18 +49,6 @@ public class LauncherFragment extends Fragment implements
 		listView.setAdapter(new AppInfoViewAdapter(getInstalledPackages(), getActivity()));
 		// send any item clicks back to this class, looking for method onItemClick
 		listView.setOnItemClickListener(this);
-	}
-
-	// if the back button is pressed while we're visible, go back to home screen one
-	public boolean onBackPressed() {
-		FragmentManager manager = getFragmentManager();
-		manager.beginTransaction()
-				.hide(manager.findFragmentById(R.id.launcher_fragment))
-				.show(manager.findFragmentById(R.id.home_screen_fragment))
-				.addToBackStack(null)
-				.commit();
-		// we've consumed the back press
-		return true;
 	}
 
 	// returns an array of appinfos of the installed packages we can launch

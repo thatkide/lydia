@@ -1,48 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:tools="http://schemas.android.com/tools" android:id="@+id/dashboard_container"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/dashboard_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
 		android:paddingBottom="0dip"
         android:keepScreenOn="true"
 		>
-	<fragment
-			android:id="@+id/header_fragment"
-			android:name="ca.efriesen.lydia.fragments.HeaderFragment"
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			android:layout_marginBottom="-20dip"
-			tools:layout="@layout/header_fragment"/>
-	<View
-			android:layout_weight="1"
+	<FrameLayout android:id="@+id/header_fragment"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent" />
+			<!--android:layout_marginBottom="-20dip"-->
+
+	<View	android:layout_weight="1"
 			android:layout_height="0dp"
 			android:layout_width="match_parent"/>
-	<fragment
-			android:id="@+id/home_screen_container_fragment"
-			android:name="ca.efriesen.lydia.fragments.HomeScreenContainerFragment"
+
+	<FrameLayout android:id="@+id/home_screen_container_fragment"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:layout="@layout/home_screen_container"/>
-	<fragment
-			android:id="@+id/map_container_fragment"
-	        android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-	        android:name="ca.efriesen.lydia.fragments.MapContainerFragment" />
-	<fragment
-			android:id="@+id/settings_fragment"
-	        android:name="ca.efriesen.lydia.fragments.SettingsFragment"
-	        android:layout_width="match_parent"
-	        android:layout_height="370dip" />
-	<View
-			android:layout_weight="1"
+			android:layout_height="wrap_content" />
+	<!--<fragment-->
+			<!--android:id="@+id/settings_container_fragment"-->
+	        <!--android:name="ca.efriesen.lydia.fragments.SettingsContainerFragment"-->
+	        <!--android:layout_width="match_parent"-->
+	        <!--android:layout_height="wrap_content" />-->
+	<View	android:layout_weight="1"
 			android:layout_height="0dp"
 			android:layout_width="match_parent"/>
-	<fragment
-			android:id="@+id/footer_fragment"
-			android:name="ca.efriesen.lydia.fragments.FooterFragment"
+
+	<FrameLayout android:id="@+id/footer_fragment"
 			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			tools:layout="@layout/footer_fragment"/>
+			android:layout_width="match_parent" />
 </LinearLayout>

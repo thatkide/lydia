@@ -7,7 +7,6 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia_common.includes.Intents;
 
 public class DriverControlsMoreFragment extends Fragment {
@@ -31,24 +31,18 @@ public class DriverControlsMoreFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		final Activity activity = getActivity();
-		final FragmentManager manager = getFragmentManager();
-
-		// hide our self
-		manager.beginTransaction().hide(manager.findFragmentById(R.id.driver_controls_more)).commit();
 
 		Button back = (Button) activity.findViewById(R.id.driver_back);
 
 		back.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Fragment driverControls = manager.findFragmentById(R.id.driver_controls);
-				Fragment driverControlsMore = manager.findFragmentById(R.id.driver_controls_more);
-
-				manager.beginTransaction()
-				.hide(driverControlsMore)
-				.show(driverControls)
-				.addToBackStack(null)
-				.commit();
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.controls_slide_in_down, R.anim.controls_slide_out_down)
+						.replace(R.id.driver_controls, new DriverControlsFragment(), "driverControls")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setDriverControlsClass(DriverControlsFragment.class);
 			}
 		});
 

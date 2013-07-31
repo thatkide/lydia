@@ -29,28 +29,10 @@ public class PhoneFragment extends Fragment {
 	ListView smslistView;
 	ListView recentCallsView;
 
-
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-		// hide ourself on create
-		FragmentManager manager = getFragmentManager();
-		manager.beginTransaction().hide(manager.findFragmentById(R.id.phone_fragment)).commit();
-
-		return inflater.inflate(R.layout.phone_fragment, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle saved) {
-		super.onActivityCreated(saved);
-
-		this.activity = getActivity();
-
-		dataSource = new MessagesDataSource(getActivity());
-		dataSource.open();
-
-		smslistView = (ListView) activity.findViewById(R.id.sms_list);
-		recentCallsView = (ListView) activity.findViewById(R.id.recent_calls);
-
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		Activity activity = getActivity();
 		// sms receiver listener
 		activity.registerReceiver(smsReceiver, new IntentFilter(Intents.SMSRECEIVED));
 		// phone call listener
@@ -58,8 +40,19 @@ public class PhoneFragment extends Fragment {
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
+		return inflater.inflate(R.layout.phone_fragment, container, false);
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
+		this.activity = getActivity();
+		dataSource = new MessagesDataSource(getActivity());
+		dataSource.open();
+
+		smslistView = (ListView) activity.findViewById(R.id.sms_list);
+		recentCallsView = (ListView) activity.findViewById(R.id.recent_calls);
 
 		smslistView.setAdapter(new SMSBaseAdapter(activity.getApplicationContext(), dataSource.getAllSMS()));
 		smslistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -74,14 +67,10 @@ public class PhoneFragment extends Fragment {
 		recentCallsView.setAdapter(new PhoneBaseAdapter(activity.getApplicationContext(), dataSource.getAllPhonecalls()));
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 		try {
 			activity.unregisterReceiver(smsReceiver);
 		} catch (Exception e) {}
@@ -89,18 +78,6 @@ public class PhoneFragment extends Fragment {
 			activity.unregisterReceiver(incomingCallReceiver);
 		} catch (Exception e) {}
 	}
-
-	public boolean onBackPressed() {
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-				.show(fragmentManager.findFragmentById(R.id.home_screen_container_fragment))
-				.show(fragmentManager.findFragmentById(R.id.home_screen_fragment))
-				.hide(fragmentManager.findFragmentById(R.id.phone_fragment))
-				.addToBackStack(null)
-				.commit();
-		return true;
-	}
-
 
 	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
 		@Override

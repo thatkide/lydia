@@ -96,7 +96,7 @@
 
 	<style name="DashboardNavigation" parent="DashboardControls">
 		<item name="android:layout_width">65dip</item>
-		<item name="android:layout_height">match_parent</item>
+		<item name="android:layout_height">240dip</item>
 		<item name="android:layout_marginTop">40dip</item>
 		<item name="android:layout_marginBottom">40dip</item>
 		<item name="android:padding">15dip</item>

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.activities.MusicSearch;
 import ca.efriesen.lydia.activities.WebActivity;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -30,6 +31,13 @@ public class HomeScreenFragment extends Fragment {
 	private static final String TAG = "HomeScreen";
 
 	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		getActivity().registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.home_screen_fragment, container, false);
 	}
@@ -39,24 +47,50 @@ public class HomeScreenFragment extends Fragment {
 		super.onSaveInstanceState(savedInstanceState);
 
 		Activity activity = getActivity();
-		// save the states of all the buttons on screen
-		TextView defroster = (TextView) activity.findViewById(R.id.rear_window_defrost);
-		savedInstanceState.putInt("defroster", defroster.getCurrentTextColor());
+		try {
+			TextView driverSeatHeat = (TextView) activity.findViewById(R.id.driver_seat_heat);
+			savedInstanceState.putInt("driverSeatHeat", driverSeatHeat.getCurrentTextColor());
 
-		TextView driverSeatHeat = (TextView) activity.findViewById(R.id.driver_seat_heat);
-		savedInstanceState.putInt("driverSeatHeat", driverSeatHeat.getCurrentTextColor());
+			TextView passengerSeatHeat = (TextView) activity.findViewById(R.id.passenger_seat_heat);
+			savedInstanceState.putInt("passengerSeatHeat", passengerSeatHeat.getCurrentTextColor());
 
-		TextView passengerSeatHeat = (TextView) activity.findViewById(R.id.passenger_seat_heat);
-		savedInstanceState.putInt("passengerSeatHeat", passengerSeatHeat.getCurrentTextColor());
-
-		TextView wiperToggle = (TextView) activity.findViewById(R.id.wiper_toggle);
-		savedInstanceState.putInt("wiperToggle", wiperToggle.getCurrentTextColor());
+			TextView wiperToggle = (TextView) activity.findViewById(R.id.wiper_toggle);
+			savedInstanceState.putInt("wiperToggle", wiperToggle.getCurrentTextColor());
+		} catch (Exception e) {}
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Activity activity = getActivity();
+		final FragmentManager manager = getFragmentManager();
+		final Activity activity = getActivity();
+
+		final Button homeScreenNext = (Button) activity.findViewById(R.id.home_screen_next);
+		final Button homeScreenPrev = (Button) activity.findViewById(R.id.home_screen_previous);
+
+		homeScreenNext.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.controls_slide_in_left, R.anim.controls_slide_in_right)
+						.replace(R.id.home_screen_fragment, new HomeScreenTwoFragment(), "homeScreenFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenTwoFragment.class);
+			}
+		});
+
+		homeScreenPrev.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.controls_slide_out_left, R.anim.controls_slide_out_right)
+						.replace(R.id.home_screen_fragment, new HomeScreenTwoFragment(), "homeScreenFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenTwoFragment.class);
+			}
+		});
 
 		Button chrome = (Button) getActivity().findViewById(R.id.google);
 		chrome.setOnClickListener(new View.OnClickListener() {
@@ -71,51 +105,30 @@ public class HomeScreenFragment extends Fragment {
 			}
 		});
 
-		// restore the button states
-		if (savedInstanceState != null) {
-			TextView defroster = (TextView) activity.findViewById(R.id.rear_window_defrost);
-			defroster.setTextColor(savedInstanceState.getInt("defroster"));
-
-			TextView driverSeatHeat = (TextView) activity.findViewById(R.id.driver_seat_heat);
-			driverSeatHeat.setTextColor(savedInstanceState.getInt("driverSeatHeat"));
-
-			TextView passengerSeatHeat = (TextView) activity.findViewById(R.id.passenger_seat_heat);
-			passengerSeatHeat.setTextColor(savedInstanceState.getInt("passengerSeatHeat"));
-
-			TextView wiperToggle = (TextView) activity.findViewById(R.id.wiper_toggle);
-			wiperToggle.setTextColor(savedInstanceState.getInt("wiperToggle"));
-		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		try {
-			getActivity().unregisterReceiver(updateMusicReceiver);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-
-		final FragmentManager manager = getFragmentManager();
-		final Activity activity = getActivity();
-
-		final Fragment musicFragment = manager.findFragmentById(R.id.music_fragment);
-		final Fragment homeScreen = manager.findFragmentById(R.id.home_screen_fragment);
+		// map on the homescreen that opens the map fragment
+		Button map = (Button) getActivity().findViewById(R.id.navigation);
+		map.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				manager.beginTransaction()
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
+						.replace(R.id.home_screen_container_fragment, new MapContainerFragment(), "homeScreenContainerFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
+			}
+		});
 
 		Button musicButton = (Button) activity.findViewById(R.id.music);
 		musicButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				MusicFragment musicFragment = new MusicFragment();
 				manager.beginTransaction()
-				.hide(homeScreen)
-				.show(musicFragment)
-				.addToBackStack(null)
-				.commit();
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, musicFragment, "musicFragment")
+						.addToBackStack(null)
+						.commit();
 			}
 		});
 
@@ -154,17 +167,16 @@ public class HomeScreenFragment extends Fragment {
 			}
 		});
 
-		activity.registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
-
 		Button phoneButton = (Button) activity.findViewById(R.id.phone_controls);
 		phoneButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				manager.beginTransaction()
-				.hide(manager.findFragmentById(R.id.home_screen_fragment))
-				.show(manager.findFragmentById(R.id.phone_fragment))
-				.addToBackStack(null)
-				.commit();
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new PhoneFragment(), "phoneFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
 			}
 		});
 
@@ -173,12 +185,40 @@ public class HomeScreenFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				manager.beginTransaction()
-				.hide(manager.findFragmentById(R.id.home_screen_fragment))
-				.show(manager.findFragmentById(R.id.launcher_fragment))
-				.addToBackStack(null)
-				.commit();
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new LauncherFragment(), "launcherFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
 			}
 		});
+
+		// restore the button states
+		if (savedInstanceState != null) {
+			TextView driverSeatHeat = (TextView) activity.findViewById(R.id.driver_seat_heat);
+			driverSeatHeat.setTextColor(savedInstanceState.getInt("driverSeatHeat"));
+
+			TextView passengerSeatHeat = (TextView) activity.findViewById(R.id.passenger_seat_heat);
+			passengerSeatHeat.setTextColor(savedInstanceState.getInt("passengerSeatHeat"));
+
+			TextView wiperToggle = (TextView) activity.findViewById(R.id.wiper_toggle);
+			wiperToggle.setTextColor(savedInstanceState.getInt("wiperToggle"));
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		try {
+			getActivity().unregisterReceiver(updateMusicReceiver);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
 
 //		Button statusButton = (Button) getActivity().findViewById(R.id.status);
 //		statusButton.setOnClickListener(new View.OnClickListener() {
@@ -259,26 +299,6 @@ public class HomeScreenFragment extends Fragment {
 //				//To change body of implemented methods use File | Settings | File Templates.
 //			}
 //		});
-	}
-
-	public void onFragmentVisible() {
-		// when the back button is pressed, make sure the home screen next and prev buttons are shown.
-		Activity activity = getActivity();
-		Button homescreenNext = (Button) activity.findViewById(R.id.home_screen_next);
-		Button homescreenPrev = (Button) activity.findViewById(R.id.home_screen_previous);
-
-		homescreenNext.setVisibility(View.VISIBLE);
-		homescreenPrev.setVisibility(View.VISIBLE);
-	}
-
-	public void onFragmentHidden() {
-		// when the back button is pressed, make sure the home screen next and prev buttons are hidden.
-		Activity activity = getActivity();
-		Button homescreenNext = (Button) activity.findViewById(R.id.home_screen_next);
-		Button homescreenPrev = (Button) activity.findViewById(R.id.home_screen_previous);
-
-		homescreenNext.setVisibility(View.GONE);
-		homescreenPrev.setVisibility(View.GONE);
 	}
 
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {

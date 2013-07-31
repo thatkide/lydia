@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class MediaUtils {
 
-	public static <T extends Media> ArrayList<T> cursorToArray(Class<T> c, Context context, Cursor cursor) {
+	public static <T extends Media> ArrayList<T> cursorToArray(Class<T> c, Cursor cursor) {
 		// make sure the cursor has info
 		if (cursor.getCount() == 0) {
 			return null;

@@ -64,10 +64,16 @@ public class MyMapFragment extends MapFragment implements
 	private static final String TAG = "lydia map fragment";
 
 	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		activity = getActivity();
+		activity.registerReceiver(mapAddressReceiver, new IntentFilter(Intents.SHOWONMAP));
+	}
+
+	@Override
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 
-		activity = getActivity();
 		// create a new location client
 		locationClient = new LocationClient(getActivity().getApplicationContext(), this, this);
 
@@ -88,8 +94,6 @@ public class MyMapFragment extends MapFragment implements
 			Log.e(TAG, e.toString());
 		}
 		locationClient.connect();
-
-		activity.registerReceiver(mapAddressReceiver, new IntentFilter(Intents.SHOWONMAP));
 	}
 
 	@Override
@@ -105,22 +109,7 @@ public class MyMapFragment extends MapFragment implements
 	@Override
 	public void onStart() {
 		super.onStart();
-		final FragmentManager manager = getFragmentManager();
 
-		// map on the homescreen that opens the map fragment
-		Button map = (Button) getActivity().findViewById(R.id.navigation);
-		map.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				manager.beginTransaction()
-						// replace the 'dashboard_container' fragment with a new 'settings fragment'
-						.hide(manager.findFragmentById(R.id.home_screen_container_fragment))
-						.hide(manager.findFragmentById(R.id.settings_fragment))
-						.show(manager.findFragmentById(R.id.map_container_fragment))
-						.addToBackStack(null)
-						.commit();
-			}
-		});
 	}
 
 	@Override
@@ -128,8 +117,8 @@ public class MyMapFragment extends MapFragment implements
 		super.onResume();
 		if (showSelf) {
 			ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-			fragments.add(getFragmentManager().findFragmentById(R.id.map_container_fragment));
-			Helpers.hideAllFragmentsBut(getFragmentManager(), fragments);
+//			fragments.add(getFragmentManager().findFragmentById(R.id.map_container_fragment));
+//			Helpers.hideAllFragmentsBut(getFragmentManager(), fragments);
 			showSelf = false;
 		}
 	}

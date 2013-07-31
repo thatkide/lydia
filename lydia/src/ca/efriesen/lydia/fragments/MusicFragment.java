@@ -108,10 +108,6 @@ public class MusicFragment extends ListFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-		// hide ourself on create
-		FragmentManager manager = getFragmentManager();
-		manager.beginTransaction().hide(manager.findFragmentById(R.id.music_fragment)).commit();
-
 		return inflater.inflate(R.layout.media_list_fragment, container, false);
 	}
 
@@ -189,12 +185,11 @@ public class MusicFragment extends ListFragment {
 			setHome();
 			return true;
 		} else if (type == SELECTED.home) {
-			FragmentManager manager = getFragmentManager();
-			manager.beginTransaction()
-			.hide(manager.findFragmentById(R.id.music_fragment))
-			.show(manager.findFragmentById(R.id.home_screen_fragment))
-			.addToBackStack(null)
-			.commit();
+			getFragmentManager().beginTransaction()
+					.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
+					.replace(R.id.home_screen_fragment, new HomeScreenFragment())
+					.addToBackStack(null)
+					.commit();
 			return true;
 		} else if (type == SELECTED.search) {
 			setHome();

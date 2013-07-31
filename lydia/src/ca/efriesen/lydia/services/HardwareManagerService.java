@@ -206,26 +206,26 @@ public class HardwareManagerService extends Service {
 	};
 
 	private void setupBluetooth() {
-		if (mBluetoothAdapter == null) {
-			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-			mBluetoothAdapter.enable();
-		}
-
-		if (bluetoothService == null)
-			bluetoothService = new BluetoothService(mBluetoothHandler);
-
-		// only start the bluetooth stuff if bluetooth is on
-		if (mBluetoothAdapter.isEnabled()) {
-			// connect bluetooth to the phone
-			if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
-				try {
-					Log.d(TAG, "connecting devices");
-					startConnectBluetooth();
-				} catch (Exception e) {
-					Log.d(TAG, e.toString());
-				}
-			}
-		}
+//		if (mBluetoothAdapter == null) {
+//			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//			mBluetoothAdapter.enable();
+//		}
+//
+//		if (bluetoothService == null)
+//			bluetoothService = new BluetoothService(mBluetoothHandler);
+//
+//		// only start the bluetooth stuff if bluetooth is on
+//		if (mBluetoothAdapter.isEnabled()) {
+//			// connect bluetooth to the phone
+//			if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
+//				try {
+//					Log.d(TAG, "connecting devices");
+//					startConnectBluetooth();
+//				} catch (Exception e) {
+//					Log.d(TAG, e.toString());
+//				}
+//			}
+//		}
 	}
 
 	private void killConnectBluetooth() {
@@ -307,7 +307,7 @@ public class HardwareManagerService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
 
-			bluetoothService.write(BluetoothService.objectToByteArray(song));
+//			bluetoothService.write(BluetoothService.objectToByteArray(song));
 		}
 	};
 

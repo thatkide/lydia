@@ -358,7 +358,7 @@ public class MediaService extends Service implements
 		// if we found 1 item or more
 		if (cursor.getCount() > 0) {
 			// make a new array list
-			ArrayList<Media> medias = MediaUtils.cursorToArray(Media.class, getApplicationContext(), cursor);
+			ArrayList<Media> medias = MediaUtils.cursorToArray(Media.class, cursor);
 			// close the db
 			cursor.close();
 			// and return
@@ -392,7 +392,7 @@ public class MediaService extends Service implements
 		String SELECTION = MediaStore.Audio.Media.IS_MUSIC + " > 0";
 		Cursor cursor = getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
 
-		ArrayList<Artist> artists = MediaUtils.cursorToArray(Artist.class, getApplicationContext(), cursor);
+		ArrayList<Artist> artists = MediaUtils.cursorToArray(Artist.class, cursor);
 		cursor.close();
 
 		try {
@@ -426,7 +426,7 @@ public class MediaService extends Service implements
 		// else all artists was selected
 		Cursor cursor = getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
 
-		ArrayList<Album> albums = MediaUtils.cursorToArray(Album.class, getApplicationContext(), cursor);
+		ArrayList<Album> albums = MediaUtils.cursorToArray(Album.class, cursor);
 		cursor.close();
 		return albums;
 	}
@@ -459,7 +459,7 @@ public class MediaService extends Service implements
 		}
 		Cursor cursor = getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
 
-		ArrayList<Song> songs = MediaUtils.cursorToArray(Song.class, getApplicationContext(), cursor);
+		ArrayList<Song> songs = MediaUtils.cursorToArray(Song.class, cursor);
 		cursor.close();
 		return songs;
 	}

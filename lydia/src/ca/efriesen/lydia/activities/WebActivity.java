@@ -26,4 +26,5 @@ public class WebActivity extends Activity {
 
 		web.loadUrl("http://www.google.ca");
 	}
+
 }
