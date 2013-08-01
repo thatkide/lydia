@@ -7,18 +7,16 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.ContactList;
 import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia_common.includes.Intents;
 
@@ -71,6 +69,7 @@ public class PassengerControlsMoreFragment extends Fragment {
 						break;
 					}
 				}
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("defrosterState", text.getCurrentTextColor()).commit();
 				// send the intent
 				activity.sendBroadcast(defroster);
 			}
@@ -78,13 +77,13 @@ public class PassengerControlsMoreFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// restore the button states
-		if (savedInstanceState != null) {
-			TextView defroster = (TextView) getActivity().findViewById(R.id.rear_window_defrost);
-			defroster.setTextColor(savedInstanceState.getInt("defroster"));
-		}
+	public void onResume() {
+		super.onResume();
+		TextView textView = (TextView) getActivity().findViewById(R.id.rear_window_defrost);
+		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("defrosterState", Color.WHITE));
+
+		// get the actual status, not just what we've stored
+		// updateDefrosterState()
 	}
 
 //	@Override

@@ -10,6 +10,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,14 +39,14 @@ public class PassengerControlsFragment extends Fragment {
 		Button passengerWindowUp = (Button) activity.findViewById(R.id.passenger_window_up);
 		Button passengerWindowDown = (Button) activity.findViewById(R.id.passenger_window_down);
 
-//		passengerWindowUp.setOnTouchListener(new View.OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View view, MotionEvent motionEvent) {
-//				// get the window intent from the windows class.  we send a view, a motion event, and it will return an intent we can then broadcast
-//				activity.sendBroadcast(Windows.sendWindowCommand(view, motionEvent));
-//				return true;
-//			}
-//		});
+		passengerWindowUp.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				// get the window intent from the windows class.  we send a view, a motion event, and it will return an intent we can then broadcast
+				activity.sendBroadcast(Windows.sendWindowCommand(view, motionEvent));
+				return true;
+			}
+		});
 
 		passengerWindowDown.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -100,7 +101,20 @@ public class PassengerControlsFragment extends Fragment {
 					}
 				}
 				activity.sendBroadcast(seatHeat);
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("passengerSeatState", text.getCurrentTextColor()).commit();
 			}
 		});
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		TextView textView = (TextView) getActivity().findViewById(R.id.passenger_seat_heat);
+		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("passengerSeatState", Color.WHITE));
+
+		// get the actual status, not just what we've stored
+		// updateSeatHeat()
+	}
+
+
 }

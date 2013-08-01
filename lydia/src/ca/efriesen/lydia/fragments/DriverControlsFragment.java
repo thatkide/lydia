@@ -10,6 +10,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -102,7 +103,19 @@ public class DriverControlsFragment extends Fragment {
 					}
 				}
 				activity.sendBroadcast(seatHeat);
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("driverSeatState", text.getCurrentTextColor()).commit();
 			}
 		});
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		TextView textView = (TextView) getActivity().findViewById(R.id.driver_seat_heat);
+		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("driverSeatState", Color.WHITE));
+
+		// get the actual status, not just what we've stored
+		// updateSeatHeat()
+	}
+
 }
