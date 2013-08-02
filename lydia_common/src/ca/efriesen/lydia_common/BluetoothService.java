@@ -40,7 +40,7 @@ public class BluetoothService {
 	private static final String NAME = "Lydia";
 
 	// Unique UUID for this application
-	private static final UUID MY_UUID = UUID.fromString("f4657ea0-20c3-11e2-81c1-0800200c9a66");
+	public static final UUID MY_UUID = UUID.fromString("f4657ea0-20c3-11e2-81c1-0800200c9a66");
 
 	// Member fields
 	private final BluetoothAdapter mAdapter;

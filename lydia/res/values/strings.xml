@@ -16,7 +16,7 @@
 	<string name="artists">Artists</string>
 	<string name="back">Back</string>
 	<string name="bluetooth">Bluetooth</string>
-	<string name="button_scan">Connect Bluetooth</string>
+	<string name="button_scan">Search for devices</string>
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
 	<string name="chrome">Chrome</string>
@@ -24,6 +24,7 @@
 	<string name="contacts">Contacts</string>
 	<string name="current_value">Current Sensor Value</string>
 	<string name="delay">Delay</string>
+	<string name="device_paired">Device paired</string>
 	<string name="dial">Dial</string>
 	<string name="dialer">Dialer</string>
 	<string name="distance">Distance</string>
@@ -62,6 +63,8 @@
 	<string name="nothing_found">Nothing found</string>
 	<string name="ok">OK</string>
 	<string name="outside_temp">Outside: 0\u2103</string>
+	<string name="paired">Paired</string>
+	<string name="pairing_device">Pairing device</string>
 	<string name="pause">Pause</string>
 	<string name="paused">Paused</string>
 	<string name="phone">Phone</string>

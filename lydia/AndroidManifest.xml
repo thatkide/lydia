@@ -69,21 +69,21 @@
 		</activity>
 
 		<activity android:name=".activities.MusicSearch"
-				android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
-				android:windowSoftInputMode="stateAlwaysVisible"/>
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+				  android:windowSoftInputMode="stateAlwaysVisible"/>
 
 		<activity android:name=".activities.WebActivity"
-		        android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+		          android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
 		<activity android:name=".activities.ContactList"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
-				android:windowSoftInputMode="stateHidden"/>
+				  android:windowSoftInputMode="stateHidden"/>
 
 		<activity android:name=".activities.ContactView"
-			android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
 		<activity android:name=".activities.SMSConversation"
-				android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
 		<activity android:name=".activities.AddressSearch"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
