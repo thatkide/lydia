@@ -131,7 +131,9 @@ public class MyMapFragment extends MapFragment implements
 		// only do this when we first open the map
 		if (firstRun) {
 			// move the camera to that spot
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), cameraZoom));
+			try {
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), cameraZoom));
+			} catch (Exception e) {}
 			firstRun = false;
 		}
 	}
