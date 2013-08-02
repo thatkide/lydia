@@ -44,15 +44,11 @@ public class HomeScreenContainerFragment extends Fragment {
 		super.onActivityCreated(saved);
 
 		try {
-			// make a new fragment of the class we have been passed
-			Fragment driverControls = (Fragment) driverControlClass.newInstance();
-			Fragment homeScreen = (Fragment) homeScreenClass.newInstance();
-			Fragment passengerControls = (Fragment) passengerControlClass.newInstance();
 			// setup the home screen
 			getFragmentManager().beginTransaction()
-					.add(R.id.driver_controls, driverControls, "driverControls")
-					.add(R.id.home_screen_fragment, homeScreen, "homeScreenFragment")
-					.add(R.id.passenger_controls, passengerControls, "passengerControls")
+					.add(R.id.driver_controls, (Fragment) driverControlClass.newInstance(), "driverControls")
+					.add(R.id.home_screen_fragment, (Fragment) homeScreenClass.newInstance(), "homeScreenFragment")
+					.add(R.id.passenger_controls, (Fragment) passengerControlClass.newInstance(), "passengerControls")
 					.commit();
 		} catch (java.lang.InstantiationException e) {
 			e.printStackTrace();

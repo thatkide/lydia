@@ -56,16 +56,13 @@ public class DriverControlsFragment extends Fragment {
 		});
 
 		// get the more button and attach an onclick listener
-		Button more = (Button) activity.findViewById(R.id.driver_more);
-
-		more.setOnClickListener(new View.OnClickListener() {
+		(activity.findViewById(R.id.driver_more)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// hide the main one and show the new one
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.controls_slide_out_up, R.anim.controls_slide_in_up)
 						.replace(R.id.driver_controls, new DriverControlsMoreFragment(), "driverControls")
-						.addToBackStack(null)
 						.commit();
 				((Dashboard)getActivity()).setDriverControlsClass(DriverControlsMoreFragment.class);
 			}

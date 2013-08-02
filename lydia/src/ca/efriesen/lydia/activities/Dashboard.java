@@ -153,10 +153,13 @@ public class Dashboard extends Activity {
 		// get the generic home screen fragment from the tag
 		Fragment homeScreenFragment = getFragmentManager().findFragmentByTag("homeScreenFragment");
 		Fragment driverControls = getFragmentManager().findFragmentByTag("driverControls");
+		Fragment settingsFragment = getFragmentManager().findFragmentById(R.id.settings_fragment);
 
 		// music fragment has special handling, check it first,
 		if (musicFragment != null && musicFragment.isVisible()) {
 			musicFragment.onBackPressed();
+		} else if(settingsFragment.isVisible()) {
+			super.onBackPressed();
 		// if the controls fragment is visible, only replace the center portion
 		} else if (driverControls.isVisible() && !homeScreenFragment.isVisible()) {
 			try {

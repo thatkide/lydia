@@ -234,7 +234,9 @@ public class HardwareManagerService extends Service {
 			connectBluetooth.interrupt();
 			connectBluetooth = null;
 		} catch (Exception e) {}
-		bluetoothService.stop();
+		try {
+			bluetoothService.stop();
+		} catch (Exception e) {}
 	}
 
 	private void startConnectBluetooth() {

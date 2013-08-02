@@ -7,18 +7,14 @@
 	<!-- left side menu controls -->
 	<Button android:id="@+id/driver_window_up"
 	        android:text="@string/window_up"
-	        style="@style/ControlRoundTopRight"
-			/>
+	        style="@style/ControlRoundTopRight" />
 	<Button android:id="@+id/driver_window_down"
 	        android:text="@string/window_down"
-	        style="@style/ControlButtons"
-			/>
+	        style="@style/ControlButtons" />
 	<Button android:id="@+id/driver_seat_heat"
 	        android:text="@string/seat_heat"
-	        style="@style/ControlButtons"
-			/>
+	        style="@style/ControlButtons" />
 	<Button android:id="@+id/driver_more"
 	        android:text="@string/more"
-	        style="@style/ControlRoundBottomRight"
-			/>
+	        style="@style/ControlRoundBottomRight" />
 </LinearLayout>
