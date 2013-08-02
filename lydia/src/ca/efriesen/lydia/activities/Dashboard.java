@@ -19,7 +19,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 public class Dashboard extends Activity {
-	private static final String TAG = "DashboardActivity";
+	private static final String TAG = "lydia Dashboard Activity";
 	private BluetoothAdapter mBluetoothAdapter = null;
 
 	// plugins

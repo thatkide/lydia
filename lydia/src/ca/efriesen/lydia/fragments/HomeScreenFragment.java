@@ -192,18 +192,6 @@ public class HomeScreenFragment extends Fragment {
 				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
 			}
 		});
-
-		// restore the button states
-		if (savedInstanceState != null) {
-			TextView driverSeatHeat = (TextView) activity.findViewById(R.id.driver_seat_heat);
-			driverSeatHeat.setTextColor(savedInstanceState.getInt("driverSeatHeat"));
-
-			TextView passengerSeatHeat = (TextView) activity.findViewById(R.id.passenger_seat_heat);
-			passengerSeatHeat.setTextColor(savedInstanceState.getInt("passengerSeatHeat"));
-
-			TextView wiperToggle = (TextView) activity.findViewById(R.id.wiper_toggle);
-			wiperToggle.setTextColor(savedInstanceState.getInt("wiperToggle"));
-		}
 	}
 
 	@Override

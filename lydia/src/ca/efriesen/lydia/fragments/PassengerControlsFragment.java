@@ -110,7 +110,9 @@ public class PassengerControlsFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		TextView textView = (TextView) getActivity().findViewById(R.id.passenger_seat_heat);
-		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("passengerSeatState", Color.WHITE));
+		try {
+			textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("passengerSeatState", Color.WHITE));
+		} catch (Exception e) {}
 
 		// get the actual status, not just what we've stored
 		// updateSeatHeat()

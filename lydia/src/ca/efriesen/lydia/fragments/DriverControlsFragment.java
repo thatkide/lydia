@@ -109,8 +109,9 @@ public class DriverControlsFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		TextView textView = (TextView) getActivity().findViewById(R.id.driver_seat_heat);
-		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("driverSeatState", Color.WHITE));
-
+		try {
+			textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("driverSeatState", Color.WHITE));
+		} catch (Exception e) {}
 		// get the actual status, not just what we've stored
 		// updateSeatHeat()
 	}

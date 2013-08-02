@@ -72,7 +72,7 @@ public class HomeScreenTwoFragment extends Fragment{
 			public void onClick(View v) {
 				// replace the 'dashboard_container' fragment with a new 'settings fragment'
 				getFragmentManager().beginTransaction()
-						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 						.replace(R.id.home_screen_container_fragment, new SettingsContainerFragment(), "homeScreenContainerFragment")
 						.addToBackStack("settingsFragment")
 						.commit();

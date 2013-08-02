@@ -80,7 +80,9 @@ public class PassengerControlsMoreFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		TextView textView = (TextView) getActivity().findViewById(R.id.rear_window_defrost);
-		textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("defrosterState", Color.WHITE));
+		try {
+			textView.setTextColor(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("defrosterState", Color.WHITE));
+		} catch (Exception e) {}
 
 		// get the actual status, not just what we've stored
 		// updateDefrosterState()

@@ -110,11 +110,15 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		home.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getFragmentManager().beginTransaction()
-						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
-						.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment())
-						.addToBackStack(null)
-						.commit();
+				// only do this if we aren't already home
+				Fragment homeScreenFragment = getFragmentManager().findFragmentByTag("homeScreenFragment");
+				if (!homeScreenFragment.isVisible()) {
+					getFragmentManager().beginTransaction()
+							.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
+							.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment())
+							.addToBackStack(null)
+							.commit();
+				}
 			}
 		});
 
