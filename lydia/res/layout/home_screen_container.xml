@@ -3,8 +3,7 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-        android:orientation="horizontal"
-		>
+        android:orientation="horizontal">
 
 	<FrameLayout android:id="@+id/driver_controls"
 				android:layout_height="match_parent"
@@ -17,12 +16,6 @@
 	<FrameLayout android:id="@+id/home_screen_fragment"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content" />
-
-	<!--<fragment android:id="@+id/launcher_fragment"-->
-			  <!--android:name="ca.efriesen.lydia.fragments.LauncherFragment"-->
-			  <!--android:layout_height="320dip"-->
-			  <!--android:layout_width="630dip" />-->
-
 
 	<View android:layout_weight="1"
 			  android:layout_height="match_parent"
