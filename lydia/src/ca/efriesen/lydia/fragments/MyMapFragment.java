@@ -116,9 +116,6 @@ public class MyMapFragment extends MapFragment implements
 	public void onResume() {
 		super.onResume();
 		if (showSelf) {
-			ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-//			fragments.add(getFragmentManager().findFragmentById(R.id.map_container_fragment));
-//			Helpers.hideAllFragmentsBut(getFragmentManager(), fragments);
 			showSelf = false;
 		}
 	}
