@@ -44,7 +44,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	private boolean mediaBound = false;
 	private MediaService mediaService;
 
-
 	ImageButton home;
 	ImageButton playPause;
 	ImageButton previous;

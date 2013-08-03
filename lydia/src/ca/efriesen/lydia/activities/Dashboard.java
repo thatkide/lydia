@@ -6,6 +6,7 @@ import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.*;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
@@ -125,6 +126,7 @@ public class Dashboard extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		try {
 			lastFm.destroy();
 		} catch (Exception e) {
@@ -165,7 +167,7 @@ public class Dashboard extends Activity {
 			try {
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
-						.replace(R.id.home_screen_fragment, (Fragment)homeScreenClass.newInstance(), "homeScreenFragment")
+						.replace(R.id.home_screen_fragment, (Fragment) homeScreenClass.newInstance(), "homeScreenFragment")
 						.commit();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
