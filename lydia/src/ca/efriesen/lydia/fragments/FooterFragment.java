@@ -236,8 +236,8 @@ public class FooterFragment extends Fragment {
 			ImageView dayNight = (ImageView) activity.findViewById(R.id.day_night);
 
 			// get the values store in the preferences
-			int lowerLevel = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext()).getString("minLight", "0"));
-			int upperLevel = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext()).getString("maxLight", "0"));
+			int lowerLevel = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(activity).getString("minLight", "0"));
+			int upperLevel = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(activity).getString("maxLight", "0"));
 
 			// if the brightness is less than the lower level, turn to night
 			if (brightness < lowerLevel) {

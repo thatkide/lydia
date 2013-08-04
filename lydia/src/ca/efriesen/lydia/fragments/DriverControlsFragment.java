@@ -100,7 +100,7 @@ public class DriverControlsFragment extends Fragment {
 					}
 				}
 				activity.sendBroadcast(seatHeat);
-				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("driverSeatState", text.getCurrentTextColor()).commit();
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("driverSeatState", text.getCurrentTextColor()).apply();
 			}
 		});
 	}

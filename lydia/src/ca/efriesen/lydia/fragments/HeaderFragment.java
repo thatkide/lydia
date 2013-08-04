@@ -149,14 +149,14 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			}
 		});
 
-		if (PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean(Constants.REPEATALL, false)) {
+		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.REPEATALL, false)) {
 			repeat.setColorFilter(blueFilter);
 		}
 
 		repeat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Boolean repeatState = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean(Constants.REPEATALL, false);
+				Boolean repeatState = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.REPEATALL, false);
 				if (!repeatState) {
 					repeat.setColorFilter(blueFilter);
 				} else {
@@ -167,7 +167,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		});
 
 		// set the default state for the shuffle button
-		if (PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean(Constants.SHUFFLE, false)) {
+		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.SHUFFLE, false)) {
 			shuffle.setColorFilter(blueFilter);
 		}
 
@@ -187,7 +187,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		shuffle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Boolean shuffleState = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getBoolean(Constants.SHUFFLE, false);
+				Boolean shuffleState = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.SHUFFLE, false);
 				if (!shuffleState) {
 					shuffle.setColorFilter(blueFilter);
 				} else {

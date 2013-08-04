@@ -103,8 +103,8 @@ public class MediaService extends Service implements
 		notificationManager.notify(notificationId, builder.build());
 
 		// default state for repeat and shuffle
-		repeatAll = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.REPEATALL, false);
-		shuffle = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.SHUFFLE, false);
+		repeatAll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.REPEATALL, false);
+		shuffle = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.SHUFFLE, false);
 
 		Log.d(TAG, "On create finished");
 	}
@@ -520,7 +520,7 @@ public class MediaService extends Service implements
 
 	public void setRepeat(boolean repeat) {
 		repeatAll = repeat;
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putBoolean(Constants.REPEATALL, repeatAll).commit();
 	}
@@ -531,7 +531,7 @@ public class MediaService extends Service implements
 
 	public void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putBoolean(Constants.SHUFFLE, shuffle).commit();
 		if (shuffle) {

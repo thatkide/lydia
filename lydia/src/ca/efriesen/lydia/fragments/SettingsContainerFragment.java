@@ -85,7 +85,7 @@ public class SettingsContainerFragment extends Fragment {
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
 
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 	}
 

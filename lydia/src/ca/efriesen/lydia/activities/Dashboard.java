@@ -68,7 +68,7 @@ public class Dashboard extends Activity {
 //		}
 
 		// initialize all plugins
-		lastFm = new LastFM(getApplicationContext());
+		lastFm = new LastFM(this);
 
 		getFragmentManager().beginTransaction()
 				.add(R.id.header_fragment, new HeaderFragment())
