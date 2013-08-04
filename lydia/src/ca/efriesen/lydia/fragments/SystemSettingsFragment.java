@@ -7,7 +7,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 
 /**
@@ -27,6 +26,8 @@ public class SystemSettingsFragment extends PreferenceFragment {
 
 			if(s.equalsIgnoreCase("systemBluetooth")) {
 				boolean systemBluetooth = sharedPreferences.getBoolean("systemBluetooth", false);
+				// apply the changes now
+				sharedPreferences.edit().putBoolean("systemBluetooth", systemBluetooth).apply();
 				BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 				if (systemBluetooth) {
 					adapter.enable();
@@ -34,7 +35,10 @@ public class SystemSettingsFragment extends PreferenceFragment {
 					adapter.disable();
 				}
 			} else if(s.equalsIgnoreCase("useBluetooth")) {
+				Log.d(TAG, "use bt changed");
 				boolean useBluetooth = sharedPreferences.getBoolean("useBluetooth", false);
+				// apply the changes now
+				sharedPreferences.edit().putBoolean("useBluetooth", useBluetooth).apply();
 				getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("useBluetooth", useBluetooth));
 			}
 		}
@@ -44,7 +48,7 @@ public class SystemSettingsFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		addPreferencesFromResource(R.xml.system_preferences_fragment);

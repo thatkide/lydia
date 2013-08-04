@@ -82,7 +82,7 @@ public class PhoneFragment extends Fragment {
 	private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			final SMS sms = (SMS) intent.getSerializableExtra("ca.efriesen.SMS");
+			final SMS sms = (SMS) intent.getSerializableExtra(Intents.SMSRECEIVED);
 			final String phoneNumber = sms.getFromNumber();
 			final String message = sms.getMessage();
 
@@ -113,7 +113,7 @@ public class PhoneFragment extends Fragment {
 							// pass the id into the reply from the original message
 							smsReply.setId(sms.getId());
 
-							activity.sendBroadcast(new Intent(Intents.SMSREPLY).putExtra("ca.efriesen.SMS", smsReply));
+							activity.sendBroadcast(new Intent(Intents.SMSREPLY).putExtra(Intents.SMSRECEIVED, smsReply));
 							dialogInterface.cancel();
 						}
 					}).create().show();

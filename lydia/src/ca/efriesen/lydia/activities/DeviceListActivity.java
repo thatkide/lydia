@@ -190,6 +190,8 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 		}
+		// ensure it's no longer in the db
+		dataSource.removeDevice(device);
 	}
 
 	// The BroadcastReceiver that listens for discovered devices and

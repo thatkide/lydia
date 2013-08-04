@@ -2,6 +2,7 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -256,9 +254,13 @@ public class FooterFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
+			BluetoothDevice device = intent.getParcelableExtra("device");
 			int state = intent.getIntExtra("state", 0);
 			switch (state) {
 				case BluetoothService.STATE_CONNECTED: {
+					try {
+						Toast.makeText(getActivity(), "Connected to " + device.getName(), Toast.LENGTH_SHORT).show();
+					} catch (Exception e) {}
 					btImage.setImageResource(R.drawable.device_access_bluetooth_connected);
 					break;
 				}

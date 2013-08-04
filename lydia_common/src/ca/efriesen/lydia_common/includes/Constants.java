@@ -36,7 +36,6 @@ public class Constants {
 	// Preferences contstants
 	final public static String REPEATALL = "repeatAll";
 	final public static String SHUFFLE = "shuffleMusic";
-	public static final String PhoneAddress = "phone_address";
 
 
 	// Lastfm stuff

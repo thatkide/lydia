@@ -178,7 +178,7 @@ public class ManagerService extends Service {
 						sendBroadcast(updateMedia);
 					} else if (msg.obj instanceof SMS) {
 						Intent smsReceived = new Intent(Intents.SMSRECEIVED);
-						smsReceived.putExtra("ca.efriesen.SMS", (SMS)msg.obj);
+						smsReceived.putExtra(Intents.SMSRECEIVED, (SMS)msg.obj);
 						sendBroadcast(smsReceived);
 					}
 					break;

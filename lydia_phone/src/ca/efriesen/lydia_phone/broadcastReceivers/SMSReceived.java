@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.telephony.SmsManager;
 import android.util.Log;
+import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.messages.SMS;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class SMSReceived extends BroadcastReceiver {
 	private static final String TAG = "lydia smsreceived";
 	public void onReceive(Context context, Intent intent) {
-		SMS sms = (SMS) intent.getSerializableExtra("ca.efriesen.SMS");
+		SMS sms = (SMS) intent.getSerializableExtra(Intents.SMSRECEIVED);
 
 		SmsManager smsManager = SmsManager.getDefault();
 		try {

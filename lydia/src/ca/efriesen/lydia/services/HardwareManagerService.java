@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
+import ca.efriesen.lydia.databases.BluetoothDeviceDataSource;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.messages.PhoneCall;
 import ca.efriesen.lydia_common.messages.SMS;
@@ -41,13 +42,13 @@ public class HardwareManagerService extends Service {
 	private Thread connectBluetooth = null;
 
 	// message storage stuff
-	MessagesDataSource dataSource;
+	MessagesDataSource messagesDataSource;
 
 	// list of devices
 	private ArrayList<Device> devices;
 
-	// other var
-	private boolean threadRunning = false;
+	// Thread var
+	private volatile boolean connectThreadAlive = true;
 
 	// we bind to this service in the dashboard.java file.
 	// the reason i do this is because then we can force an update to be sent over serial to get info we need about the devices and such.
@@ -67,14 +68,27 @@ public class HardwareManagerService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
+		// if we have said to use bluetooth
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("systemBluetooth", false)) {
+			Log.d(TAG, "yepp, bluetooth is on");
+			// get the adapter if we havne't already
+			if (mBluetoothAdapter == null) {
+				mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			}
+			if (!mBluetoothAdapter.isEnabled()) {
+				// turn on bluetooth
+				mBluetoothAdapter.enable();
+			}
+		}
+
 		// setup bluetooth stuff
-		if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("useBluetooth", false)) {
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useBluetooth", false)) {
 			setupBluetooth();
 		}
 		registerReceiver(bluetoothStateReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
-		dataSource = new MessagesDataSource(this);
-		dataSource.open();
+		messagesDataSource = new MessagesDataSource(this);
+		messagesDataSource.open();
 
 		// start it in the foreground so it doesn't get killed
 		Notification.Builder builder = new Notification.Builder(this)
@@ -118,7 +132,6 @@ public class HardwareManagerService extends Service {
 		// in the Arduino class we will filter out so we only have the devices we need
 		arduino.setDevices(devices);
 
-		registerReceiver(toggleBluetoothReveiver, new IntentFilter(Intents.BLUETOOTHTOGGLE));
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
 		registerReceiver(mediaInfoReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
 		registerReceiver(bluetoothManagerReceiver, new IntentFilter(Intents.BLUETOOTHMANAGER));
@@ -127,7 +140,8 @@ public class HardwareManagerService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		killConnectBluetooth();
+		stopConnectThread();
+		bluetoothService.stop();
 		try {
 			unregisterReceiver(bluetoothStateReceiver);
 		} catch (Exception e) {}
@@ -153,7 +167,7 @@ public class HardwareManagerService extends Service {
 				case BluetoothService.MESSAGE_READ: {
 					if (msg.obj instanceof SMS) {
 						Intent smsReceived = new Intent(Intents.SMSRECEIVED);
-						smsReceived.putExtra("ca.efriesen.SMS", (SMS)msg.obj);
+						smsReceived.putExtra(Intents.SMSRECEIVED, (SMS)msg.obj);
 						sendBroadcast(smsReceived);
 					} else if(msg.obj instanceof PhoneCall) {
 						Intent phoneCall = new Intent(Intents.PHONECALL);
@@ -189,16 +203,14 @@ public class HardwareManagerService extends Service {
 				}
 				case BluetoothService.MESSAGE_CONNECTED: {
 					Log.d(TAG, "connected, sending broadcast");
-					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_CONNECTED));
-					killConnectBluetooth();
+					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_CONNECTED).putExtra("device", (BluetoothDevice) msg.obj));
+					// interrupt the sleep, notifiy we are connected
+					connectBluetooth.interrupt();
 					break;
 				}
 				case BluetoothService.MESSAGE_DISCONNECTED: {
 					Log.d(TAG, "disconnected, sending broadcast");
 					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_NONE));
-					Log.d(TAG, "starting connect thread");
-					killConnectBluetooth();
-					startConnectBluetooth();
 					break;
 				}
 			}
@@ -206,99 +218,87 @@ public class HardwareManagerService extends Service {
 	};
 
 	private void setupBluetooth() {
-//		if (mBluetoothAdapter == null) {
-//			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//			mBluetoothAdapter.enable();
-//		}
-//
-//		if (bluetoothService == null)
-//			bluetoothService = new BluetoothService(mBluetoothHandler);
-//
-//		// only start the bluetooth stuff if bluetooth is on
-//		if (mBluetoothAdapter.isEnabled()) {
-//			// connect bluetooth to the phone
-//			if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
-//				try {
-//					Log.d(TAG, "connecting devices");
-//					startConnectBluetooth();
-//				} catch (Exception e) {
-//					Log.d(TAG, e.toString());
-//				}
-//			}
-//		}
+		if (bluetoothService == null)
+			Log.d(TAG, "mmm, new device");
+			bluetoothService = new BluetoothService(mBluetoothHandler);
+
+		try {
+			Log.d(TAG, "connecting devices");
+			startConnectBluetooth();
+		} catch (Exception e) {
+		//	resetBluetoothService();
+			Log.d(TAG, e.toString());
+		}
 	}
 
-	private void killConnectBluetooth() {
-		try {
-			Log.d(TAG, "killing connect thread");
-			connectBluetooth.interrupt();
+	private void stopConnectThread() {
+		connectThreadAlive = false;
+		if (connectBluetooth != null) {
 			connectBluetooth = null;
-		} catch (Exception e) {}
-		try {
-			bluetoothService.stop();
-		} catch (Exception e) {}
+		}
 	}
 
 	private void startConnectBluetooth() {
+		connectThreadAlive = true;
 		Log.d(TAG, "starting bluetooth connect");
-		if (!threadRunning) {
-			connectBluetooth = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					while (true) {
-						int state = bluetoothService.getState();
-						if (state != BluetoothService.STATE_CONNECTED && state != BluetoothService.STATE_CONNECTING) {
+		connectBluetooth = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// query the db for all of our devices
+				BluetoothDeviceDataSource bluetoothDeviceDataSource;
+				bluetoothDeviceDataSource = new BluetoothDeviceDataSource(getApplicationContext());
+				bluetoothDeviceDataSource.open();
+				ArrayList<BluetoothDevice> devices = bluetoothDeviceDataSource.getAllDevices();
+				bluetoothDeviceDataSource.close();
+				// while the outer var is true, keep looping forever
+				while (connectThreadAlive) {
+					// get the connection state
+					int state = bluetoothService.getState();
+					// if we aren't connected or connecting
+					if (state != BluetoothService.STATE_CONNECTED && state != BluetoothService.STATE_CONNECTING) {
+						// loop over each device and try to connect
+						for (BluetoothDevice device : devices) {
 							// Get the BluetoothDevice object
-							String address = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constants.PhoneAddress, null);
-							Log.d(TAG, "saved address" + address);
-							if (!BluetoothAdapter.checkBluetoothAddress(address)) {
-								Log.d(TAG, "invalid bluetooth address, finishing");
-								return;
-							}
-							BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+							Log.d(TAG, "trying address " + device.getAddress());
 
-							if (device != null) {
-								Log.d(TAG, "connecting");
-								bluetoothService.connect(device);
-							}
-						}
+							// connect
+							bluetoothService.connect(device);
 
-						try {
-							Log.d(TAG, "thread sleeping");
-							Thread.sleep(2000);
-						} catch (InterruptedException e) {
-							Log.d(TAG, "manager thread interrupted");
-							// I said DIE
-							threadRunning = false;
+							// sleep for 5 seconds
+							// when we wake up, we'll try the next device
+							try {
+								Log.d(TAG, "thread sleeping");
+								Thread.sleep(5000);
+							// when we successfully connect, the thread will be interrupted and we'll exit the for loop
+							} catch (InterruptedException e) { }
+
+							// if we connected, break the for loop
+							// else try the next device in the db
+							if (bluetoothService.getState() == BluetoothService.STATE_CONNECTED) {
+								Log.d(TAG, "breaking out of the loop");
+								break;
+							}
 						}
 					}
-				}
-			});
-			connectBluetooth.start();
-			threadRunning = true;
-		}
-	}
+					try {
+						// just sleep for a second so we aren't running full go all the time
+						Thread.sleep(1000);
+					} catch (InterruptedException e) { }
 
-	private BroadcastReceiver toggleBluetoothReveiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// connect bluetooth to the phone
-			if (bluetoothService.getState() != BluetoothService.STATE_NONE) {
-				killConnectBluetooth();
-//				connectBluetooth.interrupt();
-			} else {
-//				connectBluetooth.start();
+				}
 			}
-		}
-	};
+		});
+
+		connectBluetooth.start();
+	}
 
 	private BroadcastReceiver smsReplyReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			SMS sms = (SMS) intent.getSerializableExtra("ca.efriesen.SMS");
+			SMS sms = (SMS) intent.getSerializableExtra(Intents.SMSRECEIVED);
 
 			// store message in db
-			dataSource.createMessage(sms.getMessage(), sms.getToNumber(), ca.efriesen.lydia.databases.Message.TYPE_SMS, true);
+			messagesDataSource.createMessage(sms.getMessage(), sms.getToNumber(), ca.efriesen.lydia.databases.Message.TYPE_SMS, true);
 
 			bluetoothService.write(BluetoothService.objectToByteArray(sms));
 		}
@@ -309,7 +309,7 @@ public class HardwareManagerService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
 
-//			bluetoothService.write(BluetoothService.objectToByteArray(song));
+			bluetoothService.write(BluetoothService.objectToByteArray(song));
 		}
 	};
 
@@ -323,12 +323,16 @@ public class HardwareManagerService extends Service {
 			switch (state) {
 				case BluetoothAdapter.STATE_OFF: {
 					Log.d(TAG, "bluetooth off");
-					killConnectBluetooth();
+					stopConnectThread();
 					break;
 				}
 				case BluetoothAdapter.STATE_ON: {
 					Log.d(TAG, "bluetooth on");
-					setupBluetooth();
+					// in app bluetooth setting
+					if (getSharedPreferences(HardwareManagerService.this.getPackageName() + "_preferences", MODE_MULTI_PROCESS).getBoolean("useBluetooth", false)) {
+						Log.d(TAG, "ok, set it up then");
+						setupBluetooth();
+					}
 				}
 			}
 		}
@@ -337,12 +341,16 @@ public class HardwareManagerService extends Service {
 	private BroadcastReceiver bluetoothManagerReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			boolean useBluetooth = intent.getBooleanExtra("useBluetooth", false);
-			if (useBluetooth) {
-				// ensure bluetooth is enabled
-				setupBluetooth();
-			} else {
-				killConnectBluetooth();
+			if (intent.hasExtra("useBluetooth")) {
+				if (intent.getBooleanExtra("useBluetooth", false)) {
+					// ensure bluetooth is enabled
+					Log.d(TAG, "in app bt on");
+					setupBluetooth();
+				} else {
+					Log.d(TAG, "in app bt off");
+					stopConnectThread();
+					bluetoothService.stop();
+				}
 			}
 		}
 	};
