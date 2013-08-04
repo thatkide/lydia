@@ -264,10 +264,10 @@ public class BluetoothService {
 					// This is a blocking call and will only return on a
 					// successful connection or an exception
 					socket = mmServerSocket.accept();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					try {
 						socket.close();
-					} catch (IOException e1) {
+					} catch (Exception e1) {
 						Log.e(TAG, e1.toString());
 					}
 					connectionFailed();
