@@ -7,23 +7,19 @@
 		<SwitchPreference
 				android:key="systemBluetooth"
 				android:defaultValue="false"
-				android:title="System Bluetooth" />
+				android:title="@string/system_bluetooth"
+				android:summary="@string/system_bluetooth_summary"/>
 		<SwitchPreference
 				android:key="useBluetooth"
 				android:defaultValue="false"
-				android:title="Use bluetooth"
+				android:title="@string/use_bluetooth"
+				android:summary="@string/use_bluetooth_summary"
 				android:dependency="systemBluetooth"/>
 		<Preference
-				android:key="bluetooth_phone_address"
-				android:title="@string/phone"
-				android:summary="Pair a new phone"
+				android:title="@string/paired_devices"
+				android:summary="@string/paired_devices_summary"
 				android:dependency="systemBluetooth">
 				<intent android:action=".activities.DeviceListActivity"/>
 		</Preference>
-		<EditTextPreference
-				android:key="phone_address"
-				android:title="@string/address"
-				android:summary="Address of phone currently paired"
-				android:dependency="systemBluetooth"/>
 	</PreferenceCategory>
 </PreferenceScreen>

@@ -3,13 +3,9 @@ package ca.efriesen.lydia.databases;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by eric on 2013-06-02.

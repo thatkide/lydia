@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:padding="10dip">
+
+	<CheckBox android:id="@+id/bluetooth_device_use_in_app"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:layout_alignParentRight="true"
+			android:focusable="false"
+			android:focusableInTouchMode="false"/>
+	<TextView android:id="@+id/bluetooth_device_use_in_app_text"
+			  style="@style/SmallText"
+			  android:text="@string/use_phone"
+			  android:layout_toLeftOf="@id/bluetooth_device_use_in_app"/>
+
+	<TextView android:layout_toLeftOf="@id/bluetooth_device_use_in_app"
+			  android:layout_alignParentLeft="true"
+			  android:id="@+id/bluetooth_device_name"
+			  style="@style/SmallText"/>
+</RelativeLayout>

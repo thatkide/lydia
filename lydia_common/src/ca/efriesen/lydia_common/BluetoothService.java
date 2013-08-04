@@ -34,13 +34,13 @@ import java.util.UUID;
 public class BluetoothService {
 	// Debugging
 	private static final boolean D = true;
-	private static final String TAG = "Lydia Bluetooth Service";
+	private static final String TAG = "Lydia hardware Bluetooth Service";
 
 	// Name for the SDP record when creating server socket
 	private static final String NAME = "Lydia";
 
 	// Unique UUID for this application
-	private static final UUID MY_UUID = UUID.fromString("f4657ea0-20c3-11e2-81c1-0800200c9a66");
+	public static final UUID MY_UUID = UUID.fromString("f4657ea0-20c3-11e2-81c1-0800200c9a66");
 
 	// Member fields
 	private final BluetoothAdapter mAdapter;
@@ -118,7 +118,7 @@ public class BluetoothService {
 	 */
 	public synchronized void connect(BluetoothDevice device) {
 		if (D)
-			Log.d(TAG, "connect to: " + device);
+			Log.d(TAG, "connect to: " + device.getName());
 
 		// Cancel any thread attempting to make a connection
 		if (mConnectThread != null) {
@@ -144,7 +144,7 @@ public class BluetoothService {
 	 *
 	 * @param socket The BluetoothSocket on which the connection was made
 	 */
-	public synchronized void connected(BluetoothSocket socket) {
+	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
 		if (D)
 			Log.d(TAG, "connected");
 
@@ -165,6 +165,7 @@ public class BluetoothService {
 
 		// Send the name of the connected device back to the UI Activity
 		mHandler.obtainMessage(BluetoothService.MESSAGE_CONNECTED).sendToTarget();
+		mHandler.obtainMessage(BluetoothService.MESSAGE_CONNECTED, -1, -1, device).sendToTarget();
 
 		setState(STATE_CONNECTED);
 	}
@@ -219,6 +220,7 @@ public class BluetoothService {
 		Log.d(TAG, "connection lost");
 		// Send a failure message back to the Activity
 		mHandler.obtainMessage(BluetoothService.MESSAGE_DISCONNECTED).sendToTarget();
+		stop();
 	}
 
 	/**
@@ -278,7 +280,7 @@ public class BluetoothService {
 						case STATE_LISTEN:
 						case STATE_CONNECTING:
 							// Situation normal. Start the connected thread.
-							connected(socket);
+							connected(socket, socket.getRemoteDevice());
 							break;
 						case STATE_NONE:
 						case STATE_CONNECTED:
@@ -317,13 +319,16 @@ public class BluetoothService {
 	 */
 	private class ConnectThread extends Thread {
 		private BluetoothSocket mmSocket;
+		private BluetoothDevice device;
 
 		public ConnectThread(BluetoothDevice device) {
+			this.device = device;
 			BluetoothSocket tmp = null;
-
+			Log.d(TAG, "connect thread constructor");
 			// Get a BluetoothSocket for a connection with the
 			// given BluetoothDevice
 			try {
+				Log.d(TAG, "connect thread create rf comm socket");
 				tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 			} catch (IOException e) {
 				connectionFailed();
@@ -365,7 +370,7 @@ public class BluetoothService {
 			}
 
 			// Start the connected thread
-			connected(mmSocket);
+			connected(mmSocket, device);
 		}
 
 		public void cancel() {
