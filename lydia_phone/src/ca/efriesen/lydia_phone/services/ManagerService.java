@@ -190,8 +190,9 @@ public class ManagerService extends Service {
 				}
 				case BluetoothService.MESSAGE_DISCONNECTED: {
 					Log.d(TAG, "disconnected, sending broadcast");
-					mBluetoothService.stop();
-					mBluetoothService.startServer();
+					if (mBluetoothAdapter.isEnabled()) {
+						mBluetoothService.startServer();
+					}
 					// sends an intent to the ui for display purposes
 					sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("state", BluetoothService.STATE_NONE));
 					break;
