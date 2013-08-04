@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  */
 public class Arduino {
 	// debug tag
-	private static final String TAG = "Arduino";
+	private static final String TAG = "lydia Arduino";
 
 	// application context
 	private Context context;
@@ -102,10 +102,10 @@ public class Arduino {
 
 	// take the list of devices from the hardware manager, filter them so we only have serial io devices, then add them to our own list
 	public void setDevices(ArrayList<Device> devices) {
-		for (Device s : devices) {
-			if (s instanceof SerialIO) {
+		for (Device device : devices) {
+			if (device instanceof SerialIO) {
 				// only add serial IO devices.  the rest will just wast time and space
-				this.devices.add(s);
+				this.devices.add(device);
 			}
 		}
 	}
@@ -228,10 +228,10 @@ public class Arduino {
 				String value = commands.get(2);
 
 				// loop over each sensor, and check if it matches what's been passed (based on the id associated when it was created)
-				for (Device s : devices) {
-					if (s.getId() == command) {
+				for (Device device : devices) {
+					if (device.getId() == command) {
 						// we found it, so set the value
-						s.setValue(value);
+						device.setValue(value);
 						// and break
 						break;
 					}

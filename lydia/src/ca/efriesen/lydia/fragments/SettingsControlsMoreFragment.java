@@ -34,12 +34,12 @@ public class SettingsControlsMoreFragment extends Fragment {
 		});
 
 		// sensors button
-		(activity.findViewById(R.id.settings_sensors)).setOnClickListener(new View.OnClickListener() {
+		(activity.findViewById(R.id.settings_arduino)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-						.replace(R.id.settings_fragment, new SensorsSettingsFragment())
+						.replace(R.id.settings_fragment, new ArduinoSettingsFragment())
 						.addToBackStack(null)
 						.commit();
 			}

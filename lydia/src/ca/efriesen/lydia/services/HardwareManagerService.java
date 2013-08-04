@@ -109,6 +109,7 @@ public class HardwareManagerService extends Service {
 		arduino.initlize();
 
 		// populate the devices array
+		// The device contsructor take a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
 		devices = new ArrayList<Device>();
 		devices.add(new LightSensor(this, Constants.LIGHTSENSOR, Intents.LIGHTVALUE));
 //		devices.add(new PressureSensor(this, Constants.FLPRESSURESENSOR, Intents.));
@@ -122,9 +123,9 @@ public class HardwareManagerService extends Service {
 		devices.add(new Wipers(this, Constants.WIPE, Intents.WIPE));
 
 		// add the serial io manager to each serial io sensor
-		for (Device s : devices) {
-			if (s instanceof SerialIO) {
-				((SerialIO) s).setIOManager(arduino.getSerialManager());
+		for (Device device : devices) {
+			if (device instanceof SerialIO) {
+				((SerialIO) device).setIOManager(arduino.getSerialManager());
 			}
 		}
 
