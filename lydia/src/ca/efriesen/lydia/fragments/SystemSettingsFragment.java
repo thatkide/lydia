@@ -2,6 +2,7 @@ package ca.efriesen.lydia.fragments;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -22,8 +23,6 @@ public class SystemSettingsFragment extends PreferenceFragment {
 	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-			Log.d(TAG, "pref change " + s);
-
 			if(s.equalsIgnoreCase("systemBluetooth")) {
 				boolean systemBluetooth = sharedPreferences.getBoolean("systemBluetooth", false);
 				// apply the changes now
@@ -40,6 +39,10 @@ public class SystemSettingsFragment extends PreferenceFragment {
 				// apply the changes now
 				sharedPreferences.edit().putBoolean("useBluetooth", useBluetooth).apply();
 				getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("useBluetooth", useBluetooth));
+			} else if(s.equalsIgnoreCase("systemWiFi")) {
+				WifiManager manager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+				// change state of wifi
+				manager.setWifiEnabled(sharedPreferences.getBoolean("systemWiFi", false));
 			}
 		}
 	};
@@ -51,12 +54,18 @@ public class SystemSettingsFragment extends PreferenceFragment {
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
-		addPreferencesFromResource(R.xml.system_preferences_fragment);
+		// get our radio managers
+		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		WifiManager manager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
 		// set our internal preference for the bluetooth state
-		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).commit();
+		sharedPreferences.edit()
+				.putBoolean("systemBluetooth", adapter.isEnabled())
+		// set the wifi state
+				.putBoolean("systemWiFi", manager.isWifiEnabled())
+				.apply();
 
+		addPreferencesFromResource(R.xml.system_preferences_fragment);
 	}
 
 	@Override

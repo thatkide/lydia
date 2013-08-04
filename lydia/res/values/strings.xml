@@ -95,6 +95,8 @@
 	<string name="stop">Stop</string>
 	<string name="system_bluetooth">System Bluetooth</string>
 	<string name="system_bluetooth_summary">Enable/disable Bluetooth system wide</string>
+	<string name="system_wifi">System Wi-Fi</string>
+	<string name="system_wifi_summary">Enable/disable Wi-Fi system wide</string>
 	<string name="title_paired_devices">Paired Devices</string>
 	<string name="title_unpaired_devices">Unpaired Devices</string>
 	<string name="time">Time</string>
@@ -108,6 +110,7 @@
 	<string name="quick_call">Who would you like to call?</string>
 	<string name="videos">Videos</string>
 	<string name="volume_control">Volume Control</string>
+	<string name="wifi">Wi-Fi</string>
 	<string name="window_down">Window Down</string>
 	<string name="window_up">Window Up</string>
 	<string name="wipe">Wipe</string>
