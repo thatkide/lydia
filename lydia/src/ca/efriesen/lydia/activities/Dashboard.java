@@ -160,7 +160,7 @@ public class Dashboard extends Activity {
 		// music fragment has special handling, check it first,
 		if (musicFragment != null && musicFragment.isVisible()) {
 			musicFragment.onBackPressed();
-		} else if(settingsFragment.isVisible()) {
+		} else if(settingsFragment != null && settingsFragment.isVisible()) {
 			super.onBackPressed();
 		// if the controls fragment is visible, only replace the center portion
 		} else if (driverControls.isVisible() && !homeScreenFragment.isVisible()) {
