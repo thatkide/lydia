@@ -25,3 +25,5 @@ local.properties
 
 /lydia/res/values/keys.xml
 /lydia/proguard_logs/
+/lydia/proguard-project.txt
+/lydia/lydia.iml

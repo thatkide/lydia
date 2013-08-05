@@ -22,3 +22,6 @@ Second is last.fm
 - Add a new API account, fill in the required info and click "Create Account"
 - The next page has two pieces you need.  "API Key" and "Secret"
 
+Third is Bugsense
+- Go go https://www.bugsense.com and sign up.  You can use your existing Google account
+- Once signed up you wil get your API key

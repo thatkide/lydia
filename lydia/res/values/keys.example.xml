@@ -6,4 +6,6 @@
 
 	<string name="lastFmKey">Your last.fm API key</string>
 	<string name="lastFmSecret">Your last.fm API secret</string>
+
+	<string name="bugsenseApiKey">Your Bugsense Key</string>
 </resources>

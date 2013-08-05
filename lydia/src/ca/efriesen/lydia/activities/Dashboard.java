@@ -6,7 +6,6 @@ import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.*;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
@@ -16,6 +15,7 @@ import ca.efriesen.lydia.fragments.*;
 import ca.efriesen.lydia.plugins.LastFM;
 import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia_common.includes.Intents;
+import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -38,6 +38,10 @@ public class Dashboard extends Activity {
 		Log.d(TAG, "oncreate");
 		super.onCreate(savedInstance);
 
+		// don't include bug sense it the key hasn't been changed
+		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
+			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
+		}
 
 		// set the entire view to a gesture overlay
 //		GestureOverlayView overlayView = new GestureOverlayView(this);
