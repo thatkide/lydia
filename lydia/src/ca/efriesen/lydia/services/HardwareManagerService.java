@@ -349,7 +349,9 @@ public class HardwareManagerService extends Service {
 				} else {
 					Log.d(TAG, "in app bt off");
 					stopConnectThread();
-					bluetoothService.stop();
+					try {
+						bluetoothService.stop();
+					} catch (Exception e) {}
 				}
 			}
 		}
