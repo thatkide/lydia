@@ -245,38 +245,42 @@ public class MediaService extends Service implements
 
 	public void previousSong() {
 		stop();
-		// move to the previous item in the playlist
-		if (playlistPosition > 0) {
-			playlistPosition--;
-		// if we've reached the beginning
-		// go to the end (if repeat is on)
-		} else {
-			if (repeatAll) {
-				playlistPosition = playlist.size()-1;
+		if (playlist != null) {
+			// move to the previous item in the playlist
+			if (playlistPosition > 0) {
+				playlistPosition--;
+			// if we've reached the beginning
+			// go to the end (if repeat is on)
 			} else {
-				cleanUp();
-				return;
+				if (repeatAll) {
+					playlistPosition = playlist.size()-1;
+				} else {
+					cleanUp();
+					return;
+				}
 			}
+			play();
 		}
-		play();
 	}
 
 	public void nextSong() {
 		stop();
-		// move to next item in playlist
-		if (playlistPosition < playlist.size()-1) {
-			playlistPosition++;
-		// if we've reached the end
-		// start at the beginning again (if repeat is on)
-		} else {
-			if (repeatAll) {
-				playlistPosition = 0;
+		if (playlist != null) {
+			// move to next item in playlist
+			if (playlistPosition < playlist.size()-1) {
+				playlistPosition++;
+			// if we've reached the end
+			// start at the beginning again (if repeat is on)
 			} else {
-				cleanUp();
-				return;
+				if (repeatAll) {
+					playlistPosition = 0;
+				} else {
+					cleanUp();
+					return;
+				}
 			}
+			play();
 		}
-		play();
 	}
 
 	public void stop() {
