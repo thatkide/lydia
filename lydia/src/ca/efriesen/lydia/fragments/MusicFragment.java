@@ -235,7 +235,10 @@ public class MusicFragment extends ListFragment {
 
 		artists = new ArrayList<Artist>();
 		artists.add(all);
-		artists.addAll(mediaService.getAllArtists());
+		ArrayList<Artist> allArtists = mediaService.getAllArtists();
+		if (allArtists.size() > 0) {
+			artists.addAll(allArtists);
+		}
 
 		// find the listview
 		ListView view = (ListView) getActivity().findViewById(android.R.id.list);

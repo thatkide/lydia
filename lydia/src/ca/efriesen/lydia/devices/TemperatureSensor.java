@@ -47,9 +47,6 @@ public class TemperatureSensor extends Device implements SerialIO {
 
 	@Override
 	public void write(byte[] command) {
-		if (serialInputOutputManager == null) {
-			throw new NullPointerException("Serial IO Manager is null");
-		}
 		// write the bytes to the arduino
 		serialInputOutputManager.writeAsync(command);
 	}
