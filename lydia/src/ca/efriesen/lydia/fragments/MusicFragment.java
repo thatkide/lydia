@@ -236,7 +236,7 @@ public class MusicFragment extends ListFragment {
 		artists = new ArrayList<Artist>();
 		artists.add(all);
 		ArrayList<Artist> allArtists = mediaService.getAllArtists();
-		if (allArtists.size() > 0) {
+		if (allArtists != null) {
 			artists.addAll(allArtists);
 		}
 
