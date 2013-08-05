@@ -22,3 +22,6 @@ local.properties
 # IntelliJ project files
 *.idea/
 
+
+/lydia/res/values/keys.xml
+/lydia/proguard_logs/

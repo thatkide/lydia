@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import ca.efriesen.lydia_common.includes.Constants;
+import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
@@ -53,8 +53,8 @@ public class LastFM extends Plugin {
 					session = Authenticator.getMobileSession(
 							PreferenceManager.getDefaultSharedPreferences(context).getString("lastFmUsername", null),
 							PreferenceManager.getDefaultSharedPreferences(context).getString("lastFmPassword", null),
-							Constants.lastFmKey,
-							Constants.lastFmSecret
+							context.getString(R.string.lastFmKey),
+							context.getString(R.string.lastFmSecret)
 					);
 					// we're done, quit the thread
 					Thread.currentThread().interrupt();

@@ -36,10 +36,4 @@ public class Constants {
 	// Preferences contstants
 	final public static String REPEATALL = "repeatAll";
 	final public static String SHUFFLE = "shuffleMusic";
-
-
-	// Lastfm stuff
-	final public static String lastFmKey = "a750c79a8a305077843fe3023554b5ac";
-	final public static String lastFmSecret = "883a295bec7c9e532d2da8ebde7b45d8";
-
 }

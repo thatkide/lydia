@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="google_api_key">AIzaSyACXiQ5kHkhoCUv2VxvEv3hftrNkd3qfmA</string>
-	<string name="google_api_browser_key">AIzaSyDhlqvsSAdI2Dqrc4amZI1WmmGmzrN_DCc</string>
-
 	<string name="address">Address</string>
 	<string name="air_ride">Air Ride</string>
 	<string name="albums">Albums</string>

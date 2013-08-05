@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia_common.includes.Constants;
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
 
@@ -47,8 +46,8 @@ public class SettingsContainerFragment extends Fragment {
 								Authenticator.getMobileSession(
 										lastFmUser,
 										lastFmPass,
-										Constants.lastFmKey,
-										Constants.lastFmSecret
+										getActivity().getString(R.string.lastFmKey),
+										getActivity().getString(R.string.lastFmSecret)
 								);
 								// set our status message
 								message = getString(R.string.lastfm_login_successful);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="googleApiKey">Your Google API key</string>
+	<string name="googleApiBrowserKey">Your Google browser API key</string>
+
+	<string name="lastFmKey">Your last.fm API key</string>
+	<string name="lastFmSecret">Your last.fm API secret</string>
+</resources>

@@ -101,6 +101,6 @@
 		<service android:name=".services.MediaService" />
 
 		<meta-data android:name="com.google.android.maps.v2.API_KEY"
-		           android:value="@string/google_api_key" />
+		           android:value="@string/googleApiKey" />
 	</application>
 </manifest>

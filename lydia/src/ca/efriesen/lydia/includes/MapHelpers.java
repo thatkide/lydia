@@ -48,7 +48,7 @@ public class MapHelpers {
 								"sensor=true&" +
 								"location=" + location.getLatitude() + "," + location.getLongitude() + "&" +
 								"radius=1000&" + // 5 kilometer radius
-								"key=" + context.getString(R.string.google_api_browser_key));
+								"key=" + context.getString(R.string.googleApiBrowserKey));
 				URLConnection tc = googlePlaces.openConnection();
 				BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
 
@@ -100,7 +100,7 @@ public class MapHelpers {
 								"reference="+ URLEncoder.encode(strings[0], "UTF-8") + "&" +
 								"language=en&" +
 								"sensor=true&" +
-								"key=" + context.getString(R.string.google_api_browser_key));
+								"key=" + context.getString(R.string.googleApiBrowserKey));
 				URLConnection tc = googlePlaces.openConnection();
 				BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
 
