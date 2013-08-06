@@ -208,9 +208,10 @@ public class HomeScreenFragment extends Fragment {
 		super.onDestroy();
 		try {
 			getActivity().unregisterReceiver(updateMusicReceiver);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
+		} catch (IllegalArgumentException e) { }
+		try {
+			getActivity().unbindService(mediaServiceConnection);
+		} catch (Exception e) { }
 	}
 
 	@Override

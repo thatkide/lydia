@@ -31,3 +31,6 @@ local.properties
 =======
 /lydia/libs/YWeatherGetter4a/
 >>>>>>> Stashed changes
+
+*.iml
+/lydia/libs/UsbSerialLibrary/UsbSerialLibrary.iml
