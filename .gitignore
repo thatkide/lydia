@@ -25,9 +25,9 @@ local.properties
 
 /lydia/res/values/keys.xml
 /lydia/proguard_logs/
-<<<<<<< Updated upstream
 /lydia/proguard-project.txt
 /lydia/lydia.iml
-=======
 /lydia/libs/YWeatherGetter4a/
->>>>>>> Stashed changes
+/lydia/libs/google-play-services_lib/google-play-services_lib.iml
+/lydia/ant.properties
+/lydia/build.xml
