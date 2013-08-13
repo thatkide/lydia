@@ -18,8 +18,10 @@ package ca.efriesen.lydia.includes;
  *	You should have received a copy of the GNU Lesser General Public License
  *	along with STK500ForJava.  If not, see <http://www.gnu.org/licenses/>.
  */
+import android.content.Context;
 import android.util.Log;
 
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -27,8 +29,7 @@ import java.util.ArrayList;
  * Use {@link #getHexLine(int, int) getHexLine} to request chunks of bytes.
  */
 public class Hex {
-//	private Logger logger;
-	
+	private static final String TAG = "lydia Hex";
 	private ArrayList<ArrayList<Byte>> binList = new ArrayList<ArrayList<Byte>>();
 	
 	private ArrayList<Byte> dataList = new ArrayList<Byte>();
@@ -36,15 +37,53 @@ public class Hex {
 	private byte[] subHex; 
 	
 	private boolean state = false;
-	
-	public Hex(byte[] bin) {//}, Logger log) {
-//		this.logger = log;
+
+	// takes an android context and filename from the assets folder
+	public Hex(Context context, String filename) {
+		InputStream inputStream = null;
+		try {
+			// open the file
+			inputStream = context.getAssets().open(filename);
+
+			// read it into a buffered reader
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+			// make a new builder object
+			StringBuilder builder = new StringBuilder();
+			String line;
+			// read all the lines of the hex file
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+
+			// get the string representation
+			String hexData = builder.toString();
+			// replace all the colons with "3A", the hex encoding
+			hexData = hexData.replaceAll(":", "3A");
+
+			// make a new byte array
+			byte[] data = new byte[(hexData.length()/2)];
+			// loop over the string and fill the byte array
+			for (int i=0; i<hexData.length(); i+=2) {
+				data[i/2] = (byte) ((Character.digit(hexData.charAt(i), 16) << 4) + Character.digit(hexData.charAt(i+1), 16));
+			}
+
+			// pass the byte array into the global var
+			this.subHex = data;
+			// create a new ArrayList and save state
+			state = splitHex();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Hex(byte[] bin) {
 		this.subHex = bin;
 		
 		// create a new ArrayList and save state
 		state = splitHex();
 		
-		Log.d("Hex file status: " + state, "v");
+		Log.d(TAG, "Hex file status: " + state);
 	}
 	
 	/**
@@ -77,13 +116,11 @@ public class Hex {
 	public byte[] getHexLine(int startByte, int numberOfBytes)
 	{
 		try {
-			Log.d("Hex.getHexLine: startByte: " + startByte +
-					", numberOfBytes: " + numberOfBytes, "d");
+			Log.d(TAG, "Hex.getHexLine: startByte: " + startByte +", numberOfBytes: " + numberOfBytes);
 			return formatHexLine(startByte, numberOfBytes);
 		} catch (IndexOutOfBoundsException e) {
 			// There was no bytes, return an empty array
-			Log.d("Hex.getHexLine: startByte is out of bounds! Value was: " +
-					startByte + ", max value: " + dataList.size(), "w");
+			Log.d(TAG, "Hex.getHexLine: startByte is out of bounds! Value was: " + startByte + ", max value: " + dataList.size());
 			byte[] temp = new byte[0]; 
 			return temp;
 		}
@@ -113,8 +150,7 @@ public class Hex {
 		// Check if it is enough data bytes to read
 		if((startByte + numberOfBytes) > dataList.size()) {
 			dataLength = dataList.size() - startByte;
-			Log.d("Hex.formatHexLine: Could not read " + numberOfBytes +
-					" bytes, changed to " + dataLength, "i");
+			Log.d(TAG, "Hex.formatHexLine: Could not read " + numberOfBytes + " bytes, changed to " + dataLength);
 		}
 		
 		// Create a new temporary array
@@ -167,8 +203,7 @@ public class Hex {
 		
 		//The minimum length of a line is 6, including the start byte ':'
 		if((subHex.length + startOnDataByte)<6) {
-			Log.d("splitHex(): The minimum size of a line is 6, this line was " 
-					+ subHex.length, "w");
+			Log.d(TAG, "splitHex(): The minimum size of a line is 6, this line was " + subHex.length);
 			return -1;
 		}
 		
@@ -177,24 +212,24 @@ public class Hex {
 		
 		//The line must start with ':'
 		if(subHex[startOnDataByte] != 58) {
-			Log.d("splitHex(): Line not starting with ':' !", "w");
+			Log.d(TAG, "splitHex(): Line not starting with ':' !");
 			return -1;
 		}
 		//If record type is 0x01 (file end) and data size > 0, return false
 		else if(subHex[startOnDataByte + 4]==1 && dataLength>0) {
-			Log.d("splitHex(): Contains data, but are told to stop!", "w");
+			Log.d(TAG, "splitHex(): Contains data, but are told to stop!");
 			return -1;
 		}
 		//If record type is 0x01 (file end) and it exist more bytes to read, return false
 		else if(subHex[startOnDataByte + 4]==1 &&
 				subHex.length>startOnDataByte + dataLength + 6) {
-			Log.d("splitHex(): Contains more lines with data, " +
-					"but are told to stop!", "w");
+			Log.d(TAG, "splitHex(): Contains more lines with data, " +
+					"but are told to stop!");
 			return -1;
 		}
 		//If record type is 0x00 (data record) and data size equals 0, return false
 		else if(subHex[startOnDataByte + 4]==0 && subHex[startOnDataByte + 1]==0) {
-			Log.d("splitHex(): Told to send data, but contains no data!", "w");
+			Log.d(TAG, "splitHex(): Told to send data, but contains no data!");
 			return -1;
 		}
 		else {
@@ -232,7 +267,7 @@ public class Hex {
 			}
 			//Checksum not correct
 			else {
-				Log.d("splitHex(): Checksum failed!", "w");
+				Log.d(TAG, "splitHex(): Checksum failed!");
 				return -1;
 			}
 		}
