@@ -6,23 +6,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
+import ca.efriesen.lydia.includes.ConstantsStk500v1;
+import ca.efriesen.lydia.includes.Hex;
 import ca.efriesen.lydia.interfaces.SerialIO;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by eric on 2013-05-28.
  */
 public class Arduino {
 	// debug tag
-	private static final String TAG = "Arduino";
+	private static final String TAG = "lydia Arduino";
 
 	// application context
 	private Context context;
@@ -30,21 +32,35 @@ public class Arduino {
 	private ArrayList<Device> devices = new ArrayList<Device>();
 
 	// usb stuff for the arduino
-	private UsbSerialDriver mSerialDevice;
+	private volatile UsbSerialDriver mSerialDevice;
 	private UsbManager mUsbManager;
 
 	// this is the buffer for the data received from the arduino
 	private StringBuffer serialData = new StringBuffer(64);
 
 	private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-	private SerialInputOutputManager mSerialIoManger;
+	private volatile SerialInputOutputManager mSerialIoManger;
+
+	// upgrading firmware stuff
+	private AtomicBoolean upgradingFirmware = new AtomicBoolean();
+	private Thread upgradeThread;
+	private volatile byte[] upgradingInput;
+	private AtomicBoolean waitingForSerialData = new AtomicBoolean();
 
 	// listener for new data
 	private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
 		@Override
 		public void onNewData(final byte[] data) {
-			// pass new data to our parse method
-			parseSerialData(data);
+			// do this part if we're not upgrading the firmware (look for out serial data format)
+			if (!upgradingFirmware.get()) {
+				// pass new data to our parse method
+				parseSerialData(data);
+			} else {
+				Log.d(TAG, "got new data. length " + data.length);
+				upgradingInput = new byte[data.length];
+				upgradingInput = data;
+				waitingForSerialData.getAndSet(false);
+			}
 		}
 
 		@Override
@@ -102,10 +118,10 @@ public class Arduino {
 
 	// take the list of devices from the hardware manager, filter them so we only have serial io devices, then add them to our own list
 	public void setDevices(ArrayList<Device> devices) {
-		for (Device s : devices) {
-			if (s instanceof SerialIO) {
+		for (Device device : devices) {
+			if (device instanceof SerialIO) {
 				// only add serial IO devices.  the rest will just wast time and space
-				this.devices.add(s);
+				this.devices.add(device);
 			}
 		}
 	}
@@ -165,9 +181,9 @@ public class Arduino {
 		// remove white space from the byte array, and append it to the buffer
 		serialData.append(new String(data).trim());
 
-//		Log.d(TAG, " -------------------");
-//		Log.d(TAG, "data: " + serialData.toString());
-//		Log.d(TAG, "added: " + new String(data).trim());
+		Log.d(TAG, " -------------------");
+		Log.d(TAG, "data: " + serialData.toString());
+		Log.d(TAG, "added: " + new String(data).trim());
 
 		// initialize some variables
 		ArrayList<String> words = new ArrayList<String>();
@@ -228,10 +244,10 @@ public class Arduino {
 				String value = commands.get(2);
 
 				// loop over each sensor, and check if it matches what's been passed (based on the id associated when it was created)
-				for (Device s : devices) {
-					if (s.getId() == command) {
+				for (Device device : devices) {
+					if (device.getId() == command) {
 						// we found it, so set the value
-						s.setValue(value);
+						device.setValue(value);
 						// and break
 						break;
 					}
@@ -242,6 +258,223 @@ public class Arduino {
 				words.remove(0);
 				Log.d(TAG, "we have some invalid info... skip it");
 			}
+		}
+	}
+
+	public void upgradeFirmware() {
+		upgradingFirmware.getAndSet(true);
+		upgradeThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Log.d(TAG, "staring upload");
+
+				// pass the context and file name to the hex parser
+				Hex hex = new Hex(context, "master.hex");
+
+				// reset and then try to sync
+				reset();
+
+				// wait for data to return
+				waitingForSerialData.getAndSet(true);
+				getSynchronization();
+				// do nothing while waiting.  the async nature makes things difficult
+				while (waitingForSerialData.get()) {}
+
+				// we're upgrading, so check the input from the get sync command
+				// if it's valid, continue
+				synchronized (upgradingInput) {
+					// check if we got valid input
+					if (!checkInput(upgradingInput)) {
+						Log.d(TAG, "input is invalid after get sync");
+						return;
+					}
+				}
+				// do nothing until we're in sync
+				waitingForSerialData.getAndSet(true);
+				// enter programming mdoe
+				enterProgrammingMode();
+				// program the flash in the arduino, getting the hex data from the parser
+				programFlash(hex.getHexLine(0, hex.getDataSize()));
+				// exit proramming mode, we're done
+				exitProgrammingMode();
+				// we're done, reset
+				reset();
+				upgradingFirmware.getAndSet(false);
+			}
+		});
+		upgradeThread.start();
+	}
+
+	private boolean checkInput(byte[] data) {
+		Log.d(TAG, "received data " + data);
+		for (int i=0; i<data.length; i++) {
+			Log.d(TAG, "index " + i + " is " + Integer.toHexString(data[i]));
+		}
+		if (data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_OK) {
+			Log.d(TAG, "IN SYNC");
+			return true;
+		} else if (data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_NODEVICE) {
+			Log.d(TAG, "in sync, no device... what?!?");
+			return false;
+		} else if (data[0] == ConstantsStk500v1.STK_NOSYNC) {
+			Log.d(TAG, "no sync");
+			return false;
+		} else {
+			Log.d(TAG, "summin else " + data);
+			return false;
+		}
+	}
+
+	public boolean reset() {
+		// reset the arduino
+		try {
+			mSerialDevice.setDTR(false);
+			Thread.sleep(2);
+			mSerialDevice.setDTR(true);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void getSynchronization() {
+		byte[] getSyncCommand = {ConstantsStk500v1.STK_GET_SYNC, ConstantsStk500v1.CRC_EOP};
+
+		for (int i=0; i<5; i++) {
+			Log.d(TAG, "sending sync command.");
+			try {
+				mSerialDevice.write(getSyncCommand, 100);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(250);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void enterProgrammingMode() {
+		byte[] command = new byte[] {ConstantsStk500v1.STK_ENTER_PROGMODE, ConstantsStk500v1.CRC_EOP};
+		for (int i=0; i<2; i++) {
+			if (waitingForSerialData.get()) {
+				Log.d(TAG, "sending enter programming mode command. try number " + i);
+				try {
+					mSerialDevice.write(command, 100);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				try {
+					Thread.sleep(150);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void loadAddress(int writeNumber) {
+		int low = 0, high = 0;
+
+		for (int i=0; i<writeNumber; i++) {
+			low += 64;
+			if (low >= 256) {
+				low = 0;
+				high++;
+			}
+		}
+
+		byte[] loadAddress = {ConstantsStk500v1.STK_LOAD_ADDRESS, (byte)low, (byte)high, ConstantsStk500v1.CRC_EOP};
+		Log.d(TAG, "loading address low " + Integer.toHexString(low) + " high " + Integer.toHexString(high) + " combined " + Integer.toHexString(low + high));
+		try {
+			mSerialDevice.write(loadAddress, 100);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			Thread.sleep(15);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void programFlash(byte[] data) {
+		int chunkSize = 128; // bytes
+		// split data up into chunks of 123 bytes (plus 5 bytes overhead, makes 128 bytes)
+		int loops = (int)Math.ceil((double)data.length / (chunkSize));
+
+		Log.d(TAG, "length of data " + data.length);
+		Log.d(TAG, "number of loops " + loops);
+
+		for (int i=0; i<loops; i++) {
+			Log.d(TAG, "loop number " + i);
+			// send the number to the address method
+			// this tells the bootloader where we want to send the data
+			loadAddress(i);
+
+			// move along the byte array in 128 byte chunks
+			// 0, 128, 256, etc...
+			int start = (i*(chunkSize));
+
+			// end index.  this is the end of the incoming data array we take from
+			// 127, 255, etc...
+			int end = (i < loops-1) ? (start + (chunkSize-1)) : data.length-1;
+
+			// length of program array
+			// get the overall length
+			int length = end - start + 1;
+
+			Log.d(TAG, "start is " + start);
+			Log.d(TAG, "end is " + end);
+			Log.d(TAG, "length is " + length);
+
+			// create a new array the proper length
+			byte[] programPage = new byte[length+5];
+			// add the beginning overhead
+			programPage[0] = ConstantsStk500v1.STK_PROG_PAGE;
+			programPage[1] = (byte) ((length >> 8) & 0xFF);
+			programPage[2] = (byte) (length & 0xFF);
+			// Write flash
+			programPage[3] = (byte)'F';
+
+			// Put all the data together with the rest of the command
+			// write 4-132.  0-3 is above, 133 is crc below
+			// length-overhead is 128-5 = 123
+			// this will loop 123 times 0-122
+			for (int j = 0; j < length; j++) {
+				programPage[j+4] = data[j+start];
+			}
+
+			// add crc byte to the end
+			programPage[length+5-1] = ConstantsStk500v1.CRC_EOP;
+
+			Log.d(TAG, "programPage is " + programPage.length + " bytes long");
+			try {
+				mSerialDevice.write(programPage, 100);
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} catch (IOException e) {
+				Log.d(TAG, e.toString());
+				e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+
+	private void exitProgrammingMode() {
+		byte[] exit = new byte[] {ConstantsStk500v1.STK_LEAVE_PROGMODE, ConstantsStk500v1.CRC_EOP};
+		try {
+			mSerialDevice.write(exit, 100);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -491,6 +491,14 @@ public class FtdiSerialDriver extends CommonUsbSerialDriver {
 
     @Override
     public void setDTR(boolean value) throws IOException {
+		int SET_CONTROL_LINE_STATE = 0x1;
+		int DTR_HIGH = 257;
+		int DTR_LOW = 256;
+		int result = mConnection.controlTransfer(FTDI_DEVICE_OUT_REQTYPE, SET_CONTROL_LINE_STATE, value?DTR_HIGH:DTR_LOW, 0 /* index */, null, 0, USB_WRITE_TIMEOUT_MILLIS);
+
+		if (result != 0) {
+			throw new IOException("Setting DTR failed: result=" + result);
+		}
     }
 
     @Override

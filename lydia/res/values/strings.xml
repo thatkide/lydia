@@ -9,6 +9,7 @@
 	<string name="all_songs">All Songs</string>
 	<string name="answer">Answer</string>
 	<string name="app_name">lydia</string>
+	<string name="arduino">Arduino</string>
 	<string name="artist">Artist</string>
 	<string name="artists">Artists</string>
 	<string name="back">Back</string>
@@ -27,12 +28,13 @@
 	<string name="distance">Distance</string>
 	<string name="duration">Duration</string>
 	<string name="external_light_sensor">External Light Sensor</string>
+	<string name="external_temperature_sensor">External Temperature Sensor</string>
 	<string name="fast_forward">Fast Forward</string>
     <string name="google">Google</string>
 	<string name="home">Home</string>
 	<string name="ignore">Ignore</string>
 	<string name="incoming_call">Incoming Call</string>
-	<string name="inside_temp">Inside: 0\u2103</string>
+	<string name="inside_temp">Inside</string>
 	<string name="lastfm_login_failed">last.fm Login Failed</string>
 	<string name="lastfm_login_successful">last.fm Login Successful</string>
 	<string name="lastfm_use">Use last.fm to scrobble songs</string>
@@ -44,11 +46,11 @@
 	<string name="loading_address">Loading address...</string>
 	<string name="map_use_metric">Use Metric</string>
 	<string name="maps">Maps</string>
-	<string name="max_light">Max Light Before Switching</string>
+	<string name="max_light">Light level before switching high</string>
 	<string name="media_button_padding">6dp</string>
 	<string name="media">Media</string>
 	<string name="media_service">Media Service</string>
-	<string name="min_light">Minimum Light Before Switching</string>
+	<string name="min_light">Light level before switching low</string>
 	<string name="more">More</string>
 	<string name="movies">Movies</string>
 	<string name="music">Music</string>
@@ -59,7 +61,7 @@
 	<string name="none_paired">No devices have been paired</string>
 	<string name="nothing_found">Nothing found</string>
 	<string name="ok">OK</string>
-	<string name="outside_temp">Outside: 0\u2103</string>
+	<string name="outside_temp">Outside</string>
 	<string name="paired">Paired</string>
 	<string name="paired_devices">Paired Devices</string>
 	<string name="paired_devices_summary">Pair/unpair Bluetooth devices</string>
@@ -101,6 +103,7 @@
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>
 	<string name="unpairing_device">Unpairing device</string>
+	<string name="use_arduino">Use Arduino to communicate with other hardware</string>
 	<string name="use_bluetooth">Use Bluetooth</string>
 	<string name="use_bluetooth_summary">Use Bluetooth in app</string>
 	<string name="use_phone">Use this phone in app</string>
