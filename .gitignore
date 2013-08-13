@@ -26,10 +26,10 @@ local.properties
 /lydia/res/values/keys.xml
 /lydia/proguard_logs/
 /lydia/libs/YWeatherGetter4a/
-=======
 /lydia/proguard-project.txt
 /lydia/lydia.iml
 /lydia/libs/YWeatherGetter4a/
 /lydia/libs/google-play-services_lib/google-play-services_lib.iml
 /lydia/ant.properties
 /lydia/build.xml
+!/lydia/lydia.apk
