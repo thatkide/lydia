@@ -2,12 +2,12 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.*;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +49,10 @@ public class LauncherFragment extends Fragment implements
 		listView.setAdapter(new AppInfoViewAdapter(getInstalledPackages(), getActivity()));
 		// send any item clicks back to this class, looking for method onItemClick
 		listView.setOnItemClickListener(this);
+		try {
+			listView.setSelection(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("launcherPosition", 0));
+		} catch (Exception e) {}
+
 	}
 
 	// returns an array of appinfos of the installed packages we can launch
@@ -107,6 +111,9 @@ public class LauncherFragment extends Fragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+		// save the position
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("launcherPosition", position).commit();
+
 		// get the info of what was clicked
 		AppInfo appInfo = (AppInfo) adapterView.getAdapter().getItem(position);
 
