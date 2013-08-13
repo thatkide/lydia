@@ -3,12 +3,10 @@ package ca.efriesen.lydia.fragments;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+import android.preference.*;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
 
@@ -20,11 +18,21 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 
 	public SharedPreferences sharedPreferences;
 
+	public Preference.OnPreferenceClickListener clickListener = new Preference.OnPreferenceClickListener() {
+		@Override
+		public boolean onPreferenceClick(Preference preference) {
+			if (preference.getKey().equalsIgnoreCase("upgradeFirmware")) {
+				getActivity().sendBroadcast(new Intent("upgradeFirmware"));
+			}
+			return false;
+		}
+	};
+
 	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
 			if(s.equalsIgnoreCase("useLightSensor")) {
-				boolean useArduino = sharedPreferences.getBoolean("useLightSensor", false);
+				boolean useLightSensor = sharedPreferences.getBoolean("useLightSensor", false);
 			}
 		}
 	};
@@ -42,6 +50,14 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 
 		addPreferencesFromResource(R.xml.arduino_preferences_fragment);
 		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
+	}
+
+	@Override
+	public void onActivityCreated(Bundle saved) {
+		super.onActivityCreated(saved);
+		Preference upgradeFirmware = getPreferenceManager().findPreference("upgradeFirmware");
+		upgradeFirmware.setOnPreferenceClickListener(clickListener);
+
 	}
 
 	private BroadcastReceiver lightValueReceiver = new BroadcastReceiver() {

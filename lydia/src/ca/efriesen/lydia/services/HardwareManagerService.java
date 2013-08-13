@@ -105,8 +105,16 @@ public class HardwareManagerService extends Service {
 		notificationManager.notify(1, builder.build());
 
 		// setup the arduino
-		Arduino arduino = new Arduino(this);
+		final Arduino arduino = new Arduino(this);
 		arduino.initlize();
+
+		registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.d(TAG, "stk - upgrading firmware");
+				arduino.upgradeFirmware();
+			}
+		}, new IntentFilter("upgradeFirmware"));
 
 		// populate the devices array
 		// The device contsructor take a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received

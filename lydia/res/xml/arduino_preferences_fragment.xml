@@ -5,6 +5,9 @@
 		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useArduino"
 						  android:title="@string/use_arduino"
 						  android:defaultValue="true"/>
+		<Preference android:title="Upgrade Firmware"
+					android:key="upgradeFirmware"
+					android:summary="Upgrade the firmware on the Master Controller"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:key="lightSensor" android:title="@string/external_light_sensor">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useLightSensor"
