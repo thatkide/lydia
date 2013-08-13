@@ -38,15 +38,6 @@ public class HomeScreenFragment extends Fragment {
 	private static final String TAG = "lydia HomeScreen";
 
 	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
-		getActivity().registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
-		// bind to the media service
-		// we use this to update the icon on the home screen
-		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.home_screen_fragment, container, false);
 	}
@@ -71,6 +62,11 @@ public class HomeScreenFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		getActivity().registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		// bind to the media service
+		// we use this to update the icon on the home screen
+		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
+
 		final FragmentManager manager = getFragmentManager();
 		final Activity activity = getActivity();
 
