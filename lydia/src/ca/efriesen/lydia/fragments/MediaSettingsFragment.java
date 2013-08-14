@@ -11,8 +11,8 @@ public class MediaSettingsFragment extends PreferenceFragment {
 	public static final String TAG = "lydia media Settings Preference";
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public void onActivityCreated(Bundle saved) {
+		super.onActivityCreated(saved);
 
 		addPreferencesFromResource(R.xml.media_preferences_fragment);
 	}

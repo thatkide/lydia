@@ -48,8 +48,8 @@ public class SystemSettingsFragment extends PreferenceFragment {
 	};
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
@@ -67,10 +67,4 @@ public class SystemSettingsFragment extends PreferenceFragment {
 
 		addPreferencesFromResource(R.xml.system_preferences_fragment);
 	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
-
 }

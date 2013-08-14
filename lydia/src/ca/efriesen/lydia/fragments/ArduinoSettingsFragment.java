@@ -49,7 +49,6 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).commit();
 
 		addPreferencesFromResource(R.xml.arduino_preferences_fragment);
-		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
 	}
 
 	@Override
@@ -58,6 +57,7 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 		Preference upgradeFirmware = getPreferenceManager().findPreference("upgradeFirmware");
 		upgradeFirmware.setOnPreferenceClickListener(clickListener);
 
+		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
 	}
 
 	private BroadcastReceiver lightValueReceiver = new BroadcastReceiver() {

@@ -5,7 +5,7 @@
 	<PreferenceCategory android:title="@string/music">
 		<SwitchPreference
 				android:key="useLastFm"
-				android:defaultValue="true"
+				android:defaultValue="false"
 				android:title="@string/lastfm_use" />
 		<EditTextPreference
 				android:key="lastFmUsername"
