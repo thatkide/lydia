@@ -2,9 +2,8 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
+import android.app.LoaderManager;
+import android.content.*;
 import android.content.pm.*;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,29 +23,24 @@ import java.util.List;
  * Created by eric on 2013-07-15.
  */
 public class LauncherFragment extends Fragment implements
-		AdapterView.OnItemClickListener {
+		AdapterView.OnItemClickListener,
+		LoaderManager.LoaderCallbacks<ArrayList<AppInfo>>{
 	private static final String TAG = "lydia launcher fragment";
 
-	private Activity activity;
-	private PackageManager packageManager;
+	private ListView listView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 		super.onCreateView(inflater, container, savedInstance);
-		// hide ourself on create
-//		getFragmentManager().beginTransaction().hide(getFragmentManager().findFragmentById(R.id.launcher_fragment)).commit();
 		return inflater.inflate(R.layout.launcher_fragment, container, false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-		activity = getActivity();
-		packageManager = activity.getPackageManager();
 
 		// find the listview and attach the appinfo adapter to it
-		ListView listView = (ListView) getActivity().findViewById(R.id.application_list);
-		listView.setAdapter(new AppInfoViewAdapter(getInstalledPackages(), getActivity()));
+		listView = (ListView) getActivity().findViewById(R.id.application_list);
 		// send any item clicks back to this class, looking for method onItemClick
 		listView.setOnItemClickListener(this);
 		try {
@@ -56,7 +50,8 @@ public class LauncherFragment extends Fragment implements
 	}
 
 	// returns an array of appinfos of the installed packages we can launch
-	private ArrayList<AppInfo> getInstalledPackages() {
+	private static ArrayList<AppInfo> getInstalledPackages(Context context) {
+		PackageManager packageManager = context.getPackageManager();
 		// create our new arrays
 		ArrayList<AppInfo> appInfos = new ArrayList<AppInfo>();
 		// get the list of all installed apps
@@ -122,8 +117,28 @@ public class LauncherFragment extends Fragment implements
 			startActivity(appInfo.getLaunchIntent());
 		} catch (Exception e) {
 			// uh oh, it failed.  show a warning message
-			Toast.makeText(activity, getString(R.string.launcher_error), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getString(R.string.launcher_error), Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	@Override
+	public Loader<ArrayList<AppInfo>> onCreateLoader(int i, Bundle saved) {
+		return new AsyncTaskLoader<ArrayList<AppInfo>>(getActivity()) {
+			@Override
+			public ArrayList<AppInfo> loadInBackground() {
+				return getInstalledPackages(getActivity());
+			}
+		};
+	}
+
+	@Override
+	public void onLoadFinished(Loader<ArrayList<AppInfo>> arrayListLoader, ArrayList<AppInfo> appInfos) {
+		listView.setAdapter(new AppInfoViewAdapter(getInstalledPackages(getActivity()), getActivity()));
+	}
+
+	@Override
+	public void onLoaderReset(Loader<ArrayList<AppInfo>> arrayListLoader) {
+		listView.setAdapter(null);
 	}
 
 	// listview adapter for appinfos
