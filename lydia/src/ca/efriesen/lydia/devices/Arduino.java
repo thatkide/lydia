@@ -181,9 +181,9 @@ public class Arduino {
 		// remove white space from the byte array, and append it to the buffer
 		serialData.append(new String(data).trim());
 
-		Log.d(TAG, " -------------------");
-		Log.d(TAG, "data: " + serialData.toString());
-		Log.d(TAG, "added: " + new String(data).trim());
+//		Log.d(TAG, " -------------------");
+//		Log.d(TAG, "data: " + serialData.toString());
+//		Log.d(TAG, "added: " + new String(data).trim());
 
 		// initialize some variables
 		ArrayList<String> words = new ArrayList<String>();

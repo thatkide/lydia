@@ -318,7 +318,9 @@ public class HardwareManagerService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
 
-			bluetoothService.write(BluetoothService.objectToByteArray(song));
+			try {
+				bluetoothService.write(BluetoothService.objectToByteArray(song));
+			} catch (Exception e) {}
 		}
 	};
 

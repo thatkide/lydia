@@ -35,12 +35,17 @@ public class Dashboard extends Activity {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstance) {
+//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//				.detectAll()
+//				.penaltyLog()
+//				.penaltyDeath()
+//				.build());
 		Log.d(TAG, "oncreate");
 		super.onCreate(savedInstance);
 
 		// don't include bug sense it the key hasn't been changed
 		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
-			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
+//			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
 		// set the entire view to a gesture overlay

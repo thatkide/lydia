@@ -37,7 +37,7 @@ public class SystemSettingsFragment extends PreferenceFragment {
 				Log.d(TAG, "use bt changed");
 				boolean useBluetooth = sharedPreferences.getBoolean("useBluetooth", false);
 				// apply the changes now
-				sharedPreferences.edit().putBoolean("useBluetooth", useBluetooth).apply();
+//				sharedPreferences.edit().putBoolean("useBluetooth", useBluetooth).apply();
 				getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("useBluetooth", useBluetooth));
 			} else if(s.equalsIgnoreCase("systemWiFi")) {
 				WifiManager manager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);

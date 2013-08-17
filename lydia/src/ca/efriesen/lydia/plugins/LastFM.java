@@ -33,10 +33,6 @@ public class LastFM extends Plugin {
 
 	public LastFM(final Context context) {
 		this.context = context;
-		// if we don't want to use lastfm. return
-		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("useLastFm", false)) {
-			return;
-		}
 
 		Caller.getInstance().setCache(null);
 
@@ -48,6 +44,10 @@ public class LastFM extends Plugin {
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				// if we don't want to use lastfm. return
+				if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("useLastFm", false)) {
+					return;
+				}
 				try {
 					Log.d(TAG, "logging into last fm");
 					session = Authenticator.getMobileSession(

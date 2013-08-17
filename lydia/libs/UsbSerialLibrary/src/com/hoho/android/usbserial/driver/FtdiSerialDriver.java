@@ -252,7 +252,7 @@ public class FtdiSerialDriver extends CommonUsbSerialDriver {
 
             final int payloadBytesRead = buf.position() - MODEM_STATUS_HEADER_LENGTH;
             if (payloadBytesRead > 0) {
-                Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
+//                Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
                 return payloadBytesRead;
             } else {
                 return 0;
@@ -308,7 +308,7 @@ public class FtdiSerialDriver extends CommonUsbSerialDriver {
                         + " bytes at offset " + offset + " length=" + src.length);
             }
 
-            Log.d(TAG, "Wrote amtWritten=" + amtWritten + " attempted=" + writeLength);
+//            Log.d(TAG, "Wrote amtWritten=" + amtWritten + " attempted=" + writeLength);
             offset += amtWritten;
         }
         return offset;
