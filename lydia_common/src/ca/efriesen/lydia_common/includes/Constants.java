@@ -7,6 +7,9 @@ package ca.efriesen.lydia_common.includes;
  */
 public class Constants {
 
+	// I2C address of slave devices
+	final public static int ALARM = 14;
+
 	// These are for serial commands sent to the arduino
 	// 160 - 176
 	final public static int DRIVERSEAT = 171;
@@ -32,6 +35,8 @@ public class Constants {
 
 	// we need an id, but this isn't used for hardware io comms
 	final public static int WINDOWS = 100;
+	final public static int PINGREQUEST = 0x09;
+	final public static int PINGREPLY = 0x10;
 
 	// Preferences contstants
 	final public static String REPEATALL = "repeatAll";

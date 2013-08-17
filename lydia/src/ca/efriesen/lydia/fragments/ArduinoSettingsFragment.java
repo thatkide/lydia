@@ -21,7 +21,8 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 	public Preference.OnPreferenceClickListener clickListener = new Preference.OnPreferenceClickListener() {
 		@Override
 		public boolean onPreferenceClick(Preference preference) {
-			if (preference.getKey().equalsIgnoreCase("upgradeFirmware")) {
+			String key = preference.getKey();
+			if (key.equalsIgnoreCase("upgradeFirmware")) {
 				getActivity().sendBroadcast(new Intent("upgradeFirmware"));
 			}
 			return false;
@@ -41,7 +42,7 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		// set our internal preference for the bluetooth state

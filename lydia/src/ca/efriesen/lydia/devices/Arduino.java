@@ -1,10 +1,8 @@
 package ca.efriesen.lydia.devices;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.hardware.usb.UsbManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.includes.ConstantsStk500v1;
 import ca.efriesen.lydia.includes.Hex;
@@ -13,6 +11,8 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +46,7 @@ public class Arduino {
 	private Thread upgradeThread;
 	private volatile byte[] upgradingInput;
 	private AtomicBoolean waitingForSerialData = new AtomicBoolean();
+	private Boolean checkFirmware = false;
 
 	// listener for new data
 	private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
@@ -76,6 +77,11 @@ public class Arduino {
 		this.context = context;
 	}
 
+	public Arduino(Context context, boolean checkFirmware) {
+		this.context = context;
+		this.checkFirmware = checkFirmware;
+	}
+
 	// initialize the Arduino
 	public void initlize() {
 		mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -86,6 +92,10 @@ public class Arduino {
 
 		// get the arduino working
 		initSerialDevice();
+
+		if (checkFirmware) {
+			checkFirmware();
+		}
 	}
 
 	public void cleanUp() {
@@ -122,6 +132,7 @@ public class Arduino {
 			if (device instanceof SerialIO) {
 				// only add serial IO devices.  the rest will just wast time and space
 				this.devices.add(device);
+				device.initialize();
 			}
 		}
 	}
@@ -133,7 +144,7 @@ public class Arduino {
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
-		Log.d(TAG, "resumed , mSerialDevice=" + mSerialDevice);
+//		Log.d(TAG, "resumed , mSerialDevice=" + mSerialDevice);
 		if (mSerialDevice != null) {
 			try {
 				mSerialDevice.open();
@@ -156,7 +167,7 @@ public class Arduino {
 	// stop the manager
 	private void stopIoManager() {
 		if (mSerialIoManger != null) {
-			Log.d(TAG, "stopping io manager");
+//			Log.d(TAG, "stopping io manager");
 			mSerialIoManger.stop();
 			mSerialIoManger = null;
 		}
@@ -165,7 +176,7 @@ public class Arduino {
 	// start the manager
 	private void startIoManager() {
 		if (mSerialDevice != null) {
-			Log.d(TAG, "starting io manager");
+//			Log.d(TAG, "starting io manager");
 			mSerialIoManger = new SerialInputOutputManager(mSerialDevice, mListener);
 			mExecutor.submit(mSerialIoManger);
 		}
@@ -239,15 +250,16 @@ public class Arduino {
 				// split each line based on comma delineated string
 				ArrayList<String> commands = new ArrayList<String>(Arrays.asList(words.get(0).split(",")));
 
-				// get teh command and value form the array list
-				int command = Integer.valueOf(commands.get(1));
-				String value = commands.get(2);
+				// remove the carrot from the beginning
+				commands.remove(0);
+				// remove the pipe from the end
+				commands.remove(commands.size()-1);
 
 				// loop over each sensor, and check if it matches what's been passed (based on the id associated when it was created)
 				for (Device device : devices) {
-					if (device.getId() == command) {
+					if (device.getId() == Integer.parseInt(commands.get(0))) {
 						// we found it, so set the value
-						device.setValue(value);
+						device.setValue(commands);
 						// and break
 						break;
 					}
@@ -261,6 +273,46 @@ public class Arduino {
 		}
 	}
 
+	public void checkFirmware() {
+		try {
+			// start a new md5 digest
+			MessageDigest digester = MessageDigest.getInstance("MD5");
+			// open the hex file
+			InputStream inputStream = context.getAssets().open("master.hex");
+			// create a new byte array the proper length
+			byte[] bytes = new byte[inputStream.available()];
+			int byteCount;
+			// read the stream and update the digester
+			while ((byteCount = inputStream.read()) > 0 ) {
+				digester.update(bytes, 0, byteCount);
+			}
+			// get the digest of all of it
+			byte [] digest = digester.digest();
+			// create a new buffer so we can get the actual hash
+			StringBuffer hexString = new StringBuffer();
+			// add the bytes to the string
+			for (int i=0; i<digest.length; i++) {
+				hexString.append(Integer.toHexString(0xFF & digest[i]));
+			}
+			// store the hash in shared pref
+			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("currentFirmwareDigest", hexString.toString()).apply();
+			// get the previous hash
+			String previousFirmware = PreferenceManager.getDefaultSharedPreferences(context).getString("previousFirmwareDigest", "");
+			// compare them, if they don't equal, update the firmware
+			if (!previousFirmware.equalsIgnoreCase(hexString.toString())) {
+				PreferenceManager.getDefaultSharedPreferences(context).edit().putString("previousFirmwareDigest", hexString.toString()).apply();
+				upgradeFirmware();
+			}
+
+
+		} catch (NoSuchAlgorithmException e) {
+			Log.e(TAG, "no such digest");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public void upgradeFirmware() {
 		upgradingFirmware.getAndSet(true);
 		upgradeThread = new Thread(new Runnable() {
@@ -270,36 +322,34 @@ public class Arduino {
 
 				// pass the context and file name to the hex parser
 				Hex hex = new Hex(context, "master.hex");
+				byte[] hexData = hex.getHexLine(0, hex.getDataSize());
 
 				// reset and then try to sync
 				reset();
 
 				// wait for data to return
-				waitingForSerialData.getAndSet(true);
+				waitingForSerialData.set(true);
 				getSynchronization();
 				// do nothing while waiting.  the async nature makes things difficult
-				while (waitingForSerialData.get()) {}
-
+				while (waitingForSerialData.get()) {
+					Thread.yield();
+				}
 				// we're upgrading, so check the input from the get sync command
 				// if it's valid, continue
-				synchronized (upgradingInput) {
-					// check if we got valid input
-					if (!checkInput(upgradingInput)) {
-						Log.d(TAG, "input is invalid after get sync");
-						return;
-					}
+				// check if we got valid input
+				if (!checkInput(upgradingInput)) {
+					Log.d(TAG, "input is invalid after get sync");
+					return;
 				}
-				// do nothing until we're in sync
-				waitingForSerialData.getAndSet(true);
-				// enter programming mdoe
+				// enter programming mode
 				enterProgrammingMode();
 				// program the flash in the arduino, getting the hex data from the parser
-				programFlash(hex.getHexLine(0, hex.getDataSize()));
+				programFlash(hexData);
 				// exit proramming mode, we're done
 				exitProgrammingMode();
 				// we're done, reset
 				reset();
-				upgradingFirmware.getAndSet(false);
+				upgradingFirmware.set(false);
 			}
 		});
 		upgradeThread.start();
@@ -310,13 +360,13 @@ public class Arduino {
 		for (int i=0; i<data.length; i++) {
 			Log.d(TAG, "index " + i + " is " + Integer.toHexString(data[i]));
 		}
-		if (data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_OK) {
+		if (data.length == 2 && data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_OK) {
 			Log.d(TAG, "IN SYNC");
 			return true;
-		} else if (data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_NODEVICE) {
+		} else if (data.length == 2 && data[0] == ConstantsStk500v1.STK_INSYNC && data[1] == ConstantsStk500v1.STK_NODEVICE) {
 			Log.d(TAG, "in sync, no device... what?!?");
 			return false;
-		} else if (data[0] == ConstantsStk500v1.STK_NOSYNC) {
+		} else if (data.length == 1 && data[0] == ConstantsStk500v1.STK_NOSYNC) {
 			Log.d(TAG, "no sync");
 			return false;
 		} else {
@@ -366,11 +416,6 @@ public class Arduino {
 				try {
 					mSerialDevice.write(command, 100);
 				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				try {
-					Thread.sleep(150);
-				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}

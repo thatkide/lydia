@@ -105,7 +105,7 @@ public class HardwareManagerService extends Service {
 		notificationManager.notify(1, builder.build());
 
 		// setup the arduino
-		final Arduino arduino = new Arduino(this);
+		final Arduino arduino = new Arduino(this, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("autoUpgradeFirmware", true));
 		arduino.initlize();
 
 		registerReceiver(new BroadcastReceiver() {
@@ -119,6 +119,7 @@ public class HardwareManagerService extends Service {
 		// populate the devices array
 		// The device contsructor take a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
 		devices = new ArrayList<Device>();
+		devices.add(new Alarm(this, Constants.ALARM, null));
 		devices.add(new LightSensor(this, Constants.LIGHTSENSOR, Intents.LIGHTVALUE));
 //		devices.add(new PressureSensor(this, Constants.FLPRESSURESENSOR, Intents.));
 		devices.add(new TemperatureSensor(this, Constants.INSIDETEMPERATURESENSOR, Intents.INSIDETEMPERATURE));

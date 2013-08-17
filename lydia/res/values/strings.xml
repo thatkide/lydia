@@ -2,6 +2,7 @@
 <resources>
 	<string name="address">Address</string>
 	<string name="air_ride">Air Ride</string>
+	<string name="alarm">Alarm</string>
 	<string name="albums">Albums</string>
 	<string name="all_albums">All Albums</string>
 	<string name="all_artists">All Artists</string>
@@ -12,6 +13,8 @@
 	<string name="arduino">Arduino</string>
 	<string name="artist">Artist</string>
 	<string name="artists">Artists</string>
+	<string name="auto_upgrade_firmware">Automatically upgrade Arduino firmware</string>
+	<string name="auto_find_slaves">Automatically find slave devices</string>
 	<string name="back">Back</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="button_scan">Search for devices</string>
@@ -103,6 +106,7 @@
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>
 	<string name="unpairing_device">Unpairing device</string>
+	<string name="use_alarm">Use alarm</string>
 	<string name="use_arduino">Use Arduino to communicate with other hardware</string>
 	<string name="use_bluetooth">Use Bluetooth</string>
 	<string name="use_bluetooth_summary">Use Bluetooth in app</string>

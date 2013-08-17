@@ -37,7 +37,6 @@ public class SystemSettingsFragment extends PreferenceFragment {
 				Log.d(TAG, "use bt changed");
 				boolean useBluetooth = sharedPreferences.getBoolean("useBluetooth", false);
 				// apply the changes now
-//				sharedPreferences.edit().putBoolean("useBluetooth", useBluetooth).apply();
 				getActivity().sendBroadcast(new Intent(Intents.BLUETOOTHMANAGER).putExtra("useBluetooth", useBluetooth));
 			} else if(s.equalsIgnoreCase("systemWiFi")) {
 				WifiManager manager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
@@ -51,7 +50,7 @@ public class SystemSettingsFragment extends PreferenceFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		// get our radio managers
