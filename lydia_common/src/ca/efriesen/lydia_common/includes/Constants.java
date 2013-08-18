@@ -37,6 +37,7 @@ public class Constants {
 	final public static int WINDOWS = 100;
 	final public static int PINGREQUEST = 0x09;
 	final public static int PINGREPLY = 0x10;
+	final public static int RFIDNUMBER = 0x30;
 
 	// Preferences contstants
 	final public static String REPEATALL = "repeatAll";

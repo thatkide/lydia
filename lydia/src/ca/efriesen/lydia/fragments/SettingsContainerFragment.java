@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
 

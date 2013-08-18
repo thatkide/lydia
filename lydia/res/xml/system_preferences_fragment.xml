@@ -24,7 +24,7 @@
 				android:title="@string/paired_devices"
 				android:summary="@string/paired_devices_summary"
 				android:dependency="systemBluetooth">
-				<intent android:action=".activities.DeviceListActivity"/>
+				<intent android:action=".activities.DeviceListActivity" />
 		</Preference>
 	</PreferenceCategory>
 </PreferenceScreen>

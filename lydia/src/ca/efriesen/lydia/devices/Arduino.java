@@ -57,7 +57,7 @@ public class Arduino {
 				// pass new data to our parse method
 				parseSerialData(data);
 			} else {
-				Log.d(TAG, "got new data. length " + data.length);
+//				Log.d(TAG, "got new data. length " + data.length);
 				upgradingInput = new byte[data.length];
 				upgradingInput = data;
 				waitingForSerialData.getAndSet(false);
@@ -394,7 +394,7 @@ public class Arduino {
 		byte[] getSyncCommand = {ConstantsStk500v1.STK_GET_SYNC, ConstantsStk500v1.CRC_EOP};
 
 		for (int i=0; i<5; i++) {
-			Log.d(TAG, "sending sync command.");
+//			Log.d(TAG, "sending sync command.");
 			try {
 				mSerialDevice.write(getSyncCommand, 100);
 			} catch (IOException e) {
@@ -412,7 +412,7 @@ public class Arduino {
 		byte[] command = new byte[] {ConstantsStk500v1.STK_ENTER_PROGMODE, ConstantsStk500v1.CRC_EOP};
 		for (int i=0; i<2; i++) {
 			if (waitingForSerialData.get()) {
-				Log.d(TAG, "sending enter programming mode command. try number " + i);
+//				Log.d(TAG, "sending enter programming mode command. try number " + i);
 				try {
 					mSerialDevice.write(command, 100);
 				} catch (IOException e) {
@@ -434,7 +434,7 @@ public class Arduino {
 		}
 
 		byte[] loadAddress = {ConstantsStk500v1.STK_LOAD_ADDRESS, (byte)low, (byte)high, ConstantsStk500v1.CRC_EOP};
-		Log.d(TAG, "loading address low " + Integer.toHexString(low) + " high " + Integer.toHexString(high) + " combined " + Integer.toHexString(low + high));
+//		Log.d(TAG, "loading address low " + Integer.toHexString(low) + " high " + Integer.toHexString(high) + " combined " + Integer.toHexString(low + high));
 		try {
 			mSerialDevice.write(loadAddress, 100);
 		} catch (IOException e) {
@@ -452,11 +452,11 @@ public class Arduino {
 		// split data up into chunks of 123 bytes (plus 5 bytes overhead, makes 128 bytes)
 		int loops = (int)Math.ceil((double)data.length / (chunkSize));
 
-		Log.d(TAG, "length of data " + data.length);
-		Log.d(TAG, "number of loops " + loops);
+//		Log.d(TAG, "length of data " + data.length);
+//		Log.d(TAG, "number of loops " + loops);
 
 		for (int i=0; i<loops; i++) {
-			Log.d(TAG, "loop number " + i);
+//			Log.d(TAG, "loop number " + i);
 			// send the number to the address method
 			// this tells the bootloader where we want to send the data
 			loadAddress(i);
@@ -473,9 +473,9 @@ public class Arduino {
 			// get the overall length
 			int length = end - start + 1;
 
-			Log.d(TAG, "start is " + start);
-			Log.d(TAG, "end is " + end);
-			Log.d(TAG, "length is " + length);
+//			Log.d(TAG, "start is " + start);
+//			Log.d(TAG, "end is " + end);
+//			Log.d(TAG, "length is " + length);
 
 			// create a new array the proper length
 			byte[] programPage = new byte[length+5];
@@ -497,7 +497,7 @@ public class Arduino {
 			// add crc byte to the end
 			programPage[length+5-1] = ConstantsStk500v1.CRC_EOP;
 
-			Log.d(TAG, "programPage is " + programPage.length + " bytes long");
+//			Log.d(TAG, "programPage is " + programPage.length + " bytes long");
 			try {
 				mSerialDevice.write(programPage, 100);
 				try {
@@ -506,7 +506,7 @@ public class Arduino {
 					e.printStackTrace();
 				}
 			} catch (IOException e) {
-				Log.d(TAG, e.toString());
+//				Log.d(TAG, e.toString());
 				e.printStackTrace();
 				return;
 			}

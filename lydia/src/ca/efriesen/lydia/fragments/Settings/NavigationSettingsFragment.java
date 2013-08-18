@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.fragments;
+package ca.efriesen.lydia.fragments.Settings;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

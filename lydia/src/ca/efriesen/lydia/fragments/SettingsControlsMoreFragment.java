@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.fragments.Settings.ArduinoSettingsFragment;
 
 /**
  * Created by eric on 2013-08-01.

@@ -1,10 +1,12 @@
 package ca.efriesen.lydia.devices;
 
 import android.content.Context;
+import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.interfaces.SerialIO;
 import ca.efriesen.lydia_common.includes.Constants;
+import ca.efriesen.lydia_common.includes.Intents;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.util.ArrayList;
@@ -54,10 +56,24 @@ public class Alarm extends Device implements SerialIO {
 	@Override
 	public void setValue(ArrayList<String> commands) {
 		// get the value sent from the alarm
+		// commands index 0 is the module
 		int value = Integer.parseInt(commands.get(1));
 		switch (value) {
 			case Constants.PINGREPLY: {
 				PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("useAlarmModule", true).apply();
+				break;
+			}
+			case Constants.RFIDNUMBER: {
+				// get the three bytes from the master, and bit shift them into place, then spit out the number
+				long cardNum = 0;
+				cardNum |= Integer.parseInt(commands.get(2)) & 0xFF;
+				cardNum <<= 8;
+				cardNum |= Integer.parseInt(commands.get(3)) & 0xFF;
+				cardNum <<= 8;
+				cardNum |= Integer.parseInt(commands.get(4)) & 0xFF;
+				Log.d(TAG, "card num is " + cardNum);
+				context.sendBroadcast(new Intent(Intents.RFID).putExtra(Intents.RFID, cardNum));
+				break;
 			}
 		}
 	}

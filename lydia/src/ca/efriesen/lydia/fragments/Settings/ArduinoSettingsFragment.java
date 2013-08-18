@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.fragments;
+package ca.efriesen.lydia.fragments.Settings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.*;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
 
@@ -14,7 +13,7 @@ import ca.efriesen.lydia_common.includes.Intents;
  * Created by eric on 2013-08-01.
  */
 public class ArduinoSettingsFragment extends PreferenceFragment {
-	public static final String TAG = "lydia sensor Settings Preference";
+	public static final String TAG = "lydia arduino Settings Preference";
 
 	public SharedPreferences sharedPreferences;
 
@@ -24,6 +23,14 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 			String key = preference.getKey();
 			if (key.equalsIgnoreCase("upgradeFirmware")) {
 				getActivity().sendBroadcast(new Intent("upgradeFirmware"));
+
+			} else if (key.equalsIgnoreCase("setupAlarm")) {
+				// load the alarm settings fragment
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+						.replace(R.id.settings_fragment, new AlarmSettingsFragment())
+						.addToBackStack(null)
+						.commit();
 			}
 			return false;
 		}
@@ -42,6 +49,13 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		addPreferencesFromResource(R.xml.arduino_preferences_fragment);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle saved) {
+		super.onActivityCreated(saved);
+
 		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
@@ -49,14 +63,10 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).commit();
 
-		addPreferencesFromResource(R.xml.arduino_preferences_fragment);
-	}
+		PreferenceManager manager = getPreferenceManager();
 
-	@Override
-	public void onActivityCreated(Bundle saved) {
-		super.onActivityCreated(saved);
-		Preference upgradeFirmware = getPreferenceManager().findPreference("upgradeFirmware");
-		upgradeFirmware.setOnPreferenceClickListener(clickListener);
+		manager.findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
+		manager.findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
 
 		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
 	}

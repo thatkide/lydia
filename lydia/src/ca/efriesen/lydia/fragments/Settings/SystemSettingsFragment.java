@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.fragments;
+package ca.efriesen.lydia.fragments.Settings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;

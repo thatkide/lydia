@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.fragments.Settings.MediaSettingsFragment;
+import ca.efriesen.lydia.fragments.Settings.NavigationSettingsFragment;
+import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
 
 /**
  * Created by eric on 2013-07-28.
