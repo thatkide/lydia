@@ -7,19 +7,18 @@
 		android:orientation="horizontal"
 		android:padding="10dip">
 
-	<CheckBox android:id="@+id/bluetooth_device_use_in_app"
+	<CheckBox android:id="@+id/enabled"
 			  android:layout_width="wrap_content"
 			  android:layout_height="wrap_content"
 			  android:layout_alignParentRight="true"
 			android:focusable="false"
 			android:focusableInTouchMode="false"/>
-	<TextView android:id="@+id/bluetooth_device_use_in_app_text"
+	<TextView android:id="@+id/enabled_text"
 			  style="@style/SmallText"
-			  android:text="@string/use_phone"
-			  android:layout_toLeftOf="@id/bluetooth_device_use_in_app"/>
+			  android:layout_toLeftOf="@id/enabled"/>
 
-	<TextView android:layout_toLeftOf="@id/bluetooth_device_use_in_app"
+	<TextView android:layout_toLeftOf="@id/enabled"
 			  android:layout_alignParentLeft="true"
-			  android:id="@+id/bluetooth_device_name"
+			  android:id="@+id/device_name"
 			  style="@style/SmallText"/>
 </RelativeLayout>

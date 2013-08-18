@@ -6,49 +6,26 @@
 		android:padding="10dip"
 		>
 	<TextView
-			android:id="@+id/title_paired_devices"
+			android:id="@+id/rfid_tags"
 			style="@style/MediumText"
-			android:text="@string/title_paired_devices"
-			android:visibility="gone"
+			android:text="@string/rfid_tags"
 			/>
 	<View android:layout_width="match_parent"
 		  android:layout_height="1dip"
 		  android:background="#33B5E5"
-		  android:visibility="gone"
-		  android:layout_below="@id/title_paired_devices"
+		  android:layout_below="@id/rfid_tags"
 		  android:id="@+id/title_paired_devices_hr"/>
 	<ListView
-			android:id="@+id/paired_devices"
+			android:id="@+id/stored_tags"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/title_paired_devices"
+			android:layout_below="@id/rfid_tags"
 			/>
 
-	<TextView
-			android:id="@+id/title_new_devices"
-			style="@style/MediumText"
-			android:text="@string/title_unpaired_devices"
-			android:visibility="gone"
-			android:layout_below="@id/paired_devices"
-			/>
-	<View android:layout_width="match_parent"
-		  android:layout_height="1dip"
-		  android:background="#33B5E5"
-		  android:visibility="gone"
-		  android:layout_below="@id/title_new_devices"
-		  android:id="@+id/title_new_devices_hr"/>
-	<ListView
-			android:id="@+id/new_devices"
+	<TextView android:id="@+id/no_tags_found"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/title_new_devices"
-			/>
-
-	<Button android:id="@+id/button_scan"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/button_scan"
-			android:layout_below="@id/new_devices"
+			android:text="@string/nothing_found"
 			/>
 
 </RelativeLayout>

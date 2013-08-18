@@ -71,7 +71,6 @@ public class Alarm extends Device implements SerialIO {
 				cardNum |= Integer.parseInt(commands.get(3)) & 0xFF;
 				cardNum <<= 8;
 				cardNum |= Integer.parseInt(commands.get(4)) & 0xFF;
-				Log.d(TAG, "card num is " + cardNum);
 				context.sendBroadcast(new Intent(Intents.RFID).putExtra(Intents.RFID, cardNum));
 				break;
 			}

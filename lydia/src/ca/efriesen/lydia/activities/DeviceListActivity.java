@@ -290,15 +290,18 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 			BluetoothDevice device = content.get(position);
 			if (device != null) {
 				// get the name view
-				TextView name = (TextView) convertView.findViewById(R.id.bluetooth_device_name);
+				TextView name = (TextView) convertView.findViewById(R.id.device_name);
+				TextView enabledText = (TextView) convertView.findViewById(R.id.enabled_text);
+				enabledText.setText(getString(R.string.use_phone));
 
 				if (!showCheckbox) {
-					convertView.findViewById(R.id.bluetooth_device_use_in_app).setVisibility(View.GONE);
-					convertView.findViewById(R.id.bluetooth_device_use_in_app_text).setVisibility(View.GONE);
+					convertView.findViewById(R.id.enabled).setVisibility(View.GONE);
+					convertView.findViewById(R.id.enabled).setVisibility(View.GONE);
 				}
-				convertView.findViewById(R.id.bluetooth_device_use_in_app).setOnClickListener(DeviceListActivity.this);
-				convertView.findViewById(R.id.bluetooth_device_use_in_app).setTag(position);
-				((CheckBox)convertView.findViewById(R.id.bluetooth_device_use_in_app)).setChecked(dataSource.isDeviceInDB(device));
+
+				convertView.findViewById(R.id.enabled).setOnClickListener(DeviceListActivity.this);
+				convertView.findViewById(R.id.enabled).setTag(position);
+				((CheckBox)convertView.findViewById(R.id.enabled)).setChecked(dataSource.isDeviceInDB(device));
 
 				// set the name
 				name.setText(device.getName());
