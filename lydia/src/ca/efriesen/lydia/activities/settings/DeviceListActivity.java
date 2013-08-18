@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.activities;
+package ca.efriesen.lydia.activities.settings;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

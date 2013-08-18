@@ -8,17 +8,17 @@
 		android:padding="10dip">
 
 	<CheckBox android:id="@+id/enabled"
-			  android:layout_width="wrap_content"
-			  android:layout_height="wrap_content"
-			  android:layout_alignParentRight="true"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
 			android:focusable="false"
-			android:focusableInTouchMode="false"/>
+			android:focusableInTouchMode="false" />
 	<TextView android:id="@+id/enabled_text"
-			  style="@style/SmallText"
-			  android:layout_toLeftOf="@id/enabled"/>
+			style="@style/SmallText"
+			android:layout_toLeftOf="@id/enabled" />
 
 	<TextView android:layout_toLeftOf="@id/enabled"
-			  android:layout_alignParentLeft="true"
-			  android:id="@+id/device_name"
-			  style="@style/SmallText"/>
+			android:layout_alignParentLeft="true"
+			android:id="@+id/device_name"
+			style="@style/SmallText"/>
 </RelativeLayout>

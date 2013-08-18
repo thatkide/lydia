@@ -62,7 +62,7 @@
 					android:resource="@xml/device_filter"/>
 		</activity>
 
-		<activity android:name=".activities.DeviceListActivity"
+		<activity android:name=".activities.settings.DeviceListActivity"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
 			<intent-filter>
 				<action android:name=".activities.DeviceListActivity"/>
@@ -84,7 +84,7 @@
 		<activity android:name=".activities.ContactView"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
-		<activity android:name=".activities.RFIDSetup"
+		<activity android:name=".activities.settings.RFIDSetup"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
 			<intent-filter>
 				<action android:name=".activities.RFIDSetup"/>

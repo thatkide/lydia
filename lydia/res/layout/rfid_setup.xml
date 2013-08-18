@@ -23,9 +23,9 @@
 			/>
 
 	<TextView android:id="@+id/no_tags_found"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/nothing_found"
+			android:text="@string/rfid_nothing_found"
+			android:layout_below="@id/rfid_tags"
+			style="@style/SmallText"
 			/>
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.activities;
+package ca.efriesen.lydia.activities.settings;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +25,13 @@ import java.util.List;
 /**
  * Created by eric on 2013-08-18.
  */
-public class RFIDSetup extends Activity {
+public class RFIDSetup extends Activity implements AdapterView.OnItemClickListener {
 
+	private static final String TAG = "lydia rfid";
 	private RFIDTagDataSource dataSource;
 
 	private RFIDTagViewAdapter storedTagsArrayAdapter;
+	private ArrayList<RFIDTag> tags;
 
 	@Override
 	public void onCreate(Bundle saved) {
@@ -38,13 +41,14 @@ public class RFIDSetup extends Activity {
 		dataSource = new RFIDTagDataSource(this);
 		dataSource.open();
 
-		ArrayList<RFIDTag> tags = dataSource.getAllTags();
+		tags = dataSource.getAllTags();
 		storedTagsArrayAdapter = new RFIDTagViewAdapter(tags, this);
 
 		// Find and set up the ListView for stored tags
 		ListView storedTagsListView = (ListView) findViewById(R.id.stored_tags);
 
 		storedTagsListView.setAdapter(storedTagsArrayAdapter);
+		storedTagsListView.setOnItemClickListener(this);
 
 		registerReceiver(tagFoundReceiver, new IntentFilter(Intents.RFID));
 
@@ -73,9 +77,33 @@ public class RFIDSetup extends Activity {
 			tag.setEnabled(false);
 			tag.setDescription("New tag added " + dateFormat.format(date));
 
-			dataSource.addTag(tag);
+			// try to add to the db, then check if successful, and if so, notify the view
+			long id = dataSource.addTag(tag);
+			if (id != -1) {
+				tag.setId(id);
+				tags.add(tag);
+				storedTagsArrayAdapter.notifyDataSetChanged();
+			}
+			// hide the no tags found text
+			findViewById(R.id.no_tags_found).setVisibility(View.GONE);
 		}
 	};
+
+	@Override
+	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+		RFIDTag tag = (RFIDTag) adapterView.getAdapter().getItem(position);
+		Log.d(TAG, "item clicked " + tag.getDescription() + " id " + tag.getId());
+
+		// try to remove from the db, then check if successful, and if so, notify the view
+		if (dataSource.removeTag(tag) != 0) {
+			tags.remove(tag);
+			storedTagsArrayAdapter.notifyDataSetChanged();
+		}
+		// check if the tag array is empty, and if so, show the "no tags found" view
+		if (tags.size() == 0) {
+			findViewById(R.id.no_tags_found).setVisibility(View.VISIBLE);
+		}
+	}
 
 	// listview adapter for tags
 	class RFIDTagViewAdapter extends BaseAdapter {

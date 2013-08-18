@@ -29,17 +29,17 @@ public class RFIDTagDataSource {
 		dbHelper.close();
 	}
 
-	public void addTag(RFIDTag tag) {
+	public long addTag(RFIDTag tag) {
 		ContentValues values = new ContentValues();
 		values.put(RFIDTagOpenHelper.TAGNUMBER, tag.getTagNumber());
 		values.put(RFIDTagOpenHelper.DESCRIPTION, tag.getDescription());
 		values.put(RFIDTagOpenHelper.ENABLED, tag.getEnabled());
 
-		database.insert(RFIDTagOpenHelper.TABLE_NAME, null, values);
+		return database.insert(RFIDTagOpenHelper.TABLE_NAME, null, values);
 	}
 
-	public void removeTag(RFIDTag tag) {
-		database.delete(RFIDTagOpenHelper.TABLE_NAME, RFIDTagOpenHelper.COLUMN_ID + " = " + tag.getId(), null);
+	public int removeTag(RFIDTag tag) {
+		return database.delete(RFIDTagOpenHelper.TABLE_NAME, RFIDTagOpenHelper.COLUMN_ID + " = " + tag.getId(), null);
 	}
 
 	public ArrayList<RFIDTag> getAllTags() {

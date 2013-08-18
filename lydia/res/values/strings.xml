@@ -83,6 +83,7 @@
 	<string name="repeat">Repeat</string>
 	<string name="reply">Reply</string>
 	<string name="rewind">Rewind</string>
+	<string name="rfid_nothing_found">No tags found.  Scan one now to add it.</string>
 	<string name="rfid_tags">RFID tags</string>
 	<string name="rfid_tags_summary">RFID tags used to access the car</string>
 	<string name="scanning">scanning for devices...</string>
