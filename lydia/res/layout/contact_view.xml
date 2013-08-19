@@ -41,6 +41,5 @@
 			</LinearLayout>
 		</LinearLayout>
 	</ScrollView>
-	<!-- can't get the proper width without this empty list... -->
 
 </RelativeLayout>

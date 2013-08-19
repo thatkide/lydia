@@ -104,6 +104,11 @@
 		<activity android:name=".activities.NavigationMode"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
+		<activity android:name=".activities.settings.RFIDTagConfig"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+				  android:windowSoftInputMode="stateHidden"/>
+
+
 		<service android:name=".services.HardwareManagerService" android:process="ca.efriesen.lydia.hardwareManager"/>
 
 		<service android:name=".services.MediaService" />

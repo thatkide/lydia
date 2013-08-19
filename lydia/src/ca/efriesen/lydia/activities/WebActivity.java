@@ -1,5 +1,6 @@
 package ca.efriesen.lydia.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebSettings;
@@ -17,6 +18,7 @@ public class WebActivity extends Activity {
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		setContentView(getLayoutInflater().inflate(R.layout.web_activity, null));
+		getWindow().setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
 
 		WebView web = (WebView) findViewById(R.id.web);
 		web.setWebViewClient(new WebViewClient());

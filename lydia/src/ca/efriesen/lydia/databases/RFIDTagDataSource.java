@@ -34,6 +34,8 @@ public class RFIDTagDataSource {
 		values.put(RFIDTagOpenHelper.TAGNUMBER, tag.getTagNumber());
 		values.put(RFIDTagOpenHelper.DESCRIPTION, tag.getDescription());
 		values.put(RFIDTagOpenHelper.ENABLED, tag.getEnabled());
+		values.put(RFIDTagOpenHelper.STARTCAR, tag.getStartCar());
+		values.put(RFIDTagOpenHelper.UNLOCKDOORS, tag.getUnlockDoors());
 
 		return database.insert(RFIDTagOpenHelper.TABLE_NAME, null, values);
 	}
@@ -47,12 +49,12 @@ public class RFIDTagDataSource {
 
 		Cursor cursor = database.query(
 				RFIDTagOpenHelper.TABLE_NAME,
-				new String[] {RFIDTagOpenHelper.COLUMN_ID, RFIDTagOpenHelper.TAGNUMBER, RFIDTagOpenHelper.DESCRIPTION, RFIDTagOpenHelper.ENABLED},
+				new String[] {RFIDTagOpenHelper.COLUMN_ID, RFIDTagOpenHelper.TAGNUMBER, RFIDTagOpenHelper.DESCRIPTION, RFIDTagOpenHelper.ENABLED, RFIDTagOpenHelper.STARTCAR, RFIDTagOpenHelper.UNLOCKDOORS},
 				null,
 				null,
 				null,
 				null,
-				null
+				RFIDTagOpenHelper.DESCRIPTION + " COLLATE NOCASE ASC"
 		);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -63,12 +65,42 @@ public class RFIDTagDataSource {
 		return tags;
 	}
 
+	public RFIDTag getTag(long id) {
+		Cursor cursor = database.query(
+				RFIDTagOpenHelper.TABLE_NAME,
+				new String[] {RFIDTagOpenHelper.COLUMN_ID, RFIDTagOpenHelper.TAGNUMBER, RFIDTagOpenHelper.DESCRIPTION, RFIDTagOpenHelper.ENABLED, RFIDTagOpenHelper.STARTCAR, RFIDTagOpenHelper.UNLOCKDOORS},
+				RFIDTagOpenHelper.COLUMN_ID + " = " + id,
+				null,
+				null,
+				null,
+				null
+		);
+		cursor.moveToFirst();
+		RFIDTag tag = cursorToTag(cursor);
+		cursor.close();
+		return tag;
+	}
+
+	public void update(RFIDTag tag) {
+		ContentValues values = new ContentValues();
+		values.put(RFIDTagOpenHelper.TAGNUMBER, tag.getTagNumber());
+		values.put(RFIDTagOpenHelper.DESCRIPTION, tag.getDescription());
+		values.put(RFIDTagOpenHelper.ENABLED, tag.getEnabled());
+		values.put(RFIDTagOpenHelper.STARTCAR, tag.getStartCar());
+		values.put(RFIDTagOpenHelper.UNLOCKDOORS, tag.getUnlockDoors());
+
+		database.update(RFIDTagOpenHelper.TABLE_NAME, values, RFIDTagOpenHelper.COLUMN_ID + " = " + tag.getId(), null);
+
+	}
+
 	private RFIDTag cursorToTag(Cursor cursor) {
 		RFIDTag tag = new RFIDTag();
-		tag.setId(cursor.getLong(cursor.getColumnIndex(RFIDTagOpenHelper.COLUMN_ID)));
+  		tag.setId(cursor.getLong(cursor.getColumnIndex(RFIDTagOpenHelper.COLUMN_ID)));
 		tag.setTagNumber(cursor.getLong(cursor.getColumnIndex(RFIDTagOpenHelper.TAGNUMBER)));
 		tag.setDescription(cursor.getString(cursor.getColumnIndex(RFIDTagOpenHelper.DESCRIPTION)));
 		tag.setEnabled(cursor.getInt(cursor.getColumnIndex(RFIDTagOpenHelper.ENABLED)) != 0);
+		tag.setStartCar(cursor.getInt(cursor.getColumnIndex(RFIDTagOpenHelper.STARTCAR)) != 0);
+		tag.setUnlockDoors(cursor.getInt(cursor.getColumnIndex(RFIDTagOpenHelper.UNLOCKDOORS)) != 0);
 
 		return tag;
 	}

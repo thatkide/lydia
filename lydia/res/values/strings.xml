@@ -103,6 +103,7 @@
 	<string name="system_bluetooth_summary">Enable/disable Bluetooth system wide</string>
 	<string name="system_wifi">System Wi-Fi</string>
 	<string name="system_wifi_summary">Enable/disable Wi-Fi system wide</string>
+	<string name="tag_number">Tag number: </string>
 	<string name="title_paired_devices">Paired Devices</string>
 	<string name="title_unpaired_devices">Unpaired Devices</string>
 	<string name="time">Time</string>

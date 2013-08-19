@@ -1,14 +1,18 @@
 package ca.efriesen.lydia.databases;
 
+import java.io.Serializable;
+
 /**
  * Created by eric on 2013-08-18.
  */
-public class RFIDTag {
+public class RFIDTag implements Serializable{
 
 	private long id;
 	private long tagNumber;
 	private String description;
 	private boolean enabled;
+	private boolean startCar;
+	private boolean unlockDoors;
 
 	public void setId(long id) {
 		this.id = id;
@@ -40,6 +44,22 @@ public class RFIDTag {
 
 	public boolean getEnabled() {
 		return this.enabled;
+	}
+
+	public void setStartCar(boolean startCar) {
+		this.startCar = startCar;
+	}
+
+	public boolean getStartCar() {
+		return startCar;
+	}
+
+	public void setUnlockDoors(boolean unlockDoors) {
+		this.unlockDoors = unlockDoors;
+	}
+
+	public boolean getUnlockDoors() {
+		return unlockDoors;
 	}
 
 }
