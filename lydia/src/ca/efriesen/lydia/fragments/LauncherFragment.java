@@ -7,6 +7,7 @@ import android.content.*;
 import android.content.pm.*;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,9 @@ public class LauncherFragment extends Fragment implements
 		try {
 			listView.setSelection(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("launcherPosition", 0));
 		} catch (Exception e) {}
+
+		Log.d(TAG, "activity created");
+		getLoaderManager().initLoader(4, null, this);
 
 	}
 
@@ -124,16 +128,32 @@ public class LauncherFragment extends Fragment implements
 	@Override
 	public Loader<ArrayList<AppInfo>> onCreateLoader(int i, Bundle saved) {
 		return new AsyncTaskLoader<ArrayList<AppInfo>>(getActivity()) {
+			ProgressBar bar = (ProgressBar) getActivity().findViewById(R.id.loading_spinner);
+			@Override
+			public void onStartLoading() {
+				forceLoad();
+				bar.setVisibility(View.VISIBLE);
+				listView.setVisibility(View.GONE);
+			}
+
 			@Override
 			public ArrayList<AppInfo> loadInBackground() {
 				return getInstalledPackages(getActivity());
+			}
+
+			@Override
+			public void deliverResult(ArrayList<AppInfo> appInfos) {
+				super.deliverResult(appInfos);
+				bar.setVisibility(View.GONE);
+				listView.setVisibility(View.VISIBLE);
 			}
 		};
 	}
 
 	@Override
 	public void onLoadFinished(Loader<ArrayList<AppInfo>> arrayListLoader, ArrayList<AppInfo> appInfos) {
-		listView.setAdapter(new AppInfoViewAdapter(getInstalledPackages(getActivity()), getActivity()));
+		Log.d(TAG, "on load finished");
+		listView.setAdapter(new AppInfoViewAdapter(appInfos, getActivity()));
 	}
 
 	@Override

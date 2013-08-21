@@ -6,8 +6,14 @@
 		android:layout_width="630dip"
 		android:layout_height="320dip">
 
+	<ProgressBar android:id="@+id/loading_spinner"
+				 style="?android:progressBarStyleLarge"
+				 android:layout_width="wrap_content"
+				 android:layout_height="wrap_content"
+				 android:layout_gravity="center" />
 	<ListView android:id="@+id/application_list"
 			  android:layout_width="match_parent"
 			  android:layout_height="wrap_content"
-			  android:drawSelectorOnTop="false" />
+			  android:drawSelectorOnTop="false"
+			  android:visibility="gone"/>
 </LinearLayout>
