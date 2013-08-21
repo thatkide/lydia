@@ -47,15 +47,20 @@ public class RFIDTagConfig extends Activity {
 			save.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					// update the fields
 					tag.setDescription(description.getText().toString());
 					tag.setEnabled(enabled.isChecked());
 					tag.setUnlockDoors(unlockDoors.isChecked());
 					tag.setStartCar(startCar.isChecked());
 					dataSource.update(tag);
 
+					// create a new intent
 					Intent tagIntent = new Intent(Intents.RFID);
+					// put the tag as an extra
 					tagIntent.putExtra("rfid_tag", tag);
+					// also add the list id position
 					tagIntent.putExtra("list_id", extras.getInt("list_id"));
+					// set the result and close
 					setResult(RESULT_OK, tagIntent);
 					finish();
 				}

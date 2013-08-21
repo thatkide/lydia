@@ -9,7 +9,7 @@ import android.util.Log;
  * Created by eric on 2013-08-18.
  */
 public class RFIDTagOpenHelper extends SQLiteOpenHelper {
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	private static final String DATABASE_NAME = "rfid_tags.db";
 
 	public static final String TABLE_NAME = "rfid_tags";
@@ -20,6 +20,7 @@ public class RFIDTagOpenHelper extends SQLiteOpenHelper {
 	public static final String ENABLED = "enabled";
 	public static final String STARTCAR = "start_car";
 	public static final String UNLOCKDOORS = "unlock_doors";
+	public static final String EEPROMADDRESS = "eeprom_address";
 
 	private static final String TABLE_CREATE =
 			"CREATE TABLE " + TABLE_NAME +
@@ -28,7 +29,8 @@ public class RFIDTagOpenHelper extends SQLiteOpenHelper {
 					DESCRIPTION + " text, " +
 					ENABLED + " integer not null, " +
 					STARTCAR + " integer not null, " +
-					UNLOCKDOORS + " integer not null);";
+					UNLOCKDOORS + " integer not null, " +
+					EEPROMADDRESS + " integer not null unique);";
 
 	RFIDTagOpenHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -7,6 +7,7 @@ package ca.efriesen.lydia_common.includes;
  */
 public class Intents {
 	// intents used in serial comms with arduino
+	public static final String ALARM = "ca.efriesen.lydia.Alarm";
 	public static final String DEFROSTER = "ca.efriesen.lydia.DEFROSTER";
 	public static final String INSIDETEMPERATURE = "ca.efriesen.lydia.INSIDETEMPERATURE";
 	public static final String GETTEMPERATURE = "ca.efriesen.lydia.GETTEMPERATURE";

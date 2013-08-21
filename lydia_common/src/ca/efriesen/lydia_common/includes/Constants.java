@@ -10,6 +10,8 @@ public class Constants {
 	// I2C address of slave devices
 	final public static int ALARM = 14;
 
+	final public static int EEPROM = 0x31;
+
 	// These are for serial commands sent to the arduino
 	// 160 - 176
 	final public static int DRIVERSEAT = 171;

@@ -13,6 +13,7 @@ public class RFIDTag implements Serializable{
 	private boolean enabled;
 	private boolean startCar;
 	private boolean unlockDoors;
+	private int eepromAddress;
 
 	public void setId(long id) {
 		this.id = id;
@@ -60,6 +61,14 @@ public class RFIDTag implements Serializable{
 
 	public boolean getUnlockDoors() {
 		return unlockDoors;
+	}
+
+	public void setEepromAddress(int eepromAddress) {
+		this.eepromAddress = eepromAddress;
+	}
+
+	public int getEepromAddress() {
+		return eepromAddress;
 	}
 
 }
