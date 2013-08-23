@@ -46,7 +46,7 @@ public class MusicFragment extends ListFragment {
 	private static int ArtistsId = 1;
 	private static int AlbumsId = 2;
 
-	private static final String TAG = "media music fragment";
+	private static final String TAG = "lydia media music fragment";
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {

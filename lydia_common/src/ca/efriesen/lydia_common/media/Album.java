@@ -56,7 +56,7 @@ public class Album extends Media implements Serializable {
 	}
 
 	@Override
-	public String getName() {
+	synchronized public String getName() {
 		return name;
 	}
 

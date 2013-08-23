@@ -47,10 +47,13 @@ public class MediaService extends Service implements
 	private NotificationManager notificationManager;
 	private int notificationId = 1;
 
-	public static final String TAG = "Media Service V2";
+	public static final String TAG = "lydia Media Service V2";
 
 	// database stuff
 	private Uri mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+	// other stuff
+	SharedPreferences sharedPreferences;
 
 	// inidcate the state of the service
 	public enum State {
@@ -61,7 +64,7 @@ public class MediaService extends Service implements
 		Stopped,	// we call user pause stopped, and program pause pause
 	}
 
-	State mState = State.Dead;
+	private State mState = State.Dead;
 
 	// media player stuff
 	private ArrayList<Song> playlist;
@@ -88,6 +91,7 @@ public class MediaService extends Service implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 
 		// start it in the foreground so it doesn't get killed
 		builder = new Notification.Builder(this)
@@ -103,10 +107,9 @@ public class MediaService extends Service implements
 		notificationManager.notify(notificationId, builder.build());
 
 		// default state for repeat and shuffle
-		repeatAll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.REPEATALL, false);
-		shuffle = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.SHUFFLE, false);
+		repeatAll = sharedPreferences.getBoolean(Constants.REPEATALL, false);
+		shuffle = sharedPreferences.getBoolean(Constants.SHUFFLE, false);
 
-		Log.d(TAG, "On create finished");
 	}
 
 	@Override
@@ -116,12 +119,10 @@ public class MediaService extends Service implements
 		int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
 		if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-			Log.d(TAG, "We don't have audio :(");
 			// we can't get focus, so cleanup
 			cleanUp();
 		}
 		initMediaPlayer();
-		Log.d(TAG, "On Start Command finished");
 		return START_NOT_STICKY;
 	}
 
@@ -180,10 +181,9 @@ public class MediaService extends Service implements
 		sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra("ca.efriesen.Song", playlist.get(playlistPosition)));
 	}
 
-	private void initMediaPlayer() {
+	synchronized private void initMediaPlayer() {
 		// make sure we start dead, the callback will set us to prepared
 		setState(State.Stopped);
-		Log.d(TAG, "Init media player");
 
 		mMediaPlayer = new MediaPlayer();
 		mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -227,19 +227,15 @@ public class MediaService extends Service implements
 		setState(State.Dead);
 	}
 
-	private void setSong(Song song) {
+	synchronized private void setSong(Song song) {
 		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId());
 		try {
 			mMediaPlayer.setDataSource(getApplicationContext(), uri);
 			mMediaPlayer.prepareAsync();
 		} catch (IllegalArgumentException e) {
-			Log.d(TAG, e.toString());
 		} catch (IllegalStateException e) {
-			Log.d(TAG, e.toString());
 		} catch (IOException e) {
-			Log.d(TAG, e.toString());
 		} catch (NullPointerException e) {
-			Log.d(TAG, e.toString());
 		}
 	}
 
@@ -283,7 +279,7 @@ public class MediaService extends Service implements
 		}
 	}
 
-	public void stop() {
+	synchronized public void stop() {
 		if (getState() == State.Playing) {
 			mMediaPlayer.reset();
 			setState(State.Stopped);
@@ -295,12 +291,18 @@ public class MediaService extends Service implements
 		mMediaPlayer.pause();
 	}
 
-	public void play() {
+	synchronized public void play() {
 		if (getState() == State.Dead) {
 			initMediaPlayer();
-			// set the playlist and such
-			playAll();
-		} else if (getState() == State.Paused) {
+			// if we have an empty playlist
+			if (playlist == null) {
+				// play all.  this will start a new thread that queries the db and starts playing when ready
+				playAll();
+				setState(State.Playing);
+				return;
+			}
+		}
+		if (getState() == State.Paused) {
 			mMediaPlayer.start();
 		} else {
 			setSong(playlist.get(playlistPosition));
@@ -308,7 +310,7 @@ public class MediaService extends Service implements
 		setState(State.Playing);
 	}
 
-	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
+	synchronized public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
 		playlistOrdered = playlist;
 		// copy the playlist into a new object.
 		ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
@@ -323,7 +325,7 @@ public class MediaService extends Service implements
 		// add what's left
 		this.playlistShuffled.addAll(shuffled);
 
-		if (shuffle) {
+		if (getShuffle()) {
 			// start from the beginning
 			this.playlistPosition = 0;
 			this.playlist = playlistShuffled;
@@ -347,13 +349,10 @@ public class MediaService extends Service implements
 		String ORDER = MediaStore.Audio.Media.TITLE + " asc limit 100";
 		String SELECTION;
 		if (clazz.getClass().equals(Artist.class)) {
-			Log.d(TAG, "artist class");
 			SELECTION = MediaStore.Audio.Media.ARTIST + " LIKE '%" + search + "%'";
 		} else if (clazz.getClass().equals(Album.class)) {
-			Log.d(TAG, "album class");
 			SELECTION = MediaStore.Audio.Media.ALBUM + " LIKE '%" + search + "%'";
 		} else {
-			Log.d(TAG, "song class");
 			SELECTION = MediaStore.Audio.Media.TITLE + " LIKE '%" + search + "%'";
 		}
 
@@ -413,7 +412,7 @@ public class MediaService extends Service implements
 		return artists;
 	}
 
-	public ArrayList<Album> getAllAlbumsByArtist(Artist artist) {
+	synchronized public ArrayList<Album> getAllAlbumsByArtist(Artist artist) {
 		String[] PROJECTION = new String[] {
 				"DISTINCT " + MediaStore.Audio.Media.ALBUM_ID + " AS " + MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM_ID,
@@ -435,7 +434,7 @@ public class MediaService extends Service implements
 		return albums;
 	}
 
-	public ArrayList<Song> getAllSongsInAlbum(Album album) {
+	synchronized public ArrayList<Song> getAllSongsInAlbum(Album album) {
 		String[] PROJECTION = new String[] {
 				MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM,
@@ -480,11 +479,11 @@ public class MediaService extends Service implements
 		mMediaPlayer.seekTo(position);
 	}
 
-	public State getState() {
+	synchronized public State getState() {
 		return mState;
 	}
 
-	public void setState(State state) {
+	synchronized public void setState(State state) {
 		this.mState = state;
 		sendBroadcast(new Intent(Intents.MEDIASTATE).putExtra(Intents.MEDIASTATE, state));
 	}
@@ -495,7 +494,7 @@ public class MediaService extends Service implements
 			@Override
 			public void run() {
 				stop();
-				// make a new album, with id -2, and name "all songs"
+				// make a new album and name "all songs"
 				Album album = new Album();
 				album.setName(getString(R.string.all_songs));
 				// get a list of all the songs
@@ -524,20 +523,16 @@ public class MediaService extends Service implements
 
 	public void setRepeat(boolean repeat) {
 		repeatAll = repeat;
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = preferences.edit();
-		editor.putBoolean(Constants.REPEATALL, repeatAll).commit();
+		sharedPreferences.edit().putBoolean(Constants.REPEATALL, repeatAll).commit();
 	}
 
-	public boolean getShuffle() {
+	synchronized public boolean getShuffle() {
 		return shuffle;
 	}
 
-	public void setShuffle(boolean shuffle) {
+	synchronized public void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = preferences.edit();
-		editor.putBoolean(Constants.SHUFFLE, shuffle).commit();
+		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
 		if (shuffle) {
 			this.playlist = playlistShuffled;
 		} else {
