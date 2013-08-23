@@ -92,34 +92,50 @@ public class Alarm extends Device implements SerialIO {
 	private BroadcastReceiver writeAlarmSettingsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// rfid tag has id, tag number, enabled, start car, open doors and description.
-			// mcu eeprom needs number, enabled, start car, and open doors
-			// 4 bytes.  first three are tag number, last 1 can store the three boolean vars (B00000111)
-			// the first one is 0-255.  since we have 1024 bytes, and each tag uses 4, that gives us a total of 256 possible tags if we don't use eeprom for anything else.
-			// in actuality i don't see needing more than 5 or 10 spots.  however, to be flexible, let's say we use 25.  that is 100 bytes of eeprom space reserved, leaving 924 bytes available.
-			// let's use the first 100.
-			// we have 1024 bytes to play with.
-			RFIDTag tag = (RFIDTag) intent.getSerializableExtra("rfid_tag");
+			if (intent.hasExtra("rfid_tag")) {
+				// rfid tag has id, tag number, enabled, start car, open doors and description.
+				// mcu eeprom needs number, enabled, start car, and open doors
+				// 4 bytes.  first three are tag number, last 1 can store the three boolean vars (B00000111)
+				// the first one is 0-255.  since we have 1024 bytes, and each tag uses 4, that gives us a total of 256 possible tags if we don't use eeprom for anything else.
+				// in actuality i don't see needing more than 5 or 10 spots.  however, to be flexible, let's say we use 25.  that is 100 bytes of eeprom space reserved, leaving 924 bytes available.
+				// let's use the first 100.
+				// we have 1024 bytes to play with.
+				RFIDTag tag = (RFIDTag) intent.getSerializableExtra("rfid_tag");
 
-			int eepromAddress = tag.getEepromAddress();
-			int high, med , low;
-			byte flags = 0;
+				int eepromAddress = tag.getEepromAddress();
+				int high, med , low;
+				byte flags = 0;
 
-			long cardNum = tag.getTagNumber();
+				long cardNum = tag.getTagNumber();
 
-			low = (int) (cardNum & 0xFF);
-			med = (int) ((cardNum >> 8) & 0xFF);
-			high = (int) ((cardNum >> 16) & 0xFF);
+				low = (int) (cardNum & 0xFF);
+				med = (int) ((cardNum >> 8) & 0xFF);
+				high = (int) ((cardNum >> 16) & 0xFF);
 
-			// enabled is bit 0 (1), door is bit 1 (2), and start is bit 2 (4)
-			if (tag.getEnabled()) {	flags += 1; }
-			if (tag.getUnlockDoors()) {	flags += 2; }
-			if (tag.getStartCar()) { flags += 4; }
+				// enabled is bit 0 (1), door is bit 1 (2), and start is bit 2 (4)
+				if (tag.getEnabled()) {	flags += 1; }
+				if (tag.getUnlockDoors()) {	flags += 2; }
+				if (tag.getStartCar()) { flags += 4; }
 
-			Log.d(TAG, "high " + high + " med " + med + " low " + low + " flags " + flags);
-			// send to the alarm, the address, high, med, and low bytes for the card number, and the boolean switches stored in binary format
-			byte[] data = {Constants.ALARM, Constants.EEPROM, (byte)eepromAddress, (byte)high, (byte)med, (byte)low, flags};
-			write(data);
+				Log.d(TAG, "high " + high + " med " + med + " low " + low + " flags " + flags);
+				// send to the alarm, the address, high, med, and low bytes for the card number, and the boolean switches stored in binary format
+				byte[] data = {Constants.ALARM, Constants.EEPROM, (byte)eepromAddress, (byte)high, (byte)med, (byte)low, flags};
+				write(data);
+
+			} else if (intent.hasExtra("autoArm")) {
+				byte[] data = {Constants.ALARM, Constants.AUTOARM, (intent.getBooleanExtra("autoArm", true) ? (byte)0 : (byte)1)};
+				write(data);
+
+			} else if (intent.hasExtra("autoArmDelay")) {
+				int delay = intent.getIntExtra("autoArmDelay", 30);
+				Log.d(TAG, "auto arm delay is " + delay);
+				byte[] delayBytes = {(byte)(delay & 0xFF), (byte) ((delay >> 8) & 0xFF) };
+
+				// combine everything
+				byte[] data = {Constants.ALARM, Constants.AUTOARMDELAY, delayBytes[0], delayBytes[1]};
+				// write it out
+				write(data);
+			}
 		}
 	};
 }

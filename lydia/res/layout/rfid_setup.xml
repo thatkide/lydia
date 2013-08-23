@@ -7,7 +7,7 @@
 		>
 	<TextView
 			android:id="@+id/rfid_tags"
-			style="@style/MediumText"
+			style="@style/LargeText"
 			android:text="@string/rfid_tags"
 			/>
 	<View android:layout_width="match_parent"

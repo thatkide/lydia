@@ -87,7 +87,7 @@
 		<activity android:name=".activities.settings.RFIDSetup"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
 			<intent-filter>
-				<action android:name=".activities.RFIDSetup"/>
+				<action android:name="RFIDSetup"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</activity>
