@@ -11,8 +11,6 @@ import ca.efriesen.lydia.interfaces.SerialIO;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -34,9 +32,16 @@ public class Alarm extends Device implements SerialIO {
 	public void initialize() {
 		// check the preferences if we have auto find slaves turned on
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("autoFindSlaveDevices", true)) {
-			// we do, so send a ping request to the alarm module
-			byte[] pingRequest = {Constants.PINGREQUEST, ID};
-			write(pingRequest);
+			for (int i=0; i<3; i++) {
+				// we do, so send a ping request to the alarm module
+				byte[] pingRequest = {Constants.PINGREQUEST, ID};
+				write(pingRequest);
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			// set the alarm to off, if we get a reply, we'll turn it back on
 			PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("useAlarmModule", false).apply();
 		}
