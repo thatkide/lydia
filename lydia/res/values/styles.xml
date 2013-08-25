@@ -23,6 +23,21 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
+	<style name="XLargeText">
+		<item name="android:textSize">35dip</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+	</style>
+	<style name="XXLargeText">
+		<item name="android:textSize">40dip</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+	</style>
+	<style name="XXXLargeText">
+		<item name="android:textSize">80dip</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+	</style>
 
 	<style name="HeaderbarButtons">
 		<item name="android:layout_height">80dip</item>

@@ -3,7 +3,7 @@
 <PreferenceScreen
 		xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/music">
-		<SwitchPreference
+		<ca.efriesen.lydia.includes.CustomSwitchPreference
 				android:key="useLastFm"
 				android:defaultValue="false"
 				android:title="@string/lastfm_use" />

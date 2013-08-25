@@ -128,6 +128,8 @@
 	<string name="quick_call">Who would you like to call?</string>
 	<string name="videos">Videos</string>
 	<string name="volume_control">Volume Control</string>
+	<string name="weather">Weather</string>
+	<string name="weather_use_celsius">Use Celsius</string>
 	<string name="wifi">Wi-Fi</string>
 	<string name="window_down">Window Down</string>
 	<string name="window_up">Window Up</string>

@@ -21,8 +21,10 @@
 				android:text="@string/videos"
 				android:drawableTop="@drawable/movie_reel"
 				style="@style/DashboardControls"/>
-			<Button android:id="@+id/test"
-				android:text=""
+			<Button android:id="@+id/weather"
+				android:text="@string/weather"
+				android:drawableTop="@drawable/weather_sunny"
+
 				style="@style/DashboardRoundTopRight"/>
 		</LinearLayout>
 		<LinearLayout android:layout_width="wrap_content"

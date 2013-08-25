@@ -1,9 +1,6 @@
 package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.*;
 import android.graphics.Color;
 import android.location.Address;
@@ -11,13 +8,10 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.includes.GMapV2Direction;
-import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.includes.MapHelpers;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.google.android.gms.common.ConnectionResult;

@@ -5,8 +5,11 @@
 	android:orientation="vertical"
 	android:gravity="center_vertical">
 
+	<Button android:id="@+id/settings_weather"
+			style="@style/ControlRoundTopRight"
+			android:text="@string/weather" />
 	<Button	android:id="@+id/settings_arduino"
-		style="@style/ControlRoundTopRight"
+		style="@style/ControlButtons"
 		android:text="@string/arduino" />
 	<Button android:id="@+id/settings_back"
 		style="@style/ControlRoundBottomRight"

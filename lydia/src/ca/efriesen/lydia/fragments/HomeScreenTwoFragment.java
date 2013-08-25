@@ -31,19 +31,16 @@ public class HomeScreenTwoFragment extends Fragment{
 		super.onActivityCreated(savedInstanceState);
 		activity = getActivity();
 
-		final Button contacts = (Button) activity.findViewById(R.id.contacts);
-		final Button homeScreenNext = (Button) activity.findViewById(R.id.home_screen_next);
-		final Button homeScreenPrev = (Button) activity.findViewById(R.id.home_screen_previous);
-		final Button settings = (Button) activity.findViewById(R.id.settings);
-
-		contacts.setOnClickListener(new View.OnClickListener() {
+		// contacts
+		activity.findViewById(R.id.contacts).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				activity.startActivity(new Intent(activity, ContactList.class));
 			}
 		});
 
-		homeScreenNext.setOnClickListener(new View.OnClickListener() {
+		// home screen next
+		activity.findViewById(R.id.home_screen_next).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getFragmentManager().beginTransaction()
@@ -51,11 +48,12 @@ public class HomeScreenTwoFragment extends Fragment{
 						.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
 						.addToBackStack(null)
 						.commit();
-				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
+				((Dashboard) getActivity()).setHomeScreenClass(HomeScreenFragment.class);
 			}
 		});
 
-		homeScreenPrev.setOnClickListener(new View.OnClickListener() {
+		// home screen previous
+		activity.findViewById(R.id.home_screen_previous).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getFragmentManager().beginTransaction()
@@ -63,11 +61,23 @@ public class HomeScreenTwoFragment extends Fragment{
 						.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
 						.addToBackStack(null)
 						.commit();
-				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
+				((Dashboard) getActivity()).setHomeScreenClass(HomeScreenFragment.class);
 			}
 		});
 
-		settings.setOnClickListener(new View.OnClickListener() {
+		activity.findViewById(R.id.weather).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new WeatherFragment(), "weatherFragment")
+						.addToBackStack(null)
+						.commit();
+			}
+		});
+
+		// settings
+		activity.findViewById(R.id.settings).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// replace the 'dashboard_container' fragment with a new 'settings fragment'
