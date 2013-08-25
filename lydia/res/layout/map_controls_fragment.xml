@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:layout_width="wrap_content"
-			  android:layout_height="wrap_content"
-			  android:orientation="vertical">
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:gravity="center_vertical">
 	<Button android:id="@+id/map_search"
-			style="@style/ControlRoundTopRight"
-			android:text="@string/search" />
+		style="@style/ControlRoundTopRight"
+		android:text="@string/search" />
 	<Button android:id="@+id/toggle_traffic"
-			style="@style/ControlButtons"
-			android:text="@string/toggle_traffic" />
+		style="@style/ControlButtons"
+		android:text="@string/toggle_traffic" />
 	<Button	android:id="@+id/clear_map"
-			style="@style/ControlButtons"
-			android:text="@string/clear" />
+		style="@style/ControlButtons"
+		android:text="@string/clear" />
 	<Button android:id="@+id/map_directions_mode"
-			style="@style/ControlRoundBottomRight"
-			android:text="@string/navigation_mode" />
+		style="@style/ControlRoundBottomRight"
+		android:text="@string/navigation_mode" />
 </LinearLayout>

@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="match_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center"
+	android:orientation="horizontal">
+	<Button android:id="@+id/home_screen_previous"
+		style="@style/DashboardPrevious" />
+	<LinearLayout android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal">
-	<Button   android:id="@+id/home_screen_previous"
-			  style="@style/DashboardPrevious" />
-	<LinearLayout	android:layout_width="wrap_content"
-					 android:layout_height="wrap_content"
-					 android:orientation="vertical">
-		<LinearLayout	android:layout_width="wrap_content"
-						 android:layout_height="wrap_content"
-						 android:orientation="horizontal">
-				<Button android:id="@+id/contacts"
-						android:text="@string/contacts"
-						android:drawableTop="@drawable/contacts"
-						style="@style/DashboardRoundTopLeft"/>
-				<Button android:id="@+id/videos"
-						android:text="@string/videos"
-						android:drawableTop="@drawable/movie_reel"
-						style="@style/DashboardControls"/>
-				<Button android:id="@+id/test"
-						android:text=""
-						style="@style/DashboardRoundTopRight"/>
-			</LinearLayout>
-			<LinearLayout	android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:orientation="horizontal">
-				<Button android:id="@+id/status"
-						android:text="@string/status"
-						style="@style/DashboardRoundBottomLeft"/>
-				<Button android:id="@+id/test2"
-						android:text=""
-						style="@style/DashboardControls"/>
-				<Button android:id="@+id/settings"
-						android:text="@string/settings"
-						android:drawableTop="@drawable/settings"
-						style="@style/DashboardRoundBottomRight"/>
-			</LinearLayout>
+		android:orientation="vertical">
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			<Button android:id="@+id/contacts"
+				android:text="@string/contacts"
+				android:drawableTop="@drawable/contacts"
+				style="@style/DashboardRoundTopLeft"/>
+			<Button android:id="@+id/videos"
+				android:text="@string/videos"
+				android:drawableTop="@drawable/movie_reel"
+				style="@style/DashboardControls"/>
+			<Button android:id="@+id/test"
+				android:text=""
+				style="@style/DashboardRoundTopRight"/>
 		</LinearLayout>
-	<Button   android:id="@+id/home_screen_next"
-			  style="@style/DashboardNext" />
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			<Button android:id="@+id/status"
+				android:text="@string/status"
+				style="@style/DashboardRoundBottomLeft"/>
+			<Button android:id="@+id/test2"
+				android:text=""
+				style="@style/DashboardControls"/>
+			<Button android:id="@+id/settings"
+				android:text="@string/settings"
+				android:drawableTop="@drawable/settings"
+				style="@style/DashboardRoundBottomRight"/>
+		</LinearLayout>
+	</LinearLayout>
+	<Button android:id="@+id/home_screen_next"
+		style="@style/DashboardNext" />
 
 </LinearLayout>

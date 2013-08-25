@@ -1,111 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<ImageButton android:id="@+id/home"
+		android:src="@drawable/home"
+		style="@style/HeaderbarButtons"
+	    android:contentDescription="@string/home" />
+	<ImageButton android:id="@+id/play_pause"
+		android:src="@drawable/av_play"
+		style="@style/HeaderbarRoundBottomRight"
+		android:layout_toRightOf="@id/home"
+	    android:contentDescription="@string/play"/>
+	<TextView android:id="@+id/song_title"
+		android:text=""
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:singleLine="true"
+		android:ellipsize="marquee"
+		android:marqueeRepeatLimit="marquee_forever"
+		android:selectAllOnFocus="true"
+		android:layout_marginLeft="175dip"
+		android:layout_marginRight="175dip"
+		style="@style/MediumText"
+		android:layout_centerHorizontal="true"/>
+	<TextView android:id="@+id/artist"
+		android:text=""
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:singleLine="true"
+		android:ellipsize="marquee"
+		android:marqueeRepeatLimit="marquee_forever"
+		android:layout_marginLeft="230dip"
+		android:layout_marginRight="230dip"
+		android:selectAllOnFocus="true"
+		style="@style/SmallText"
+		android:layout_centerHorizontal="true"
+		android:layout_below="@id/song_title" />
+	<SeekBar android:id="@+id/song_progress_bar"
+		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-	<ImageButton
-			android:id="@+id/home"
-			android:src="@drawable/home"
-			style="@style/HeaderbarButtons"
-	        android:contentDescription="@string/home"
-			/>
-	<ImageButton
-			android:id="@+id/play_pause"
-			android:src="@drawable/av_play"
-			style="@style/HeaderbarRoundBottomRight"
-			android:layout_toRightOf="@id/home"
-	        android:contentDescription="@string/play"
-			/>
-	<TextView
-			android:id="@+id/song_title"
-			android:text=""
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:singleLine="true"
-			android:ellipsize="marquee"
-			android:marqueeRepeatLimit="marquee_forever"
-			android:selectAllOnFocus="true"
-			android:layout_marginLeft="175dip"
-			android:layout_marginRight="175dip"
-			style="@style/MediumText"
-			android:layout_centerHorizontal="true"
-			/>
-	<TextView
-			android:id="@+id/artist"
-			android:text=""
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:singleLine="true"
-			android:ellipsize="marquee"
-			android:marqueeRepeatLimit="marquee_forever"
-			android:layout_marginLeft="230dip"
-			android:layout_marginRight="230dip"
-			android:selectAllOnFocus="true"
-			style="@style/SmallText"
-			android:layout_centerHorizontal="true"
-			android:layout_below="@id/song_title" />
-	<SeekBar
-			android:id="@+id/song_progress_bar"
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			android:layout_marginLeft="270dip"
-			android:layout_marginRight="270dip"
-			android:layout_below="@id/artist"
-			/>
-	<TextView
-			android:id="@+id/song_progress_text"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_below="@id/artist"
-			android:layout_marginLeft="190dip"
-			style="@style/SmallText"
-			android:text="0:00"
-			/>
-	<TextView
-			android:id="@+id/song_length"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_below="@id/artist"
-			android:layout_alignParentRight="true"
-			android:layout_marginRight="190dip"
-			style="@style/SmallText"
-			android:text="0:00"
-			/>
-	<ImageButton
-			android:id="@+id/repeat"
-			android:src="@drawable/av_repeat"
-	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
-	        android:layout_below="@id/song_title"
-	        android:layout_marginLeft="190dip"
-	        android:contentDescription="@string/repeat"
-			android:background="@null"/>
+		android:layout_marginLeft="270dip"
+		android:layout_marginRight="270dip"
+		android:layout_below="@id/artist"/>
+	<TextView android:id="@+id/song_progress_text"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_below="@id/artist"
+		android:layout_marginLeft="190dip"
+		style="@style/SmallText"
+		android:text="0:00"/>
+	<TextView android:id="@+id/song_length"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_below="@id/artist"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="190dip"
+		style="@style/SmallText"
+		android:text="0:00"/>
+	<ImageButton android:id="@+id/repeat"
+		android:src="@drawable/av_repeat"
+	    android:layout_height="wrap_content"
+	    android:layout_width="wrap_content"
+	    android:layout_below="@id/song_title"
+	    android:layout_marginLeft="190dip"
+	    android:contentDescription="@string/repeat"
+		android:background="@null"/>
 
-	<ImageButton
-			android:id="@+id/shuffle"
-			android:src="@drawable/av_shuffle"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_below="@id/song_title"
-			android:layout_alignParentRight="true"
-			android:layout_marginRight="190dip"
-			android:contentDescription="@string/shuffle"
-			android:background="@null"/>
+	<ImageButton android:id="@+id/shuffle"
+		android:src="@drawable/av_shuffle"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_below="@id/song_title"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="190dip"
+		android:contentDescription="@string/shuffle"
+		android:background="@null"/>
 
-	<ImageButton
-			android:id="@+id/next"
-			android:src="@drawable/av_next"
-			style="@style/HeaderbarButtons"
-			android:layout_alignParentRight="true"
-	        android:contentDescription="@string/next"
-			/>
+	<ImageButton android:id="@+id/next"
+		android:src="@drawable/av_next"
+		style="@style/HeaderbarButtons"
+		android:layout_alignParentRight="true"
+	    android:contentDescription="@string/next" />
 	<!-- this must be after the id/next button -->
-	<ImageButton
-			android:id="@+id/previous"
-			android:src="@drawable/av_previous"
-			style="@style/HeaderbarRoundBottomLeft"
-			android:layout_toLeftOf="@id/next"
-	        android:contentDescription="@string/previous"
-			/>
+	<ImageButton android:id="@+id/previous"
+		android:src="@drawable/av_previous"
+		style="@style/HeaderbarRoundBottomLeft"
+		android:layout_toLeftOf="@id/next"
+	    android:contentDescription="@string/previous"/>
 </RelativeLayout>

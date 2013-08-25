@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
@@ -27,6 +28,7 @@ public class SettingsContainerFragment extends Fragment {
 	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+			// TODO - put this into media settings
 			// if the lastfm password has changed
 			if (s.equalsIgnoreCase("lastFmPassword") || s.equalsIgnoreCase("useLastFm")) {
 				// try a lastfm login, we we want to use it
