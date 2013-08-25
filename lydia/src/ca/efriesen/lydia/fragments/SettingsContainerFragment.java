@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
@@ -89,6 +88,11 @@ public class SettingsContainerFragment extends Fragment {
 
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
+
+		getFragmentManager().beginTransaction()
+				.add(R.id.settings_controls, new SettingsControlsFragment())
+				.add(R.id.settings_fragment, new SystemSettingsFragment())
+				.commit();
 	}
 
 	@Override
@@ -100,15 +104,5 @@ public class SettingsContainerFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 		return inflater.inflate(R.layout.settings_container_fragment, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle saved) {
-		super.onActivityCreated(saved);
-
-		getFragmentManager().beginTransaction()
-				.add(R.id.settings_controls, new SettingsControlsFragment())
-				.add(R.id.settings_fragment, new SystemSettingsFragment())
-				.commit();
 	}
 }

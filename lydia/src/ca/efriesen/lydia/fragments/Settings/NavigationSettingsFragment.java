@@ -11,8 +11,8 @@ public class NavigationSettingsFragment extends PreferenceFragment {
 	public static final String TAG = "lydia navigation Settings Preference";
 
 	@Override
-	public void onActivityCreated(Bundle saved) {
-		super.onActivityCreated(saved);
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
 
 		addPreferencesFromResource(R.xml.navigation_preferences_fragment);
 	}
