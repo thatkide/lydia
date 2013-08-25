@@ -389,6 +389,14 @@ public class MyMapFragment extends MapFragment implements
 		}
 	}
 
+	public boolean onBackPressed() {
+		if (navigating) {
+			clearMap();
+			return true;
+		}
+		return false;
+	}
+
 	private BroadcastReceiver mapAddressReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {

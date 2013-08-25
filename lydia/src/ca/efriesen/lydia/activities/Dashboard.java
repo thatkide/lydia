@@ -165,10 +165,16 @@ public class Dashboard extends Activity {
 		Fragment homeScreenFragment = getFragmentManager().findFragmentByTag("homeScreenFragment");
 		Fragment driverControls = getFragmentManager().findFragmentByTag("driverControls");
 		Fragment settingsFragment = getFragmentManager().findFragmentById(R.id.settings_fragment);
+		MyMapFragment mapFragment = (MyMapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
 
 		// music fragment has special handling, check it first,
 		if (musicFragment != null && musicFragment.isVisible()) {
 			musicFragment.onBackPressed();
+		} else if (mapFragment != null && mapFragment.isVisible()) {
+			// check to see if the map has handled the back press, if not, we do it
+			if (!mapFragment.onBackPressed()) {
+				super.onBackPressed();
+			}
 		} else if(settingsFragment != null && settingsFragment.isVisible()) {
 			super.onBackPressed();
 		// if the controls fragment is visible, only replace the center portion

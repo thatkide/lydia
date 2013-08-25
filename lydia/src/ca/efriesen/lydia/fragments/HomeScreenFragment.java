@@ -116,7 +116,7 @@ public class HomeScreenFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				manager.beginTransaction()
-						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 						.replace(R.id.home_screen_container_fragment, new MapContainerFragment(), "homeScreenContainerFragment")
 						.addToBackStack(null)
 						.commit();
