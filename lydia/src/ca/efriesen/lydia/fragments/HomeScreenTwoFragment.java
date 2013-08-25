@@ -74,7 +74,7 @@ public class HomeScreenTwoFragment extends Fragment{
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 						.replace(R.id.home_screen_container_fragment, new SettingsContainerFragment(), "homeScreenContainerFragment")
-						.addToBackStack("settingsFragment")
+						.addToBackStack(null)
 						.commit();
 			}
 		});

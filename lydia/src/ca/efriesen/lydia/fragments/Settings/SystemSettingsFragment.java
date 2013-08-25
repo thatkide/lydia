@@ -47,6 +47,12 @@ public class SystemSettingsFragment extends PreferenceFragment {
 	};
 
 	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		addPreferencesFromResource(R.xml.system_preferences_fragment);
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
@@ -63,7 +69,5 @@ public class SystemSettingsFragment extends PreferenceFragment {
 		// set the wifi state
 				.putBoolean("systemWiFi", manager.isWifiEnabled())
 				.apply();
-
-		addPreferencesFromResource(R.xml.system_preferences_fragment);
 	}
 }

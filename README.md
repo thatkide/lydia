@@ -1,7 +1,7 @@
 lydia
 =====
 
-Android front end for in car use.  Currently it will only work properly on a Nexus 7 tablet because of hardcoded settings.  
+Android front end for in car use.  Currently it has only been tested on a Nexus 7 first gen.   
 
 "lydia" is the tablet portion.
 "lydia_phone" is the phone portion.  
