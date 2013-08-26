@@ -68,7 +68,11 @@ public class WeatherFragment extends Fragment implements
 		if (weatherInfo != null) {
 
 			ImageView iconView = (ImageView) activity.findViewById(R.id.weather_conditions_icon);
-			iconView.setImageBitmap(weatherInfo.getConditionsIcon(activity, weatherInfo.getCurrentCode()));
+			int currentCode = weatherInfo.getCurrentCode();
+			if (currentCode == WeatherInfo.NOT_AVAILABLE) {
+				currentCode = weatherInfo.getForecast1Code();
+			}
+			iconView.setImageBitmap(weatherInfo.getConditionsIcon(activity, currentCode));
 
 			// hide the loading spinner
 			activity.findViewById(R.id.loading_spinner).setVisibility(View.GONE);
@@ -92,10 +96,14 @@ public class WeatherFragment extends Fragment implements
 				windchill = weatherInfo.getWindChillF() + (char)0x00B0 + "F";
 			}
 
+			String currentText = weatherInfo.getCurrentText();
+			if (currentText.equalsIgnoreCase("unknown")) {
+				currentText = weatherInfo.getForecast1Text();
+			}
 			// current info
 			((TextView)activity.findViewById(R.id.weather_title)).setText(weatherInfo.getLocationCity() + ", " + weatherInfo.getLocationRegion());
 			((TextView)activity.findViewById(R.id.weather_current_temp)).setText(String.valueOf(currentTemp));
-			((TextView)activity.findViewById(R.id.weather_conditions_desc)).setText(weatherInfo.getCurrentText());
+			((TextView)activity.findViewById(R.id.weather_conditions_desc)).setText(currentText);
 			((TextView)activity.findViewById(R.id.weather_wind)).setText(windSpeed + " from "+ weatherInfo.getmWindDirectionText());
 			((TextView)activity.findViewById(R.id.weather_windchill)).setText(windchill);
 			((TextView)activity.findViewById(R.id.weather_humidity)).setText(weatherInfo.getAtmosphereHumidity() + "%");
