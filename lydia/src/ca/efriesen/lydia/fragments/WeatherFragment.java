@@ -3,11 +3,9 @@ package ca.efriesen.lydia.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.IntentSender;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +19,16 @@ import zh.wang.android.utils.YahooWeather4a.WeatherInfo;
 import zh.wang.android.utils.YahooWeather4a.YahooWeatherInfoListener;
 import zh.wang.android.utils.YahooWeather4a.YahooWeatherUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * Created by eric on 2013-08-04.
  */
 public class WeatherFragment extends Fragment implements
 		YahooWeatherInfoListener,
-		GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private LocationClient locationClient;
@@ -66,10 +68,7 @@ public class WeatherFragment extends Fragment implements
 		if (weatherInfo != null) {
 
 			ImageView iconView = (ImageView) activity.findViewById(R.id.weather_conditions_icon);
-			Bitmap icon = weatherInfo.getConditionsIcon(activity);
-			if (icon != null) {
-				iconView.setImageBitmap(icon);
-			}
+			iconView.setImageBitmap(weatherInfo.getConditionsIcon(activity, weatherInfo.getCurrentCode()));
 
 			// hide the loading spinner
 			activity.findViewById(R.id.loading_spinner).setVisibility(View.GONE);
@@ -83,16 +82,17 @@ public class WeatherFragment extends Fragment implements
 			String windSpeed, windchill;
 			if (celsius) {
 				currentTemp = weatherInfo.getCurrentTempC();
-				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "c");
+				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "C");
 				windSpeed = weatherInfo.getWindSpeedK() + " km/h";
-				windchill = weatherInfo.getWindChillC() + (char)0x00B0 + "c";
+				windchill = weatherInfo.getWindChillC() + (char)0x00B0 + "C";
 			} else {
 				currentTemp = weatherInfo.getCurrentTempF();
-				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "f");
+				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "F");
 				windSpeed = weatherInfo.getWindSpeedM() + " mph";
-				windchill = weatherInfo.getWindChillF() + (char)0x00B0 + "f";
+				windchill = weatherInfo.getWindChillF() + (char)0x00B0 + "F";
 			}
 
+			// current info
 			((TextView)activity.findViewById(R.id.weather_title)).setText(weatherInfo.getLocationCity() + ", " + weatherInfo.getLocationRegion());
 			((TextView)activity.findViewById(R.id.weather_current_temp)).setText(String.valueOf(currentTemp));
 			((TextView)activity.findViewById(R.id.weather_conditions_desc)).setText(weatherInfo.getCurrentText());
@@ -101,6 +101,43 @@ public class WeatherFragment extends Fragment implements
 			((TextView)activity.findViewById(R.id.weather_humidity)).setText(weatherInfo.getAtmosphereHumidity() + "%");
 			((TextView)activity.findViewById(R.id.weather_sunrise)).setText(weatherInfo.getAstronomySunrise());
 			((TextView)activity.findViewById(R.id.weather_sunset)).setText(weatherInfo.getAstronomySunset());
+
+			// 5 day forecast
+			for (int i=0; i<5; i++) {
+				try {
+					// use reflection to get the proper method
+					Method getDay = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "Day");
+					Method getCode = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "Code");
+					Method getText = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "Text");
+					Method getTempHigh;
+					Method getTempLow;
+					String high, low;
+					if (celsius) {
+						getTempHigh = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "TempHighC");
+						getTempLow = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "TempLowC");
+						high = "High: " + getTempHigh.invoke(weatherInfo) + (char)0x00B0 + "C";
+						low = "Low: " + getTempLow.invoke(weatherInfo) + (char)0x00B0 + "C";
+					} else {
+						getTempHigh = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "TempHighF");
+						getTempLow = weatherInfo.getClass().getMethod("getForecast" + (i+1) + "TempLowF");
+						high = "High: " + getTempHigh.invoke(weatherInfo) + (char)0x00B0 + "F";
+						low = "Low: " + getTempLow.invoke(weatherInfo) + (char)0x00B0 + "F";
+					}
+
+					// get the text/image based on the resource id and method from above
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_title", "id", "ca.efriesen.lydia"))).setText((String)getDay.invoke(weatherInfo));
+					((ImageView) activity.findViewById(getResources().getIdentifier("weather_day" + i + "_icon", "id", "ca.efriesen.lydia"))).setImageBitmap(weatherInfo.getConditionsIcon(activity, (Integer) getCode.invoke(weatherInfo)));
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_conditions", "id", "ca.efriesen.lydia"))).setText((String) getText.invoke(weatherInfo));
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_high", "id", "ca.efriesen.lydia"))).setText(high);
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_low", "id", "ca.efriesen.lydia"))).setText(low);
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
