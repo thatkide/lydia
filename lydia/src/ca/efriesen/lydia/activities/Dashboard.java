@@ -12,6 +12,7 @@ import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.*;
+import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
 import ca.efriesen.lydia.plugins.LastFM;
 import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -170,15 +171,23 @@ public class Dashboard extends Activity {
 		// music fragment has special handling, check it first,
 		if (musicFragment != null && musicFragment.isVisible()) {
 			musicFragment.onBackPressed();
+			return;
 		} else if (mapFragment != null && mapFragment.isVisible()) {
 			// check to see if the map has handled the back press, if not, we do it
 			if (!mapFragment.onBackPressed()) {
 				super.onBackPressed();
+				return;
 			}
 		} else if(settingsFragment != null && settingsFragment.isVisible()) {
-			super.onBackPressed();
+			// check if the current settings fragment is an instance of the system settings (the one displayed first), and if not, do super.onbackpressed and return.  if it is, replace the home screen like any other fragment
+			if (!(settingsFragment instanceof SystemSettingsFragment)) {
+				super.onBackPressed();
+				return;
+			}
+		}
+
 		// if the controls fragment is visible, only replace the center portion
-		} else if (driverControls.isVisible() && !homeScreenFragment.isVisible()) {
+		if (driverControls.isVisible() && !homeScreenFragment.isVisible()) {
 			try {
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)

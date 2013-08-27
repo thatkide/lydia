@@ -62,7 +62,6 @@ public class SettingsControlsFragment extends Fragment {
 			}
 		});
 
-
 		// nav button
 		(activity.findViewById(R.id.settings_navigation)).setOnClickListener(new View.OnClickListener() {
 			@Override

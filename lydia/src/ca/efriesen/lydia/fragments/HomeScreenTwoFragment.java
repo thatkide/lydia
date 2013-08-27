@@ -86,6 +86,7 @@ public class HomeScreenTwoFragment extends Fragment{
 						.replace(R.id.home_screen_container_fragment, new SettingsContainerFragment(), "homeScreenContainerFragment")
 						.addToBackStack(null)
 						.commit();
+				((Dashboard) getActivity()).setHomeScreenClass(HomeScreenTwoFragment.class);
 			}
 		});
 	}
