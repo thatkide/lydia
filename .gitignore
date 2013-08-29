@@ -21,7 +21,6 @@ local.properties
 
 # IntelliJ project files
 *.idea/
-*.iml
 
 # Android Studio
 .idea/
@@ -30,7 +29,6 @@ local.properties
 /*/out
 /*/*/build
 /*/*/production
-*.iml
 *.iws
 *.ipr
 *~
@@ -40,6 +38,4 @@ local.properties
 /lydia/res/values/keys.xml
 /lydia/proguard_logs/
 /lydia/proguard-project.txt
-/lydia/lydia.iml
-/lydia/libs/google-play-services_lib/google-play-services_lib.iml
 !lydia_signed.apk
