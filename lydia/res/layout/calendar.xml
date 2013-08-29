@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+
+	<RelativeLayout android:id="@+id/calendar_header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dip">
+
+		<TextView android:id="@+id/calendar_title"
+			style="@style/LargeText"
+			android:layout_alignParentLeft="true"/>
+
+		<ImageView android:id="@+id/calendar_next"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/arrow_next"
+			android:layout_alignParentRight="true"/>
+
+		<TextView android:id="@+id/calendar_today"
+			style="@style/MediumText"
+			android:text="@string/today"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:layout_toLeftOf="@id/calendar_next" />
+
+		<ImageView android:id="@+id/calendar_previous"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/arrow_previous"
+			android:layout_toLeftOf="@id/calendar_today"/>
+
+	</RelativeLayout>
+
+	<GridView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/calendar_gridview"
+		android:layout_below="@+id/calendar_header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:listSelector="@android:color/transparent"
+		android:numColumns="7"
+		android:stretchMode="columnWidth" />
+
+	<ListView android:id="@+id/calendar_text"
+		android:layout_below="@+id/calendar_gridview"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+</RelativeLayout>

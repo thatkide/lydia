@@ -100,7 +100,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		});
 
 		// color filters for the random and repeat buttons
-		final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Color.rgb(51, 181, 229), PorterDuff.Mode.SRC_ATOP);
+		final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Constants.FilterColor, PorterDuff.Mode.SRC_ATOP);
 		final PorterDuffColorFilter whiteFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 		artist.setOnTouchListener(this);

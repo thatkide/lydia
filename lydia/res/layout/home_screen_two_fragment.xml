@@ -33,8 +33,9 @@
 			<Button android:id="@+id/status"
 				android:text="@string/status"
 				style="@style/DashboardRoundBottomLeft"/>
-			<Button android:id="@+id/test2"
-				android:text=""
+			<Button android:id="@+id/calendar"
+				android:text="@string/calendar"
+				android:drawableTop="@drawable/calendar"
 				style="@style/DashboardControls"/>
 			<Button android:id="@+id/settings"
 				android:text="@string/settings"

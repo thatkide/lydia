@@ -76,6 +76,18 @@ public class HomeScreenTwoFragment extends Fragment{
 			}
 		});
 
+		activity.findViewById(R.id.calendar).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new CalendarView(), "calendarFragment")
+						.addToBackStack(null)
+						.commit();
+
+			}
+		});
+
 		// settings
 		activity.findViewById(R.id.settings).setOnClickListener(new View.OnClickListener() {
 			@Override

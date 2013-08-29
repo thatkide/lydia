@@ -1,11 +1,15 @@
 package ca.efriesen.lydia_common.includes;
 
+import android.graphics.Color;
+
 /**
  * User: eric
  * Date: 2013-07-11
  * Time: 11:14 PM
  */
 public class Constants {
+
+	final public static int FilterColor = Color.rgb(30, 140, 180);
 
 	// I2C address of slave devices
 	final public static int ALARM = 14;

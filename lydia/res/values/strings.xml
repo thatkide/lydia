@@ -26,6 +26,7 @@
 	<string name="back">Back</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="button_scan">Search for devices</string>
+	<string name="calendar">Calendar</string>
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
 	<string name="chrome">Chrome</string>
@@ -116,6 +117,7 @@
 	<string name="title_paired_devices">Paired Devices</string>
 	<string name="title_unpaired_devices">Unpaired Devices</string>
 	<string name="time">Time</string>
+	<string name="today">Today</string>
 	<string name="toggle_traffic">Toggle Traffic</string>
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>
