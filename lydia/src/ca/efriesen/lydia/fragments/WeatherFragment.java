@@ -49,7 +49,7 @@ public class WeatherFragment extends Fragment implements
 	public void onConnected(Bundle data) {
 		Location location = locationClient.getLastLocation();
 		YahooWeatherUtils yahooWeatherUtils = YahooWeatherUtils.getInstance();
-		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("weatherUseCurrentLocation", true)) {
+		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("weatherUseCurrentLocation", true) && location != null) {
 			yahooWeatherUtils.queryYahooWeather(getActivity(), location , this);
 		} else {
 			String city = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("weatherCity", "Vancouver Canada");

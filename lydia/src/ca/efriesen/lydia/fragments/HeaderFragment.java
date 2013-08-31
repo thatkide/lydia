@@ -84,6 +84,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		TextView artist = (TextView) activity.findViewById(R.id.artist);
 		TextView songTitle = (TextView) activity.findViewById(R.id.song_title);
 		SeekBar songProgress = (SeekBar) activity.findViewById(R.id.song_progress_bar);
+		songProgress.setEnabled(false);
 		songProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -278,6 +279,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			titleView.setText(song.getName());
 
 			// set the progress bar to have the same steps as the song is long in milliseconds
+			progressBar.setEnabled(true);
 			progressBar.setMax(song.getDuration());
 			lengthView.setText(song.getDurationString());
 
