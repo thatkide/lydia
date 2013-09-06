@@ -23,7 +23,7 @@
 				style="@style/DashboardControls"/>
 			<Button android:id="@+id/weather"
 				android:text="@string/weather"
-				android:drawableTop="@drawable/weather_sunny"
+				android:drawableTop="@drawable/weather_icon"
 
 				style="@style/DashboardRoundTopRight"/>
 		</LinearLayout>

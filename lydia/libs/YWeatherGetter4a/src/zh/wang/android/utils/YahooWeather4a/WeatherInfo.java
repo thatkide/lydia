@@ -254,6 +254,7 @@ public class WeatherInfo {
 
 			case SUNNY:
 			case HOT:
+			case FAIR_DAY:
 				return BitmapFactory.decodeResource(context.getResources(), R.drawable.weather_sunny);
 
 			case ISOLATED_THUNDERSHOWERS:
