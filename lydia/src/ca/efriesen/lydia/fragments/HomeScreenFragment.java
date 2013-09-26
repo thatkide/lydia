@@ -224,7 +224,7 @@ public class HomeScreenFragment extends Fragment {
 //		statusButton.setOnClickListener(new View.OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
-//				Fragment statusFragment = new StatusFragment();
+//				Fragment statusFragment = new EngineStatusFragment();
 //				FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 //				transaction.add(getId(), statusFragment, "status").commit();
 //			}

@@ -76,6 +76,17 @@ public class HomeScreenTwoFragment extends Fragment{
 			}
 		});
 
+		activity.findViewById(R.id.engine).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new EngineStatusFragment(), "engineStatus")
+						.addToBackStack(null)
+						.commit();
+			}
+		});
+
 		activity.findViewById(R.id.calendar).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {

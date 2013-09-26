@@ -116,6 +116,7 @@ public class HardwareManagerService extends Service {
 		devices = new ArrayList<Device>();
 		devices.add(new Alarm(this, Constants.ALARM, null));
 		devices.add(new LightSensor(this, Constants.LIGHTSENSOR, Intents.LIGHTVALUE));
+		devices.add(new MJLJReceiver(this, Constants.MJLJ, null));
 //		devices.add(new PressureSensor(this, Constants.FLPRESSURESENSOR, Intents.));
 		devices.add(new TemperatureSensor(this, Constants.INSIDETEMPERATURESENSOR, Intents.INSIDETEMPERATURE));
 		devices.add(new TemperatureSensor(this, Constants.OUTSIDETEMPERATURESENSOR, Intents.OUTISETEMPERATURE));

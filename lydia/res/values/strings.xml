@@ -39,6 +39,7 @@
 	<string name="dialer">Dialer</string>
 	<string name="distance">Distance</string>
 	<string name="duration">Duration</string>
+	<string name="engine">Engine</string>
 	<string name="external_light_sensor">External Light Sensor</string>
 	<string name="external_temperature_sensor">External Temperature Sensor</string>
 	<string name="fast_forward">Fast Forward</string>

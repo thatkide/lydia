@@ -13,6 +13,7 @@ public class Intents {
 	public static final String GETTEMPERATURE = "ca.efriesen.lydia.GETTEMPERATURE";
 	public static final String LIGHTVALUE = "ca.efriesen.lydia.LIGHTVALUE";
 	public static final String LOCKSCREEN = "ca.efriesen.lydia.LOCKSCREEN";
+	public static final String MJLJ = "ca.efriesen.lydia.MJLJ";
 	public static final String OUTISETEMPERATURE = "ca.efriesen.lydia.OUTSIDETEMPERATURE";
 	public static final String RFID = "ca.efriesen.lydia.RFID";
 	public static final String SEATHEAT = "ca.efriesen.lydia.SEATHEAT";

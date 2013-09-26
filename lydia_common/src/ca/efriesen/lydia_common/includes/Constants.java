@@ -39,7 +39,13 @@ public class Constants {
 	final public static int SCREENUNLOCK = 170;
 	final public static int WIPE = 174;
 
-	final public static int FLPRESSURESENSOR = 177;
+	// MJLJ commands
+	final public static int MJLJ = 182;
+	final public static int GETADVANCE = 177;
+	final public static int GETFLAGS = 181;
+	final public static int GETLOAD = 178;
+	final public static int GETRPM = 179;
+	final public static int GETRUNNING = 180;
 
 
 	// we need an id, but this isn't used for hardware io comms
