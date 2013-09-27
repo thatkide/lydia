@@ -38,6 +38,12 @@ public class HomeScreenFragment extends Fragment {
 	private static final String TAG = "lydia HomeScreen";
 
 	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		setRetainInstance(true);
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.home_screen_fragment, container, false);
 	}

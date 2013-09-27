@@ -30,6 +30,12 @@ public class HomeScreenContainerFragment extends Fragment {
 			this.passengerControlClass = passengerControlClass;
 	}
 
+	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		setRetainInstance(true);
+	}
+
 	// default to home screen one
 	public HomeScreenContainerFragment() {
 	}
@@ -46,9 +52,9 @@ public class HomeScreenContainerFragment extends Fragment {
 		try {
 			// setup the home screen
 			getFragmentManager().beginTransaction()
-					.add(R.id.driver_controls, (Fragment) driverControlClass.newInstance(), "driverControls")
-					.add(R.id.home_screen_fragment, (Fragment) homeScreenClass.newInstance(), "homeScreenFragment")
-					.add(R.id.passenger_controls, (Fragment) passengerControlClass.newInstance(), "passengerControls")
+					.replace(R.id.driver_controls, (Fragment) driverControlClass.newInstance(), "driverControls")
+					.replace(R.id.home_screen_fragment, (Fragment) homeScreenClass.newInstance(), "homeScreenFragment")
+					.replace(R.id.passenger_controls, (Fragment) passengerControlClass.newInstance(), "passengerControls")
 					.commit();
 		} catch (java.lang.InstantiationException e) {
 			e.printStackTrace();

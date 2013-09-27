@@ -56,6 +56,12 @@ public class FooterFragment extends Fragment {
 	};
 
 	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		setRetainInstance(true);
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		return inflater.inflate(R.layout.footer_fragment, container, false);

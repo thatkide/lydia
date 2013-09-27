@@ -21,6 +21,13 @@ import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia_common.includes.Intents;
 
 public class PassengerControlsMoreFragment extends Fragment {
+
+	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		setRetainInstance(true);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 		return inflater.inflate(R.layout.passenger_controls_more_fragment, container, false);

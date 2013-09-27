@@ -52,7 +52,7 @@ public class Dashboard extends Activity {
 		// set the entire view to a gesture overlay
 //		GestureOverlayView overlayView = new GestureOverlayView(this);
 		// inflate our xml
-		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
+//		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
 		// add the xml to the gesture overlay
 //		overlayView.addView(inflate);
 		// send all gestures to our listener
@@ -69,22 +69,17 @@ public class Dashboard extends Activity {
 		startService(new Intent(this, HardwareManagerService.class));
 
 		// find the fragment container
-//		if (findViewById(R.id.home_screen_fragment) != null) {
-//			// if this is a resume, we'll have overlapping fragments
-//			if (savedInstance != null) {
-//				Log.d(TAG, "oncreate find view, return call");
-//				return;
-//			}
-//		}
+		// if this is a resume, we'll have overlapping fragments
+		if (getFragmentManager().findFragmentByTag("homeScreenContainerFragment") == null) {
+			getFragmentManager().beginTransaction()
+				.replace(R.id.header_fragment, new HeaderFragment())
+				.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(), "homeScreenContainerFragment")
+				.replace(R.id.footer_fragment, new FooterFragment())
+				.commit();
+		}
 
 		// initialize all plugins
 		lastFm = new LastFM(this);
-
-		getFragmentManager().beginTransaction()
-				.add(R.id.header_fragment, new HeaderFragment())
-				.add(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(), "homeScreenContainerFragment")
-				.add(R.id.footer_fragment, new FooterFragment())
-				.commit();
 
 		Log.d(TAG, "oncreate finished");
 	}

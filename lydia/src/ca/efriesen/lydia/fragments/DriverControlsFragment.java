@@ -24,6 +24,13 @@ import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 
 public class DriverControlsFragment extends Fragment {
+
+	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		setRetainInstance(true);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
 		return inflater.inflate(R.layout.driver_controls_fragment, container, false);

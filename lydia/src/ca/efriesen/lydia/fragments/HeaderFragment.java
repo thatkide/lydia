@@ -54,6 +54,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
+		setRetainInstance(true);
 		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
