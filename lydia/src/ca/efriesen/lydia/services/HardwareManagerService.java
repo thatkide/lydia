@@ -117,7 +117,7 @@ public class HardwareManagerService extends Service {
 		}, new IntentFilter("upgradeFirmware"));
 
 		// populate the devices array
-		// The device contsructor take a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
+		// The device constructor takes a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
 		devices = new ArrayList<Device>();
 		devices.add(new Alarm(this, Constants.ALARM, null));
 		devices.add(new LightSensor(this, Constants.LIGHTSENSOR, Intents.LIGHTVALUE));
