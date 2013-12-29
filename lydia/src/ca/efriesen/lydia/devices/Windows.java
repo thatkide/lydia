@@ -97,8 +97,10 @@ public class Windows extends Device implements SerialIO {
 
 	@Override
 	public void write(byte[] command) {
-		// write the bytes to the arduino
-		serialInputOutputManager.writeAsync(command);
+		try {
+			// write the bytes to the arduino
+			serialInputOutputManager.writeAsync(command);
+		} catch (NullPointerException e) {}
 	}
 
 	public static Intent sendWindowCommand(View view, MotionEvent motionEvent) {

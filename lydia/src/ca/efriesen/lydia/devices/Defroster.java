@@ -63,7 +63,9 @@ public class Defroster extends Device implements SerialIO {
 
 	@Override
 	public void write(byte[] command) {
-		// write the bytes to the arduino
-		serialInputOutputManager.writeAsync(command);
+		try {
+			// write the bytes to the arduino
+			serialInputOutputManager.writeAsync(command);
+		} catch (NullPointerException e) {}
 	}
 }
