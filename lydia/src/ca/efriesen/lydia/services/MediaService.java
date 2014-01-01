@@ -208,6 +208,9 @@ public class MediaService extends Service implements
 	}
 
 	private void cleanUp() {
+		// remove note text on cleanup
+		builder.setContentText("");
+		notificationManager.notify(notificationId, builder.build());
 		// release media player resources
 		try {
 			mMediaPlayer.release();
