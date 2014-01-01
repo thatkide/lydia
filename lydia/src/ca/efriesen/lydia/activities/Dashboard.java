@@ -17,6 +17,7 @@ import ca.efriesen.lydia.plugins.LastFM;
 import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
+import com.appaholics.updatechecker.UpdateChecker;
 import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -32,11 +33,17 @@ public class Dashboard extends Activity {
 	private Class homeScreenClass;
 	private Class passengerControlsClass;
 
+	// Update checker
+	UpdateChecker checker;
+
 	/**
 	 * Called when the activities is first created.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstance) {
+		checker = new UpdateChecker(this, true);
+
+
 //		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //				.detectAll()
 //				.penaltyLog()
@@ -328,6 +335,22 @@ public class Dashboard extends Activity {
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstance) {
 			return mDialog;
+		}
+	}
+
+
+	private class UpdaterTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected Void doInBackground(Void... voids) {
+			checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
+
+			return null;
+		}
+
+		protected void onPostExecute() {
+			if (checker.isUpdateAvailable()) {
+				checker.downloadAndInstall("https://github.com/ericfri/lydia/raw/master/lydia_signed.apk");
+			}
 		}
 	}
 }
