@@ -45,7 +45,7 @@ public class MediaService extends Service implements
 	// notification vars
 	private Notification.Builder builder;
 	private NotificationManager notificationManager;
-	private int notificationId = 1;
+	private int notificationId = 12;
 
 	public static final String TAG = "lydia Media Service V2";
 
@@ -96,11 +96,11 @@ public class MediaService extends Service implements
 		// start it in the foreground so it doesn't get killed
 		builder = new Notification.Builder(this)
 				.setSmallIcon(R.drawable.av_play)
-				.setContentTitle("Lydia Music")
+				.setContentTitle("Music")
 				.setOnlyAlertOnce(true)
 				.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, Dashboard.class), PendingIntent.FLAG_UPDATE_CURRENT));
 
-		startForeground(42, builder.build());
+		startForeground(notificationId, builder.build());
 
 		// Add a notification
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -173,12 +173,17 @@ public class MediaService extends Service implements
 		mMediaPlayer.start();
 		setState(State.Playing);
 
+		Song song = (Song) playlist.get(playlistPosition);
+
+		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
+		notificationManager.notify(notificationId, builder.build());
+
 		// set the duration in the song
 		playlist.get(playlistPosition).setDuration(mediaPlayer.getDuration());
 		playlist.get(playlistPosition).setDurationString(MediaUtils.convertMillis(mMediaPlayer.getDuration()));
 
 		// send the new song as the update media info intent
-		sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra("ca.efriesen.Song", playlist.get(playlistPosition)));
+		sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra("ca.efriesen.Song", song));
 	}
 
 	synchronized private void initMediaPlayer() {
@@ -203,6 +208,9 @@ public class MediaService extends Service implements
 	}
 
 	private void cleanUp() {
+		// remove note text on cleanup
+		builder.setContentText("");
+		notificationManager.notify(notificationId, builder.build());
 		// release media player resources
 		try {
 			mMediaPlayer.release();

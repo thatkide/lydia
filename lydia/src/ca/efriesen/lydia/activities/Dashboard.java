@@ -15,6 +15,7 @@ import ca.efriesen.lydia.fragments.*;
 import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
 import ca.efriesen.lydia.plugins.LastFM;
 import ca.efriesen.lydia.services.HardwareManagerService;
+import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
@@ -69,6 +70,9 @@ public class Dashboard extends Activity {
 
 		// start the hardware managerservice
 		startService(new Intent(this, HardwareManagerService.class));
+
+		// start the media service
+		startService(new Intent(this, MediaService.class));
 
 		// find the fragment container
 		// if this is a resume, we'll have overlapping fragments
