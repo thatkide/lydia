@@ -83,7 +83,7 @@ public class Arduino {
 	}
 
 	// initialize the Arduino
-	public void initlize() {
+	public void initialize() {
 		mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
 		// register a receiver, so if the service is already running, and the arduino is attached/detached, we can (re)initialize it and get the io working

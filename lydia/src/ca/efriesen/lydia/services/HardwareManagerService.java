@@ -46,6 +46,7 @@ public class HardwareManagerService extends Service {
 
 	// list of devices
 	private ArrayList<Device> devices;
+	private Arduino arduino;
 
 	// Thread var
 	private volatile boolean connectThreadAlive = true;
@@ -105,16 +106,10 @@ public class HardwareManagerService extends Service {
 		notificationManager.notify(1, builder.build());
 
 		// setup the arduino
-		final Arduino arduino = new Arduino(this, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("autoUpgradeFirmware", true));
-		arduino.initlize();
+		arduino = new Arduino(this, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("autoUpgradeFirmware", true));
+		arduino.initialize();
 
-		registerReceiver(new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				Log.d(TAG, "stk - upgrading firmware");
-				arduino.upgradeFirmware();
-			}
-		}, new IntentFilter("upgradeFirmware"));
+		registerReceiver(upgradeFirmwareReceiver, new IntentFilter("upgradeFirmware"));
 
 		// populate the devices array
 		// The device constructor takes a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
@@ -165,6 +160,13 @@ public class HardwareManagerService extends Service {
 		try {
 			unregisterReceiver(bluetoothManagerReceiver);
 		} catch (Exception e) {}
+		try {
+			unregisterReceiver(smsReplyReceiver);
+		} catch (Exception e) {	}
+		try {
+			unregisterReceiver(upgradeFirmwareReceiver);
+		} catch (Exception e) {}
+		arduino.cleanUp();
 	}
 
 
@@ -301,6 +303,14 @@ public class HardwareManagerService extends Service {
 
 		connectBluetooth.start();
 	}
+
+	private BroadcastReceiver upgradeFirmwareReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "stk - upgrading firmware");
+			arduino.upgradeFirmware();
+		}
+	};
 
 	private BroadcastReceiver smsReplyReceiver = new BroadcastReceiver() {
 		@Override
