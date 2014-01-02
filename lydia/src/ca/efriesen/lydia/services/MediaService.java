@@ -10,10 +10,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
@@ -38,6 +39,19 @@ public class MediaService extends Service implements
 	// other services
 	AudioManager audioManager = null;
 	MediaPlayer mMediaPlayer = null;
+
+	// Intent strings
+	public static final String MEDIA_COMMAND = "ca.efriesen.lydia.MediaService.MediaCommand";
+	public static final String NEXT = "ca.efriesen.lydia.MediaService.Next";
+	public static final String PLAY = "ca.efriesen.lydia.MediaService.Play";
+	public static final String PLAY_PAUSE = "ca.efriesen.lydia.MediaService.PlayPause";
+	public static final String PREVIOUS = "ca.efriesen.lydia.MediaService.Previous";
+	public static final String PROGRESS = "ca.efriesen.lydia.MediaService.Progress";
+	public static final String REPEAT = "ca.efriesen.lydia.MediaService.Repeat";
+	public static final String SET_POSITION = "ca.efriesen.lydia.MediaService.SetPosition";
+	public static final String SHUFFLE = "ca.efriesen.lydia.MediaService.Shuffle";
+	public static final String STATE = "ca.efriesen.lydia.MediaService.State";
+	public static final String STOP = "ca.efriesen.lydia.MediaService.Stop";
 
 	// service bindings
 	private final IBinder mBinder = new MediaServiceBinder();
@@ -74,6 +88,10 @@ public class MediaService extends Service implements
 	private boolean repeatAll;
 	private boolean shuffle;
 
+	private Handler mHandler = new Handler();
+
+	private LocalBroadcastManager localBroadcastManager;
+
 	public class MediaServiceBinder extends Binder {
 		public MediaService getService() {
 			return MediaService.this;
@@ -86,12 +104,12 @@ public class MediaService extends Service implements
 		return mBinder;
 	}
 
-	// Service methods
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
 		sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
 		// start it in the foreground so it doesn't get killed
 		builder = new Notification.Builder(this)
@@ -110,6 +128,15 @@ public class MediaService extends Service implements
 		repeatAll = sharedPreferences.getBoolean(Constants.REPEATALL, false);
 		shuffle = sharedPreferences.getBoolean(Constants.SHUFFLE, false);
 
+		localBroadcastManager.registerReceiver(CommandReceiver, new IntentFilter(MEDIA_COMMAND));
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		try {
+			localBroadcastManager.unregisterReceiver(CommandReceiver);
+		} catch (Exception e) {}
 	}
 
 	@Override
@@ -170,10 +197,13 @@ public class MediaService extends Service implements
 
 	@Override
 	public void onPrepared(MediaPlayer mediaPlayer) {
+		// remove old callbacks
+		mHandler.removeCallbacks(mUpdateTime);
+
 		mMediaPlayer.start();
 		setState(State.Playing);
 
-		Song song = (Song) playlist.get(playlistPosition);
+		Song song = playlist.get(playlistPosition);
 
 		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
 		notificationManager.notify(notificationId, builder.build());
@@ -184,9 +214,10 @@ public class MediaService extends Service implements
 
 		// send the new song as the update media info intent
 		sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra("ca.efriesen.Song", song));
+		mHandler.postDelayed(mUpdateTime, 25);
 	}
 
-	synchronized private void initMediaPlayer() {
+	private void initMediaPlayer() {
 		// make sure we start dead, the callback will set us to prepared
 		setState(State.Stopped);
 
@@ -208,6 +239,9 @@ public class MediaService extends Service implements
 	}
 
 	private void cleanUp() {
+		// stop sending broadcasts
+		mHandler.removeCallbacks(mUpdateTime);
+
 		// remove note text on cleanup
 		builder.setContentText("");
 		notificationManager.notify(notificationId, builder.build());
@@ -235,7 +269,7 @@ public class MediaService extends Service implements
 		setState(State.Dead);
 	}
 
-	synchronized private void setSong(Song song) {
+	private void setSong(Song song) {
 		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId());
 		try {
 			mMediaPlayer.setDataSource(getApplicationContext(), uri);
@@ -287,7 +321,7 @@ public class MediaService extends Service implements
 		}
 	}
 
-	synchronized public void stop() {
+	public void stop() {
 		if (getState() == State.Playing) {
 			mMediaPlayer.reset();
 			setState(State.Stopped);
@@ -299,7 +333,7 @@ public class MediaService extends Service implements
 		mMediaPlayer.pause();
 	}
 
-	synchronized public void play() {
+	public void play() {
 		if (getState() == State.Dead) {
 			initMediaPlayer();
 			// if we have an empty playlist
@@ -318,7 +352,15 @@ public class MediaService extends Service implements
 		setState(State.Playing);
 	}
 
-	synchronized public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
+	public void playPause() {
+		if (getState() == State.Paused) {
+			play();
+		} else {
+			pause();
+		}
+	}
+
+	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
 		playlistOrdered = playlist;
 		// copy the playlist into a new object.
 		ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
@@ -420,7 +462,7 @@ public class MediaService extends Service implements
 		return artists;
 	}
 
-	synchronized public ArrayList<Album> getAllAlbumsByArtist(Artist artist) {
+	public ArrayList<Album> getAllAlbumsByArtist(Artist artist) {
 		String[] PROJECTION = new String[] {
 				"DISTINCT " + MediaStore.Audio.Media.ALBUM_ID + " AS " + MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM_ID,
@@ -442,7 +484,7 @@ public class MediaService extends Service implements
 		return albums;
 	}
 
-	synchronized public ArrayList<Song> getAllSongsInAlbum(Album album) {
+	public ArrayList<Song> getAllSongsInAlbum(Album album) {
 		String[] PROJECTION = new String[] {
 				MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM,
@@ -487,13 +529,14 @@ public class MediaService extends Service implements
 		mMediaPlayer.seekTo(position);
 	}
 
-	synchronized public State getState() {
+	public State getState() {
 		return mState;
 	}
 
-	synchronized public void setState(State state) {
+	public void setState(State state) {
 		this.mState = state;
-		sendBroadcast(new Intent(Intents.MEDIASTATE).putExtra(Intents.MEDIASTATE, state));
+		localBroadcastManager.sendBroadcast(new Intent(STATE).putExtra(STATE, state));
+//		sendBroadcast(new Intent(Intents.MEDIASTATE).putExtra(Intents.MEDIASTATE, state));
 	}
 
 	public void playAll() {
@@ -534,11 +577,11 @@ public class MediaService extends Service implements
 		sharedPreferences.edit().putBoolean(Constants.REPEATALL, repeatAll).commit();
 	}
 
-	synchronized public boolean getShuffle() {
+	public boolean getShuffle() {
 		return shuffle;
 	}
 
-	synchronized public void setShuffle(boolean shuffle) {
+	public void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
 		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
 		if (shuffle) {
@@ -556,4 +599,37 @@ public class MediaService extends Service implements
 			}
 		}
 	}
+
+	private Runnable mUpdateTime = new Runnable() {
+		@Override
+		public void run() {
+			localBroadcastManager.sendBroadcast(new Intent(PROGRESS).putExtra("currentPositionString", getCurrentPositionString()).putExtra("currentPositionInt" ,getCurrentPosition()));
+			mHandler.postDelayed(mUpdateTime, 250);
+		}
+	};
+
+	private BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String command = intent.getStringExtra("command");
+			if (command.equals(NEXT)) {
+				nextSong();
+			} else if (command.equals(PREVIOUS)) {
+				previousSong();
+			} else if (command.equals(PLAY)) {
+				play();
+			} else if (command.equals(PLAY_PAUSE)) {
+				playPause();
+			} else if (command.equals(REPEAT)) {
+				setRepeat(intent.getBooleanExtra(REPEAT, false));
+			} else if (command.equals(SET_POSITION)) {
+				setCurrentPosition(intent.getIntExtra(SET_POSITION, 0));
+			} else if (command.equals(SHUFFLE)) {
+				setShuffle(intent.getBooleanExtra(SHUFFLE, false));
+			} else if (command.equals(STOP)) {
+				stop();
+			}
+		}
+	};
+
 }

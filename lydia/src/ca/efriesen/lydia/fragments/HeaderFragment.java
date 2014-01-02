@@ -2,27 +2,23 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.*;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
+import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
-
-import java.util.ArrayList;
 
 
 /**
@@ -34,28 +30,25 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 
 	public static final String TAG = "Header Fragment";
 
-	private Handler mHandler = new Handler();
 	private Activity activity;
 
 	private String artistId;
 	private String albumId;
 
-	// bind to the media service
-	private boolean mediaBound = false;
-	private MediaService mediaService;
+	LocalBroadcastManager localBroadcastManager;
 
-	ImageButton home;
-	ImageButton playPause;
-	ImageButton previous;
-	ImageButton next;
-	ImageButton shuffle;
-	ImageButton repeat;
+	private ImageButton home;
+	private ImageButton playPause;
+	private ImageButton previous;
+	private ImageButton next;
+	private ImageButton shuffle;
+	private ImageButton repeat;
 
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		setRetainInstance(true);
-		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
+		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 	}
 
 	@Override
@@ -90,7 +83,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
-					mediaService.setCurrentPosition(progress);
+					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SET_POSITION).putExtra(MediaService.SET_POSITION, progress));
 				}
 			}
 
@@ -126,28 +119,21 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		playPause.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
-				if (mediaService.getState() == MediaService.State.Playing) {
-					pp.setImageResource(R.drawable.av_play);
-					mediaService.pause();
-				} else {
-					pp.setImageResource(R.drawable.av_pause);
-					mediaService.play();
-				}
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PLAY_PAUSE));
 			}
 		});
 
 		next.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mediaService.nextSong();
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.NEXT));
 			}
 		});
 
 		previous.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mediaService.previousSong();
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PREVIOUS));
 			}
 		});
 
@@ -164,7 +150,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 				} else {
 					repeat.setColorFilter(whiteFilter);
 				}
-				mediaService.setRepeat(!repeatState);
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.REPEAT).putExtra(MediaService.REPEAT, !repeatState));
 			}
 		});
 
@@ -178,8 +164,10 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public boolean onLongClick(View v) {
 				Toast.makeText(activity.getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-				mediaService.setShuffle(true);
-				mediaService.play();
+		// FIXME
+		// this needs to send the shuffle, then in the service, do the play too
+//				mediaService.setShuffle(true);
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PLAY));
 				// we return true, saying we've handled this.. don't let anybody else do anything
 				return true;
 			}
@@ -195,7 +183,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 				} else {
 					shuffle.setColorFilter(whiteFilter);
 				}
-				mediaService.setShuffle(!shuffleState);
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE).putExtra(MediaService.SHUFFLE, !shuffleState));
 			}
 		});
 
@@ -204,23 +192,28 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 
 		// register a receiver to listen for the usb stick being unmounted.  when unmounted kill the update thread
 		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
+
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.STATE));
+		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// unbind on destroy
 		try {
 			activity.unregisterReceiver(mMusicInfo);
 		} catch (Exception e) {}
 		try {
 			activity.unregisterReceiver(cardUnmountedReceiver);
 		} catch (Exception e) {}
+
 		try {
-			getActivity().unbindService(mediaServiceConnection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			localBroadcastManager.unregisterReceiver(mediaStateReceiver);
+		} catch (Exception e) {}
+
+		try {
+			localBroadcastManager.unregisterReceiver(mediaProgressReceiver);
+		} catch (Exception e) {}
 	}
 
 	@Override
@@ -243,10 +236,8 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	private BroadcastReceiver cardUnmountedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// remove the callbacks
-			mHandler.removeCallbacks(mUpdateTime);
 			// make sure the music is stopped
-//			mService.stopMusic();
+			localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.STOP));
 			Log.d(TAG, "Card unmounted");
 		}
 	};
@@ -254,9 +245,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	private BroadcastReceiver mMusicInfo = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// remove old callbacks
-			mHandler.removeCallbacks(mUpdateTime);
-
 			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
 
 			// get the play/pause button
@@ -287,36 +275,29 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			// these need to be selected to start the marquee
 			artistView.setSelected(true);
 			titleView.setSelected(true);
-
-			mHandler.postDelayed(mUpdateTime, 25);
 		}
 	};
 
-	private Runnable mUpdateTime = new Runnable() {
+	private BroadcastReceiver mediaProgressReceiver = new BroadcastReceiver() {
 		@Override
-		public void run() {
+		public void onReceive(Context context, Intent intent) {
 			TextView currentPosition = (TextView) activity.findViewById(R.id.song_progress_text);
 			ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.song_progress_bar);
 
-			currentPosition.setText(mediaService.getCurrentPositionString());
-			progressBar.setProgress(mediaService.getCurrentPosition());
-
-			mHandler.postDelayed(mUpdateTime, 25);
+			currentPosition.setText(intent.getStringExtra("currentPositionString"));
+			progressBar.setProgress(intent.getIntExtra("currentPositionInt", 0));
 		}
 	};
 
-	private ServiceConnection mediaServiceConnection = new ServiceConnection() {
+	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
-		public void onServiceConnected(ComponentName name, IBinder iBinder) {
-			mediaService = ((MediaService.MediaServiceBinder) iBinder).getService();
-			mediaBound = true;
-			Log.d(TAG, "media service bound");
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mediaBound = false;
-			mediaService = null;
+		public void onReceive(Context context, Intent intent) {
+			ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
+			if (intent.getSerializableExtra(MediaService.STATE) == MediaService.State.Paused) {
+				pp.setImageResource(R.drawable.av_play);
+			} else {
+				pp.setImageResource(R.drawable.av_pause);
+			}
 		}
 	};
 
