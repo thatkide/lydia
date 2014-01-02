@@ -301,7 +301,9 @@ public class Arduino {
 			// compare them, if they don't equal, update the firmware
 			if (!previousFirmware.equalsIgnoreCase(hexString.toString())) {
 				PreferenceManager.getDefaultSharedPreferences(context).edit().putString("previousFirmwareDigest", hexString.toString()).apply();
-				upgradeFirmware();
+				try {
+					upgradeFirmware();
+				} catch (Exception e) {}
 			}
 
 
