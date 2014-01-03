@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
-import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
 
@@ -32,17 +30,14 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 
 	private Activity activity;
 
+	// color filters for the random and repeat buttons
+	final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Constants.FilterColor, PorterDuff.Mode.SRC_ATOP);
+	final PorterDuffColorFilter whiteFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+
 	private String artistId;
 	private String albumId;
 
 	LocalBroadcastManager localBroadcastManager;
-
-	private ImageButton home;
-	private ImageButton playPause;
-	private ImageButton previous;
-	private ImageButton next;
-	private ImageButton shuffle;
-	private ImageButton repeat;
 
 	@Override
 	public void onCreate(Bundle savedInstance) {
@@ -68,16 +63,16 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		super.onStart();
 
 		// get all the buttons
-		home = (ImageButton) activity.findViewById(R.id.home);
-		playPause = (ImageButton) activity.findViewById(R.id.play_pause);
-		previous = (ImageButton) activity.findViewById(R.id.previous);
-		next = (ImageButton) activity.findViewById(R.id.next);
-		shuffle = (ImageButton) activity.findViewById(R.id.shuffle);
-		repeat = (ImageButton) activity.findViewById(R.id.repeat);
-
+		ImageButton home = (ImageButton) activity.findViewById(R.id.home);
+		ImageButton playPause = (ImageButton) activity.findViewById(R.id.play_pause);
+		ImageButton previous = (ImageButton) activity.findViewById(R.id.previous);
+		ImageButton next = (ImageButton) activity.findViewById(R.id.next);
+		final ImageButton shuffle = (ImageButton) activity.findViewById(R.id.shuffle);
+		final ImageButton repeat = (ImageButton) activity.findViewById(R.id.repeat);
 		TextView artist = (TextView) activity.findViewById(R.id.artist);
 		TextView songTitle = (TextView) activity.findViewById(R.id.song_title);
 		SeekBar songProgress = (SeekBar) activity.findViewById(R.id.song_progress_bar);
+
 		songProgress.setEnabled(false);
 		songProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
@@ -93,10 +88,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {}
 		});
-
-		// color filters for the random and repeat buttons
-		final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Constants.FilterColor, PorterDuff.Mode.SRC_ATOP);
-		final PorterDuffColorFilter whiteFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 		artist.setOnTouchListener(this);
 		songTitle.setOnTouchListener(this);
@@ -137,25 +128,20 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			}
 		});
 
-		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.REPEATALL, false)) {
+		// we store the repeat state in shared prefs, we can read it, just don't touch it.  that's not our job
+		if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.REPEATALL, false)) {
 			repeat.setColorFilter(blueFilter);
 		}
 
 		repeat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Boolean repeatState = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.REPEATALL, false);
-				if (!repeatState) {
-					repeat.setColorFilter(blueFilter);
-				} else {
-					repeat.setColorFilter(whiteFilter);
-				}
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.REPEAT).putExtra(MediaService.REPEAT, !repeatState));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.REPEAT));
 			}
 		});
 
 		// set the default state for the shuffle button
-		if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.SHUFFLE, false)) {
+		if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.SHUFFLE, false)) {
 			shuffle.setColorFilter(blueFilter);
 		}
 
@@ -163,11 +149,8 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		shuffle.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				Toast.makeText(activity.getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-		// FIXME
-		// this needs to send the shuffle, then in the service, do the play too
-//				mediaService.setShuffle(true);
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PLAY));
+				Toast.makeText(activity, getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE_PLAY));
 				// we return true, saying we've handled this.. don't let anybody else do anything
 				return true;
 			}
@@ -177,43 +160,46 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		shuffle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Boolean shuffleState = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.SHUFFLE, false);
-				if (!shuffleState) {
-					shuffle.setColorFilter(blueFilter);
-				} else {
-					shuffle.setColorFilter(whiteFilter);
-				}
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE).putExtra(MediaService.SHUFFLE, !shuffleState));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE));
 			}
 		});
 
 		// register a receiver to update the media info
-		activity.registerReceiver(mMusicInfo, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(Intents.UPDATEMEDIAINFO));
 
 		// register a receiver to listen for the usb stick being unmounted.  when unmounted kill the update thread
 		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
 
-		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.STATE));
+		// register the local broadcasts from the service
 		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
+		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaService.REPEAT_STATE));
+		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaService.SHUFFLE_STATE));
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.STATE));
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		try {
-			activity.unregisterReceiver(mMusicInfo);
+			localBroadcastManager.unregisterReceiver(mMusicInfo);
 		} catch (Exception e) {}
 		try {
 			activity.unregisterReceiver(cardUnmountedReceiver);
 		} catch (Exception e) {}
 
 		try {
+			localBroadcastManager.unregisterReceiver(mediaProgressReceiver);
+		} catch (Exception e) {}
+		try {
+			localBroadcastManager.unregisterReceiver(mediaRepeatState);
+		} catch (Exception e) {}
+		try {
+			localBroadcastManager.unregisterReceiver(mediaShuffleState);
+		} catch (Exception e) {}
+		try {
 			localBroadcastManager.unregisterReceiver(mediaStateReceiver);
 		} catch (Exception e) {}
 
-		try {
-			localBroadcastManager.unregisterReceiver(mediaProgressReceiver);
-		} catch (Exception e) {}
 	}
 
 	@Override
@@ -245,11 +231,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	private BroadcastReceiver mMusicInfo = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
-
-			// get the play/pause button
-			ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
-			pp.setImageResource(R.drawable.av_pause);
+			Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
 
 			// get the required text views
 			TextView artistView = (TextView) activity.findViewById(R.id.artist);
@@ -286,6 +268,32 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 
 			currentPosition.setText(intent.getStringExtra("currentPositionString"));
 			progressBar.setProgress(intent.getIntExtra("currentPositionInt", 0));
+		}
+	};
+
+	private BroadcastReceiver mediaRepeatState = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final ImageButton repeat = (ImageButton) activity.findViewById(R.id.repeat);
+
+			if (intent.getBooleanExtra(MediaService.REPEAT_STATE, false)) {
+				repeat.setColorFilter(blueFilter);
+			} else {
+				repeat.setColorFilter(whiteFilter);
+			}
+		}
+	};
+
+	private BroadcastReceiver mediaShuffleState = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final ImageButton shuffle = (ImageButton) activity.findViewById(R.id.shuffle);
+
+			if (intent.getBooleanExtra(MediaService.SHUFFLE_STATE, false)) {
+				shuffle.setColorFilter(blueFilter);
+			} else {
+				shuffle.setColorFilter(whiteFilter);
+			}
 		}
 	};
 
