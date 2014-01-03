@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.*;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
@@ -36,6 +33,8 @@ public class HomeScreenFragment extends Fragment {
 	private final static int SEARCH = 4;
 
 	private static final String TAG = "lydia HomeScreen";
+
+	private LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 
 	@Override
 	public void onCreate(Bundle saved) {
@@ -68,10 +67,7 @@ public class HomeScreenFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		getActivity().registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
-		// bind to the media service
-		// we use this to update the icon on the home screen
-		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
 
 		final FragmentManager manager = getFragmentManager();
 		final Activity activity = getActivity();
@@ -209,11 +205,8 @@ public class HomeScreenFragment extends Fragment {
 	public void onDestroy() {
 		super.onDestroy();
 		try {
-			getActivity().unregisterReceiver(updateMusicReceiver);
+			localBroadcastManager.unregisterReceiver(updateMusicReceiver);
 		} catch (IllegalArgumentException e) { }
-		try {
-			getActivity().unbindService(mediaServiceConnection);
-		} catch (Exception e) { }
 	}
 
 	@Override
@@ -304,54 +297,37 @@ public class HomeScreenFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-	}
-
-	private void setAlbumArtImage(Album album) {
-		try {
-			// find the music button on the home screen
-			Button music = (Button) getActivity().findViewById(R.id.music);
-			try {
-				// save the album id
-				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("currentAlbum", album.getId()).commit();
-				// set the background of the button to the album art
-
-				BitmapDrawable bitmapDrawable = new BitmapDrawable(getActivity().getResources(), album.getAlbumArt(getActivity().getApplicationContext()));
-
-				// create a drawable from the bitmap, and set the background of the music button to the file
-				music.setBackground(bitmapDrawable);
-				// remove the record image
-				music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-				// remove the text on the button
-				music.setText("");
-			} catch (Exception e) {
-				music.setBackgroundResource(R.drawable.button_bg);
-				music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
-				music.setText(R.string.music);
-			}
-		} catch (Exception e) {}
+		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
 	}
 
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
-			setAlbumArtImage(song.getAlbum());
-		}
-	};
+			Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
+			Album album = song.getAlbum();
+			try {
+				// find the music button on the home screen
+				Button music = (Button) getActivity().findViewById(R.id.music);
+				try {
+					// save the album id
+					PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("currentAlbum", album.getId()).commit();
+					// set the background of the button to the album art
 
-	private ServiceConnection mediaServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder iBinder) {
-			MediaService mediaService = ((MediaService.MediaServiceBinder) iBinder).getService();
-			if (mediaService.getState() != MediaService.State.Dead) {
-				Album album = new Album();
-				album.setId(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("currentAlbum", 0));
-				setAlbumArtImage(album);
-			}
-		}
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getActivity().getResources(), album.getAlbumArt(getActivity().getApplicationContext()));
 
-		@Override
-		public void onServiceDisconnected(ComponentName name) { }
+					// create a drawable from the bitmap, and set the background of the music button to the file
+					music.setBackground(bitmapDrawable);
+					// remove the record image
+					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+					// remove the text on the button
+					music.setText("");
+				} catch (Exception e) {
+					music.setBackgroundResource(R.drawable.button_bg);
+					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
+					music.setText(R.string.music);
+				}
+			} catch (Exception e) {}
+		}
 	};
 
 }
