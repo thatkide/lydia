@@ -63,7 +63,7 @@ public class Dashboard extends Activity {
 
 		// don't include bug sense it the key hasn't been changed
 		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
-			String build = "0.01-1";
+			String build = "0.01-4";
 			BugSenseHandler.addCrashExtraData("build", build);
 //			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
