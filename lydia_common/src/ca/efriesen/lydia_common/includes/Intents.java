@@ -26,7 +26,7 @@ public class Intents {
 
 	// intents for the media
 	public static final String MEDIASTATE = "ca.efriesen.lydia.mediaState";
-	public static final String SONGFINISHED = "ca.efriesen.lydia.songFinished";
+//	public static final String SONGFINISHED = "ca.efriesen.lydia.songFinished";
 	public static final String UPDATEMEDIAINFO = "ca.efriesen.lydia.UPDATEINFO";
 
 	// intents for bluetooth comms

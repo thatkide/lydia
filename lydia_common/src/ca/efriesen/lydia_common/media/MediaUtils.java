@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ import java.util.Date;
  */
 public class MediaUtils {
 
-	public static <T extends Media> ArrayList<T> cursorToArray(Class<T> c, Cursor cursor) {
+	public static <T extends Media> ArrayList<T> cursorToArray(Class<T> c, Cursor cursor, Context context) {
 		// make sure the cursor has info
 		if (cursor.getCount() == 0) {
 			return null;
@@ -27,8 +28,11 @@ public class MediaUtils {
 		// loop over the cursor
 		do {
 			try {
+				// get the constructor that takes a context
+				Constructor constructor = c.getConstructor(Context.class);
+
 				// create a new instance of the class passed
-				T item = c.newInstance();
+				T item = c.cast(constructor.newInstance(context));
 
 				// get the setcursordata method from the class
 				Method setCursorData = c.getMethod("setCursorData", Cursor.class);
@@ -40,7 +44,6 @@ public class MediaUtils {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 
 			} catch (Exception e) {
 				e.printStackTrace();

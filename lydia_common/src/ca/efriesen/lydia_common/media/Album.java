@@ -3,15 +3,18 @@ package ca.efriesen.lydia_common.media;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
+import ca.efriesen.lydia_common.R;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
 * Created by eric on 2013-06-23.
@@ -19,11 +22,19 @@ import java.nio.ByteBuffer;
 public class Album extends Media implements Serializable {
 
 	private static final String TAG = "lydia album";
+	private Context context;
 	private Artist artist;
 	private int id;
 	private String name;
 	private String year;
 	private int artist_id;
+	// database stuff
+	private Uri mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+	public Album(Context context) {
+		super(context);
+		this.context = context;
+	}
 
 	public void setCursorData(Cursor cursor) {
 		setId(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
@@ -34,7 +45,7 @@ public class Album extends Media implements Serializable {
 	}
 
 	public void setArtist(Cursor cursor) {
-		artist = new Artist();
+		artist = new Artist(context);
 		artist.setCursorData(cursor);
 	}
 
@@ -95,6 +106,40 @@ public class Album extends Media implements Serializable {
 			return null;
 		}
 	}
+
+	public ArrayList<Song> getAllSongs() {
+		String[] PROJECTION = new String[] {
+				MediaStore.Audio.Media._ID,
+				MediaStore.Audio.Media.ALBUM,
+				MediaStore.Audio.Media.ALBUM_ID,
+				MediaStore.Audio.Media.ARTIST,
+				MediaStore.Audio.Media.ARTIST_ID,
+				MediaStore.Audio.Media.TITLE,
+				MediaStore.Audio.Media.TRACK,
+				MediaStore.Audio.Media.YEAR
+		};
+		// always order by artist, then album, the track
+		String ORDER = MediaStore.Audio.Media.ARTIST + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.TRACK + " ASC";
+		//set the selection
+		String SELECTION;
+		if (name == context.getString(R.string.all_songs)) {
+			SELECTION = null;
+		} else if (name == context.getString(R.string.all_albums)) {
+			if (artist_id != -1) {
+				SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + artist_id;
+			} else {
+				SELECTION = null;
+			}
+		} else {
+			SELECTION = MediaStore.Audio.Media.ALBUM_ID + " = " + id;
+		}
+		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
+
+		ArrayList<Song> songs = MediaUtils.cursorToArray(Song.class, cursor, context);
+		cursor.close();
+		return songs;
+	}
+
 
 	@Override
 	public String toString() {

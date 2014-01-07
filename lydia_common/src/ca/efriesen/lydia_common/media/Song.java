@@ -2,7 +2,9 @@ package ca.efriesen.lydia_common.media;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.Serializable;
 
@@ -11,6 +13,8 @@ import java.io.Serializable;
  * Created by eric on 2013-06-25.
  */
 public class Song extends Media implements Serializable {
+	private static final String TAG = "lydia Song";
+	private Context context;
 	private Album album;
 	private Artist artist;
 	private int id;
@@ -20,6 +24,11 @@ public class Song extends Media implements Serializable {
 	private String durationString;
 	private String name;
 	private String track;
+
+	public Song(Context context) {
+		super(context);
+		this.context = context;
+	}
 
 	public void setCursorData(Cursor cursor) {
 		setAlbumId(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
@@ -35,7 +44,7 @@ public class Song extends Media implements Serializable {
 	}
 
 	public void setAlbum(Cursor cursor) {
-		album = new Album();
+		album = new Album(context);
 		album.setCursorData(cursor);
 	}
 

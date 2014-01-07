@@ -34,9 +34,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Constants.FilterColor, PorterDuff.Mode.SRC_ATOP);
 	final PorterDuffColorFilter whiteFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
-	private String artistId;
-	private String albumId;
-
 	LocalBroadcastManager localBroadcastManager;
 
 	@Override
@@ -174,7 +171,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
 		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaService.REPEAT_STATE));
 		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaService.SHUFFLE_STATE));
-		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.STATE));
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
 	}
 
 	@Override
@@ -242,8 +239,8 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			TextView lengthView = (TextView) activity.findViewById(R.id.song_length);
 
 			// update the internal vars about the artist and album. so when we click the text it takes us to the correct listing
-			artistId = String.valueOf(song.getArtistId());
-			albumId = String.valueOf(song.getAlbumId());
+//			artistId = String.valueOf(song.getArtistId());
+//			albumId = String.valueOf(song.getAlbumId());
 
 			// update the text views
 			artistView.setText(song.getAlbum().getArtist().getName() + " - " + song.getAlbum().getName());
@@ -301,10 +298,10 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
-			if (intent.getSerializableExtra(MediaService.STATE) == MediaService.State.Paused) {
-				pp.setImageResource(R.drawable.av_play);
-			} else {
+			if (intent.getBooleanExtra("isPlaying", false)) {
 				pp.setImageResource(R.drawable.av_pause);
+			} else {
+				pp.setImageResource(R.drawable.av_play);
 			}
 		}
 	};

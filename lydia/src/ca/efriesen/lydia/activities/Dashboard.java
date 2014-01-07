@@ -51,7 +51,7 @@ public class Dashboard extends Activity {
 			}
 		});
 
-		checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
+//		checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
 
 //		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //				.detectAll()

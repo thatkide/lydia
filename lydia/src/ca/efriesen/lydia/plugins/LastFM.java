@@ -29,7 +29,7 @@ public class LastFM extends Plugin {
 	private Thread updateTrackThread;
 
 	// media vars
-	MediaService.State state;
+//	MediaService.State state;
 
 	public LastFM(final Context context) {
 		this.context = context;
@@ -37,7 +37,7 @@ public class LastFM extends Plugin {
 		Caller.getInstance().setCache(null);
 
 		context.registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
-		context.registerReceiver(songFinishedReceiver, new IntentFilter(Intents.SONGFINISHED));
+//		context.registerReceiver(songFinishedReceiver, new IntentFilter(Intents.SONGFINISHED));
 		context.registerReceiver(mediaStateReceiver, new IntentFilter(Intents.MEDIASTATE));
 
 		Log.d(TAG, "using lastfm");
@@ -105,7 +105,7 @@ public class LastFM extends Plugin {
 						// until told to quit
 						while (true) {
 							// and we're playing
-							while (state == MediaService.State.Playing) {
+//							while (state == MediaService.State.Playing) {
 								try {
 									// update the track info
 									Track.updateNowPlaying(song.getAlbum().getArtist().getName(), song.getName(), session);
@@ -120,7 +120,7 @@ public class LastFM extends Plugin {
 									// return, this ensures we quit
 									return;
 								}
-							}
+//							}
 						}
 					} catch (IllegalStateException e) {
 						// YOU DIE NOW
@@ -175,7 +175,7 @@ public class LastFM extends Plugin {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			state = (MediaService.State) intent.getExtras().getSerializable(Intents.MEDIASTATE);
+//			state = (MediaService.State) intent.getExtras().getSerializable(Intents.MEDIASTATE);
 		}
 	};
 }
