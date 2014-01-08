@@ -87,25 +87,28 @@ public class SongState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// only do this if we've actually got a position in the extras
-			if (intent.hasExtra("position")) {
-				int position = intent.getIntExtra("position", 0);
-				// get the number of elements in the list
-				int length = listView.getChildCount();
-				// loop over all of them
-				for (int i=0; i<length; i++) {
-					// get the text
-					TextView textView = (TextView) listView.getChildAt(i).findViewById(android.R.id.text1);
-					// if it's not the song playing
-					if (position != i) {
-						// ensure the text is normal
-						textView.setTypeface(null, Typeface.NORMAL);
-					} else {
-						// otherwise make it bold
-						textView.setTypeface(null, Typeface.BOLD_ITALIC);
+			try {
+				// only do this if we've actually got a position in the extras
+				if (intent.hasExtra("position")) {
+					int position = intent.getIntExtra("position", 0);
+					ListView listView = (ListView) activity.findViewById(android.R.id.list);
+					// get the number of elements in the list
+					int length = listView.getChildCount();
+					// loop over all of them
+					for (int i=0; i<length; i++) {
+						// get the text
+						TextView textView = (TextView) listView.getChildAt(i).findViewById(android.R.id.text1);
+						// if it's not the song playing
+						if (position != i) {
+							// ensure the text is normal
+							textView.setTypeface(null, Typeface.NORMAL);
+						} else {
+							// otherwise make it bold
+							textView.setTypeface(null, Typeface.BOLD_ITALIC);
+						}
 					}
 				}
-			}
+			} catch (Exception e) {}
 		}
 	};
 }
