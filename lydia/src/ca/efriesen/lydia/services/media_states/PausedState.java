@@ -27,7 +27,7 @@ public class PausedState extends MediaState {
 		// set teh state to paused
 		mediaService.setState(mediaService.getPausedState());
 		// set the song.  this will check the state and not play in the paused state
-		setSong(mediaService.playlist.get(mediaService.playlistPosition));
+		mediaService.getState().setSong(mediaService.playlist.get(mediaService.playlistPosition));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class PausedState extends MediaState {
 		super.previous();
 		mediaService.stop();
 		mediaService.setState(mediaService.getPausedState());
-		setSong(mediaService.playlist.get(mediaService.playlistPosition));
+		mediaService.getState().setSong(mediaService.playlist.get(mediaService.playlistPosition));
 	}
 
 	@Override
