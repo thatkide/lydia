@@ -83,7 +83,10 @@ public class SongState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			adapter.notifyDataSetChanged();
+			if (intent.hasExtra(MediaService.SONG)) {
+				currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
+				adapter.notifyDataSetChanged();
+			}
 		}
 	};
 
