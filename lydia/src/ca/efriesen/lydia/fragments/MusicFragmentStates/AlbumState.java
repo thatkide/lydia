@@ -9,7 +9,6 @@ import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Album;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
-import ca.efriesen.lydia_common.media.Song;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,14 +28,12 @@ public class AlbumState implements MusicFragmentState {
 		this.activity = musicFragment.getActivity();
 	}
 
-	@Override
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getArtistState());
 		musicFragment.setView();
 		return true;
 	}
 
-	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		Album album = (Album)albums.get(position);
 		// transition states and set the view
@@ -44,7 +41,6 @@ public class AlbumState implements MusicFragmentState {
 		musicFragment.setView(album);
 	}
 
-	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 		// remove all old stuff
 		albums = new ArrayList<Media>();
@@ -70,7 +66,6 @@ public class AlbumState implements MusicFragmentState {
 		view.setAdapter(new ArrayAdapter<Media>(activity, android.R.layout.simple_list_item_1, albums));
 	}
 
-	@Override
 	public void search(String text) {
 		try {
 			ArrayList<Album> medias = Media.getAllLike(Album.class, activity, text);
