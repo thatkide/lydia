@@ -2,10 +2,8 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.*;
 import android.content.*;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,8 +14,6 @@ import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragmentStates.*;
 import ca.efriesen.lydia_common.media.*;
 import ca.efriesen.lydia.services.MediaService;
-
-import java.util.ArrayList;
 
 /**
  * User: eric
@@ -162,22 +158,6 @@ public class MusicFragment extends ListFragment {
 		return false;
 	}
 
-//	private void setSearch() {
-//		ListView view = (ListView) getActivity().findViewById(android.R.id.list);
-//		// if the nothing found
-//		if (medias.get(0).getName() == getString(R.string.nothing_found)) {
-//			// make it so we can't click anything
-//			view.setEnabled(false);
-//		} else {
-//			view.setEnabled(true);
-//		}
-//		// set the adapter to a new array of options set above
-//		view.setAdapter(new ArrayAdapter<Media>(getActivity(), android.R.layout.simple_list_item_1, medias));
-//
-//		type = SELECTED.search;
-//	}
-
-
 	private ServiceConnection mediaServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder iBinder) {
@@ -190,54 +170,4 @@ public class MusicFragment extends ListFragment {
 			mediaService = null;
 		}
 	};
-/* ------------------ Begin custom classes ------------------ */
-
-	// let's extend the simple cursor adapter so we can do our own stuff
-//	private class SongCursorAdapter extends SimpleCursorAdapter {
-//		// we want the album and artist.  we include that info in all the list items, but hide it when it's not unique
-//		Cursor cursor;
-//		Context context;
-//		Activity activity;
-//		String album;
-//		String prevAlbum;
-//		String artist;
-//		String prevArtist;
-//
-//		public SongCursorAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to, int flags) {
-//			super(context, layout, cursor, from, to, flags);
-//			this.cursor = cursor;
-//			this.context = context;
-//			this.activity = (Activity) context;
-//		}
-//
-//		@Override
-//		public void bindView(View view, Context context, Cursor cursor) {
-//			super.bindView(view, context, cursor);
-//			// get the artist and album for the current item
-//			album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-//			artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-//
-//			// compare it with the last item
-//			if (cursor.getPosition() > 0 && cursor.moveToPrevious()) {
-//				prevAlbum = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-//				prevArtist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-//				cursor.moveToNext();
-//			}
-//
-//			// if the album is different, show it
-//			if (prevAlbum == null || !prevAlbum.equals(album) || cursor.getPosition() == 0) {
-//				view.findViewById(R.id.album_list).setVisibility(View.VISIBLE);
-//			} else {
-//				view.findViewById(R.id.album_list).setVisibility(View.GONE);
-//			}
-//			// if the artist is different, show it as well
-//			if (prevArtist == null || !prevArtist.equals(artist) || cursor.getPosition() == 0) {
-//				view.findViewById(R.id.artist_list).setVisibility(View.VISIBLE);
-//				view.findViewById(R.id.spacer).setVisibility(View.VISIBLE);
-//			} else {
-//				view.findViewById(R.id.artist_list).setVisibility(View.GONE);
-//				view.findViewById(R.id.spacer).setVisibility(View.GONE);
-//			}
-//		}
-//	}
 }

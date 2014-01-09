@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.services.media_states.MediaState;
@@ -65,7 +66,7 @@ public class MediaService extends Service implements
 	private NotificationManager notificationManager;
 	private int notificationId = 12;
 
-	public static final String TAG = "lydia Media Service V2";
+	public static final String TAG = "lydia mediaService";
 
 	// other stuff
 	private SharedPreferences sharedPreferences;
@@ -224,15 +225,16 @@ public class MediaService extends Service implements
 
 	@Override
 	public void onPrepared(MediaPlayer mediaPlayer) {
+		//Log.d(TAG, "onPrepared " + getClass().getName());
 		// remove old callbacks
 		mHandler.removeCallbacks(mUpdateTime);
-		if (getState() == getPlayingState()) {
+		if (getState() != getPausedState()) {
+			setState(getPlayingState());
 			mediaPlayer.start();
 		}
-		localBroadcastManager.sendBroadcast(new Intent(MediaService.IS_PLAYING).putExtra("isPlaying", mMediaPlayer.isPlaying()).putExtra("position", playlistPosition));
-
 		// get the song to send to the notification and broadcast
 		Song song = playlist.get(playlistPosition);
+		localBroadcastManager.sendBroadcast(new Intent(MediaService.IS_PLAYING).putExtra("isPlaying", mMediaPlayer.isPlaying()).putExtra(SONG, song));
 
 		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
 		notificationManager.notify(notificationId, builder.build());
@@ -261,6 +263,7 @@ public class MediaService extends Service implements
 	}
 
 	private void cleanUp() {
+		//Log.d(TAG, "cleanup");
 		// stop sending broadcasts
 		mHandler.removeCallbacks(mUpdateTime);
 
@@ -290,10 +293,12 @@ public class MediaService extends Service implements
 	}
 
 	public void play() {
+		//Log.d(TAG, "play " + getClass().getName());
 		mediaState.play();
 	}
 
 	public void stop() {
+		//Log.d(TAG, "stop " + getClass().getName());
 		mediaState.stop();
 	}
 
@@ -303,6 +308,7 @@ public class MediaService extends Service implements
 	}
 
 	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
+		//Log.d(TAG, "setplaylist " + getClass().getName());
 		playlistOrdered = playlist;
 		// copy the playlist into a new object.
 		ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
@@ -344,6 +350,7 @@ public class MediaService extends Service implements
 	}
 
 	public void setState(MediaState state) {
+		//Log.d(TAG, "setState " + state.getClass().getName());
 		mediaState = state;
 	}
 
