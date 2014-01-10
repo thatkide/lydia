@@ -6,14 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.Album;
@@ -29,6 +28,7 @@ import java.util.Arrays;
  */
 public class AlbumState implements MusicFragmentState {
 
+	private static final String TAG = "lydia AlbumState";
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayList albums;
@@ -48,7 +48,6 @@ public class AlbumState implements MusicFragmentState {
 		return true;
 	}
 
-	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
@@ -58,7 +57,7 @@ public class AlbumState implements MusicFragmentState {
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// transition states and set the view
 		musicFragment.setState(musicFragment.getSongState());
-		musicFragment.setView((Album)albums.get(position));
+		musicFragment.setView(artist, (Album)albums.get(position));
 	}
 
 	public void setView(Boolean fromSearch, Media... medias) {
@@ -67,20 +66,16 @@ public class AlbumState implements MusicFragmentState {
 
 		try {
 			if (!fromSearch) {
+				// we should only have one artist passed, grab it from the array
 				artist = (Artist) medias[0];
-				Album all = new Album(activity);
-				all.setArtistId(artist.getId());
-				all.setName(activity.getString(R.string.all_albums));
-
-				albums.add(all);
-				albums.addAll(artist.getAllAlbums());
+				albums = artist.getAllAlbums();
 			} else {
 				albums = new ArrayList<Media>(Arrays.asList(medias));
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			artist = new Artist(activity);
 		}
-
 
 		ListView view = (ListView) activity.findViewById(android.R.id.list);
 		adapter = new AlbumAdapter(activity, android.R.layout.simple_list_item_1, albums);

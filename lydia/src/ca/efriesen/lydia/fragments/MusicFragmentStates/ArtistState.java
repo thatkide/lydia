@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import java.util.Arrays;
  */
 public class ArtistState implements MusicFragmentState {
 
+	private final String TAG = "lydia artistState";
+
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayList artists;
@@ -40,14 +43,12 @@ public class ArtistState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
 	}
 
-	@Override
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getHomeState());
 		musicFragment.setView();
 		return true;
 	}
 
-	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
@@ -56,7 +57,6 @@ public class ArtistState implements MusicFragmentState {
 		}
 	}
 
-	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// save the position, so when we come back, it's where we left off
 		artistListPosition = position;
@@ -67,21 +67,14 @@ public class ArtistState implements MusicFragmentState {
 		musicFragment.setView(artist);
 	}
 
-	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		if (!fromSearch) {
-			// Log.d(TAG, "set artist");
-			Artist all = new Artist(activity);
-			all.setName(activity.getString(R.string.all_artists));
-			all.setId(-1);
 
-			artists = new ArrayList<Media>();
-			artists.add(all);
-			ArrayList<Artist> allArtists = Artist.getAllArtists(activity);
-			if (allArtists != null) {
-				artists.addAll(allArtists);
-			}
+		// we only use medias if we're searching
+		if (!fromSearch) {
+			// default is to get all artists available
+			artists = Artist.getAllArtists(activity);
 		} else {
+			// unless we're searching
 			artists = new ArrayList<Media>(Arrays.asList(medias));
 		}
 
@@ -94,11 +87,12 @@ public class ArtistState implements MusicFragmentState {
 		view.setSelection(artistListPosition);
 	}
 
-	@Override
 	public void search(String text) {
 		try {
-			ArrayList<Artist> medias = Media.getAllLike(Artist.class, activity, text);
-			setView(true, medias.toArray(new Artist[medias.size()]));
+			// search for artists like our string
+			ArrayList<Artist> artists = Media.getAllLike(Artist.class, activity, text);
+			// set the view to the returned array
+			setView(true, artists.toArray(new Artist[artists.size()]));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -107,9 +101,13 @@ public class ArtistState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.hasExtra(MediaService.SONG)) {
-				currentArtist = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum().getArtist();
-				adapter.notifyDataSetChanged();
+			try {
+				if (intent.hasExtra(MediaService.SONG)) {
+					currentArtist = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum().getArtist();
+					adapter.notifyDataSetChanged();
+				}
+			} catch (NullPointerException e) {
+				e.printStackTrace();
 			}
 		}
 	};

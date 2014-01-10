@@ -175,7 +175,6 @@ public class Dashboard extends Activity {
 		this.passengerControlsClass = passengerControlsClass;
 	}
 
-
 	@Override
 	public void onBackPressed() {
 		MusicFragment musicFragment = (MusicFragment) getFragmentManager().findFragmentByTag("musicFragment");
@@ -213,6 +212,8 @@ public class Dashboard extends Activity {
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
 

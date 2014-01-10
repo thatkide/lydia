@@ -163,8 +163,7 @@ public class MusicFragment extends ListFragment {
 	// return true as it's been handled, don't allow the default to do anything.
 	// return false as we didn't do anything, you do it
 	public boolean onBackPressed() {
-		musicFragmentState.onBackPressed();
-		return false;
+		return musicFragmentState.onBackPressed();
 	}
 
 	private ServiceConnection mediaServiceConnection = new ServiceConnection() {

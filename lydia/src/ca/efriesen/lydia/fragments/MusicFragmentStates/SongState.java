@@ -6,12 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
@@ -38,7 +37,6 @@ public class SongState implements MusicFragmentState {
 	private Artist artist;
 	private SongAdapter adapter;
 	private Song currentSong;
-	private Boolean isPlaying = false;
 
 	public SongState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
@@ -52,7 +50,6 @@ public class SongState implements MusicFragmentState {
 		return true;
 	}
 
-	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
@@ -66,10 +63,10 @@ public class SongState implements MusicFragmentState {
 
 	public void setView(Boolean fromSearch, Media... medias) {
 		if (!fromSearch) {
-			Album album = (Album) medias[0];
+			artist = (Artist) medias[0];
+			Album album = (Album) medias[1];
 			// we need the artist for the transition back using the back button
-			artist = album.getArtist();
-			songs = album.getAllSongs();
+			songs = album.getAllSongs(artist);
 		} else {
 			songs = new ArrayList<Media>(Arrays.asList(medias));
 		}
@@ -93,9 +90,6 @@ public class SongState implements MusicFragmentState {
 			if (intent.hasExtra(MediaService.SONG)) {
 				currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
 				adapter.notifyDataSetChanged();
-			}
-			if (intent.hasExtra("isPlaying")) {
-				isPlaying = intent.getBooleanExtra("isPlaying", false);
 			}
 		}
 	};

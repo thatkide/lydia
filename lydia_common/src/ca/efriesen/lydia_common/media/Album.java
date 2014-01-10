@@ -44,6 +44,10 @@ public class Album extends Media implements Serializable {
 		setArtist(cursor);
 	}
 
+	public void setArtist(Artist artist) {
+		this.artist = artist;
+	}
+
 	public void setArtist(Cursor cursor) {
 		artist = new Artist(context);
 		artist.setCursorData(cursor);
@@ -107,7 +111,7 @@ public class Album extends Media implements Serializable {
 		}
 	}
 
-	public ArrayList<Song> getAllSongs() {
+	public ArrayList<Song> getAllSongs(Artist artist) {
 		String[] PROJECTION = new String[] {
 				MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM,
@@ -122,19 +126,25 @@ public class Album extends Media implements Serializable {
 		String ORDER = MediaStore.Audio.Media.ARTIST + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.TRACK + " ASC";
 		//set the selection
 		String SELECTION;
-		if (name == context.getString(R.string.all_songs)) {
-			// Select everything marked as being music
-			SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-		} else if (name == context.getString(R.string.all_albums)) {
-			if (artist_id != -1) {
-				SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + artist_id;
+
+		// if the album id is not 0, we have a valid album, use it
+		if (id > 0) {
+			SELECTION = MediaStore.Audio.Media.ALBUM_ID + " = " + id;
+		// if the id is -1, then all albums was pressed.  now we need to check if it's all artists too, or a single artist
+		} else if (id == -1) {
+			// we have a valid artist
+			if (artist.getId() > 0) {
+				// get everything from the artist
+				SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + artist.getId();
 			} else {
-				// Select everything markes as being music
+				// get everything that is music
 				SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 			}
 		} else {
-			SELECTION = MediaStore.Audio.Media.ALBUM_ID + " = " + id;
+			// again, everything that is music
+			SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 		}
+
 		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
 
 		ArrayList<Song> songs = MediaUtils.cursorToArray(Song.class, cursor, context);

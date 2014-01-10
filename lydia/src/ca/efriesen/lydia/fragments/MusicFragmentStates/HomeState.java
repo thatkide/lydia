@@ -38,7 +38,7 @@ public class HomeState implements MusicFragmentState {
 	public boolean onBackPressed() {
 		musicFragment.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
-				.replace(R.id.home_screen_fragment, new HomeScreenFragment())
+				.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
 				.addToBackStack(null)
 				.commit();
 		return true;

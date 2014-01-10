@@ -74,7 +74,7 @@ public class Artist extends Media implements Serializable {
 		};
 		String ORDER = MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC";
 		String SELECTION = null;
-		if (name != context.getString(R.string.all_artists)) {
+		if (id != -1) {
 			SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + id;
 		}
 		// else all artists was selected
@@ -82,7 +82,16 @@ public class Artist extends Media implements Serializable {
 
 		ArrayList<Album> albums = MediaUtils.cursorToArray(Album.class, cursor, context);
 		cursor.close();
-		return albums;
+
+		Album all = new Album(context);
+		all.setId(-1);
+		all.setArtistId(-1);
+		all.setName(context.getString(R.string.all_albums));
+
+		ArrayList<Album> fullList = new ArrayList<Album>();
+		fullList.add(all);
+		fullList.addAll(albums);
+		return fullList;
 	}
 
 	@Override
@@ -116,6 +125,16 @@ public class Artist extends Media implements Serializable {
 		} catch (NullPointerException e) {
 			Log.e(TAG, e.toString());
 		}
-		return artists;
+
+		// Log.d(TAG, "set artist");
+		Artist all = new Artist(context);
+		all.setName(context.getString(R.string.all_artists));
+		all.setId(-1);
+
+		ArrayList<Artist> fullList = new ArrayList<Artist>();
+		fullList.add(all);
+		fullList.addAll(artists);
+
+		return fullList;
 	}
 }
