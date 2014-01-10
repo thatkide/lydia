@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public interface MusicFragmentState {
 
 	public boolean onBackPressed();
+	public void onDestroy();
 	public void onListItemClick(ListView list, View v, int position, long id);
 	public void setView(Boolean fromSearch, Media... medias);
 	public void search(String text);

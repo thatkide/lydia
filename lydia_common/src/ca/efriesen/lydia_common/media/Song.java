@@ -1,8 +1,11 @@
 package ca.efriesen.lydia_common.media;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -37,6 +40,7 @@ public class Song extends Media implements Serializable {
 		setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
 		setTrack(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TRACK)));
 		setAlbum(cursor);
+//		setDuration();
 	}
 
 	public Album getAlbum() {
@@ -70,6 +74,19 @@ public class Song extends Media implements Serializable {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
+	}
+
+	// This is SLOW. It's turned off for now.
+	public void setDuration() {
+		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+		try {
+			retriever.setDataSource(context, uri);
+			this.duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+			this.durationString = MediaUtils.convertMillis(this.duration);
+
+		} catch (Exception e) {
+		e.printStackTrace();}
 	}
 
 	public String getDurationString() {

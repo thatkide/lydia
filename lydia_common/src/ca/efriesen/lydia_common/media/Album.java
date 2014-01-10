@@ -123,12 +123,14 @@ public class Album extends Media implements Serializable {
 		//set the selection
 		String SELECTION;
 		if (name == context.getString(R.string.all_songs)) {
-			SELECTION = null;
+			// Select everything marked as being music
+			SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 		} else if (name == context.getString(R.string.all_albums)) {
 			if (artist_id != -1) {
 				SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + artist_id;
 			} else {
-				SELECTION = null;
+				// Select everything markes as being music
+				SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 			}
 		} else {
 			SELECTION = MediaStore.Audio.Media.ALBUM_ID + " = " + id;

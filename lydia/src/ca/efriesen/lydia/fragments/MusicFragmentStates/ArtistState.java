@@ -1,11 +1,20 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
+import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
@@ -20,12 +29,15 @@ public class ArtistState implements MusicFragmentState {
 
 	private Activity activity;
 	private MusicFragment musicFragment;
-	private ArrayList<Media> artists;
+	private ArrayList artists;
 	private int artistListPosition;
+	private Artist currentArtist;
+	private ArtistAdapter adapter;
 
 	public ArtistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
 	}
 
 	@Override
@@ -33,6 +45,15 @@ public class ArtistState implements MusicFragmentState {
 		musicFragment.setState(musicFragment.getHomeState());
 		musicFragment.setView();
 		return true;
+	}
+
+	@Override
+	public void onDestroy() {
+		try {
+			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
@@ -67,7 +88,8 @@ public class ArtistState implements MusicFragmentState {
 		// find the listview
 		ListView view = (ListView) activity.findViewById(android.R.id.list);
 		// set the adapter to a new array adapter of artists, and get them from the media service
-		view.setAdapter(new ArrayAdapter<Media>(activity, android.R.layout.simple_list_item_1, artists));
+		adapter = new ArtistAdapter(activity, android.R.layout.simple_list_item_1, artists);
+		view.setAdapter(adapter);
 		// set the list to the saved position
 		view.setSelection(artistListPosition);
 	}
@@ -79,6 +101,44 @@ public class ArtistState implements MusicFragmentState {
 			setView(true, medias.toArray(new Artist[medias.size()]));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.hasExtra(MediaService.SONG)) {
+				currentArtist = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum().getArtist();
+				adapter.notifyDataSetChanged();
+			}
+		}
+	};
+
+	class ArtistAdapter extends ArrayAdapter<Artist> {
+
+		private final Context context;
+		private final ArrayList<Artist> artists;
+
+		public ArtistAdapter(Context context, int textViewResourceId, ArrayList<Artist> artists) {
+			super(context, textViewResourceId, artists);
+			this.context = context;
+			this.artists = artists;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+
+			TextView textView = (TextView) rowView.findViewById(android.R.id.text1);
+			Artist artist = artists.get(position);
+			textView.setText(artist.getName());
+			if (currentArtist != null && artist.getId() == currentArtist.getId()) {
+				textView.setTypeface(null, Typeface.BOLD_ITALIC);
+			} else {
+				textView.setTypeface(null, Typeface.NORMAL);
+			}
+			return rowView;
 		}
 	}
 }
