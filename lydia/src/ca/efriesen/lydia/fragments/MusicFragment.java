@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -39,8 +40,10 @@ public class MusicFragment extends ListFragment {
 	private MusicFragmentState songState;
 	private MusicFragmentState musicFragmentState;
 
+	public LocalBroadcastManager localBroadcastManager;
 
 	public void setState(MusicFragmentState musicFragmentState) {
+		setListAdapter(null);
 		this.musicFragmentState = musicFragmentState;
 	}
 
@@ -67,6 +70,8 @@ public class MusicFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
 		super.onActivityCreated(savedInstance);
+
+		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 
 		homeState = new HomeState(this);
 		artistState = new ArtistState(this);
@@ -108,6 +113,10 @@ public class MusicFragment extends ListFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		homeState.onDestroy();
+		artistState.onDestroy();
+		albumState.onDestroy();
+		songState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);
 		} catch (Exception e) {

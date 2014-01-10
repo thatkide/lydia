@@ -11,8 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.Album;
@@ -34,22 +36,27 @@ public class SongState implements MusicFragmentState {
 	private MusicFragment musicFragment;
 	private ArrayList songs;
 	private Artist artist;
-	private LocalBroadcastManager localBroadcastManager;
 	private SongAdapter adapter;
 	private Song currentSong;
+	private Boolean isPlaying = false;
 
 	public SongState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
-
-		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
 	}
 
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getAlbumState());
 		musicFragment.setView(artist);
 		return true;
+	}
+
+	@Override
+	public void onDestroy() {
+		try {
+			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
+		} catch (Exception e) {}
 	}
 
 	public void onListItemClick(ListView list, View v, int position, long id) {
@@ -67,7 +74,7 @@ public class SongState implements MusicFragmentState {
 			songs = new ArrayList<Media>(Arrays.asList(medias));
 		}
 		ListView view = (ListView) activity.findViewById(android.R.id.list);
-		adapter = new SongAdapter(activity, android.R.layout.simple_list_item_1, songs);
+		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
 		view.setAdapter(adapter);
 	}
 
@@ -87,6 +94,9 @@ public class SongState implements MusicFragmentState {
 				currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
 				adapter.notifyDataSetChanged();
 			}
+			if (intent.hasExtra("isPlaying")) {
+				isPlaying = intent.getBooleanExtra("isPlaying", false);
+			}
 		}
 	};
 
@@ -94,25 +104,38 @@ public class SongState implements MusicFragmentState {
 
 		private final Context context;
 		private final ArrayList<Song> songs;
+		private final int layoutId;
 
-		public SongAdapter(Context context, int textViewResourceId, ArrayList<Song> songs) {
-			super(context, textViewResourceId, songs);
+		public SongAdapter(Context context, int layoutId, ArrayList<Song> songs) {
+			super(context, layoutId, songs);
 			this.context = context;
+			this.layoutId = layoutId;
 			this.songs = songs;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+			View rowView = inflater.inflate(layoutId, parent, false);
 
-			TextView textView = (TextView) rowView.findViewById(android.R.id.text1);
+			TextView songTrack = (TextView) rowView.findViewById(R.id.row_song_track);
+			TextView songTitle = (TextView) rowView.findViewById(R.id.row_song_title);
+			TextView songDuration = (TextView) rowView.findViewById(R.id.row_song_duration);
+
 			Song song = songs.get(position);
-			textView.setText(song.getName());
+			try {
+				songTrack.setText(song.getTrack().substring(2, 4));
+			}catch (StringIndexOutOfBoundsException e) {}
+			songTitle.setText(song.getName());
+			// If we populate all the songs, it's SLOW
+			// If we don't we get one at a time, so it's turned off for now
+//			songDuration.setText(song.getDurationString());
+
+
 			if (currentSong != null && song.getId() == currentSong.getId()) {
-				textView.setTypeface(null, Typeface.BOLD_ITALIC);
+				songTitle.setTypeface(null, Typeface.BOLD_ITALIC);
 			} else {
-				textView.setTypeface(null, Typeface.NORMAL);
+				songTitle.setTypeface(null, Typeface.NORMAL);
 			}
 			return rowView;
 		}

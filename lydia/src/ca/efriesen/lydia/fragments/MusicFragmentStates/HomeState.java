@@ -45,6 +45,11 @@ public class HomeState implements MusicFragmentState {
 	}
 
 	@Override
+	public void onDestroy() {
+
+	}
+
+	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// if we pressed artist on the home screen
 			if (Long.valueOf(ArtistsId) == id) {
