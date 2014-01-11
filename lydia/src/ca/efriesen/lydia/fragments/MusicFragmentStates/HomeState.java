@@ -7,6 +7,7 @@ import android.widget.ListView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.HomeScreenFragment;
 import ca.efriesen.lydia.fragments.MusicFragment;
+import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
 
 import java.util.ArrayList;
@@ -58,10 +59,11 @@ public class HomeState implements MusicFragmentState {
 				musicFragment.setView();
 			// else maybe albums?
 			} else if (Long.valueOf(AlbumsId) == id) {
-				// -1 for all albums
+				Artist artist = new Artist(activity);
+				artist.setId(-1);
 				// transition states and set the view
 				musicFragment.setState(musicFragment.getAlbumState());
-				musicFragment.setView();
+				musicFragment.setView(artist);
 			}
 		// what about playlists
 	}
