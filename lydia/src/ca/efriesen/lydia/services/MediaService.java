@@ -302,7 +302,10 @@ public class MediaService extends Service implements
 
 	private void shufflePlay() {
 		setShuffle(true);
-//		play();
+		stop();
+		ArrayList<Song> songs = Album.getAllSongs(this, getShuffle());
+		setPlaylist(songs, 0);
+		play();
 	}
 
 	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
@@ -394,6 +397,7 @@ public class MediaService extends Service implements
 	private void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
 		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
+		localBroadcastManager.sendBroadcast(new Intent(SHUFFLE_STATE).putExtra(SHUFFLE_STATE, shuffle));
 	}
 
 	public void toggleShuffle() {
