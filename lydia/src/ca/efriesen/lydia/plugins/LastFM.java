@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
 import de.umass.lastfm.Authenticator;
@@ -20,25 +20,27 @@ import de.umass.lastfm.Track;
  */
 public class LastFM extends Plugin {
 
-	private static final String TAG = "LastFM media";
+	private static final String TAG = "lydia LastFM";
 	private Context context;
+
+	LocalBroadcastManager localBroadcastManager;
 
 	// Last.fm variables
 	private Session session;
 	private Thread scrobbleThread;
 	private Thread updateTrackThread;
 
-	// media vars
-//	MediaService.State state;
+	private boolean isPlaying = false;
 
 	public LastFM(final Context context) {
 		this.context = context;
 
 		Caller.getInstance().setCache(null);
 
-		context.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
-//		context.registerReceiver(songFinishedReceiver, new IntentFilter(Intents.SONGFINISHED));
-		context.registerReceiver(mediaStateReceiver, new IntentFilter(Intents.MEDIASTATE));
+		localBroadcastManager = LocalBroadcastManager.getInstance(context);
+
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(songFinishedReceiver, new IntentFilter(MediaService.SONG_FINISHED));
 
 		Log.d(TAG, "using lastfm");
 		Thread thread = new Thread(new Runnable() {
@@ -81,11 +83,6 @@ public class LastFM extends Plugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			context.unregisterReceiver(mediaStateReceiver);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
@@ -95,7 +92,8 @@ public class LastFM extends Plugin {
 			if (updateTrackThread != null) {
 				updateTrackThread.interrupt();
 			}
-			final Song song = (Song) intent.getSerializableExtra("ca.efriesen.Song");
+			final Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
+			isPlaying = intent.getBooleanExtra(MediaService.IS_PLAYING, false);
 
 			// send to last.fm in a new thread
 			updateTrackThread = new Thread(new Runnable() {
@@ -105,7 +103,7 @@ public class LastFM extends Plugin {
 						// until told to quit
 						while (true) {
 							// and we're playing
-//							while (state == MediaService.State.Playing) {
+							while (isPlaying) {
 								try {
 									// update the track info
 									Track.updateNowPlaying(song.getAlbum().getArtist().getName(), song.getName(), session);
@@ -120,7 +118,7 @@ public class LastFM extends Plugin {
 									// return, this ensures we quit
 									return;
 								}
-//							}
+							}
 						}
 					} catch (IllegalStateException e) {
 						// YOU DIE NOW
@@ -169,13 +167,6 @@ public class LastFM extends Plugin {
 				}
 			});
 			scrobbleThread.start();
-		}
-	};
-
-	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-//			state = (MediaService.State) intent.getExtras().getSerializable(Intents.MEDIASTATE);
 		}
 	};
 }

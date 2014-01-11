@@ -24,10 +24,6 @@ public class Intents {
 	public static final String WIPERS = "ca.efriesen.lydia.WIPERS";
 	public static final String WIPERDELAY = "ca.efriesen.lydia.WIPERDELAY";
 
-	// intents for the media
-	public static final String MEDIASTATE = "ca.efriesen.lydia.mediaState";
-//	public static final String SONGFINISHED = "ca.efriesen.lydia.songFinished";
-
 	// intents for bluetooth comms
 	public static final String BLUETOOTHGETSTATE = "ca.efriesne.lydia.BluetoothGetState";
 	public static final String BLUETOOTHMANAGER = "ca.efriesen.lydia.BluetoothManager";

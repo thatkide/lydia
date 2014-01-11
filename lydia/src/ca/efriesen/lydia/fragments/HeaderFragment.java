@@ -297,7 +297,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
-			if (intent.getBooleanExtra("isPlaying", false)) {
+			if (intent.getBooleanExtra(MediaService.IS_PLAYING, false)) {
 				pp.setImageResource(R.drawable.av_pause);
 			} else {
 				pp.setImageResource(R.drawable.av_play);
