@@ -111,7 +111,20 @@ public class Album extends Media implements Serializable {
 		}
 	}
 
+	public static ArrayList<Song> getAllSongs(Context context, boolean random) {
+		Artist artist = new Artist(context);
+		artist.setId(-1);
+		Album album = new Album(context);
+		album.setId(-1);
+
+		return album.getAllSongs(artist, random);
+	}
+
 	public ArrayList<Song> getAllSongs(Artist artist) {
+		return this.getAllSongs(artist, false);
+	}
+
+	public ArrayList<Song> getAllSongs(Artist artist, boolean random) {
 		String[] PROJECTION = new String[] {
 				MediaStore.Audio.Media._ID,
 				MediaStore.Audio.Media.ALBUM,
@@ -123,7 +136,12 @@ public class Album extends Media implements Serializable {
 				MediaStore.Audio.Media.YEAR
 		};
 		// always order by artist, then album, the track
-		String ORDER = MediaStore.Audio.Media.ARTIST + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.TRACK + " ASC";
+		String ORDER;
+		if (!random) {
+			ORDER = MediaStore.Audio.Media.ARTIST + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC, " + MediaStore.Audio.Media.TRACK + " ASC";
+		} else {
+			ORDER = "RANDOM()";
+		}
 		//set the selection
 		String SELECTION;
 

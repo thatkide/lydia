@@ -20,7 +20,6 @@ import ca.efriesen.lydia.services.media_states.PausedState;
 import ca.efriesen.lydia.services.media_states.PlayState;
 import ca.efriesen.lydia.services.media_states.StoppedState;
 import ca.efriesen.lydia_common.includes.Constants;
-import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.*;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class MediaService extends Service implements
 
 	// Intent strings
 	public static final String GET_CURRENT_SONG = "ca.efriesen.lydia.MediaService.GetCurrentSong";
-	public static final String IS_PLAYING = "ca.efriesen.lydia.MediaService.IsPlaying";
 	public static final String MEDIA_COMMAND = "ca.efriesen.lydia.MediaService.MediaCommand";
 	public static final String NEXT = "ca.efriesen.lydia.MediaService.Next";
 	public static final String PLAY = "ca.efriesen.lydia.MediaService.Play";
@@ -57,6 +55,7 @@ public class MediaService extends Service implements
 	public static final String SHUFFLE_STATE = "ca.efriesen.lydia.MediaService.ShuffleState";
 	public static final String SONG = "ca.efriesen.Song";
 	public static final String STOP = "ca.efriesen.lydia.MediaService.Stop";
+	public static final String UPDATE_MEDIA_INFO = "ca.efriesen.lydia.MediaService.UpdateMediaInfo";
 
 	// service bindings
 	private final IBinder mBinder = new MediaServiceBinder();
@@ -234,7 +233,6 @@ public class MediaService extends Service implements
 		}
 		// get the song to send to the notification and broadcast
 		Song song = playlist.get(playlistPosition);
-		localBroadcastManager.sendBroadcast(new Intent(MediaService.IS_PLAYING).putExtra("isPlaying", mMediaPlayer.isPlaying()).putExtra(SONG, song));
 
 		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
 		notificationManager.notify(notificationId, builder.build());
@@ -244,7 +242,7 @@ public class MediaService extends Service implements
 		playlist.get(playlistPosition).setDurationString(MediaUtils.convertMillis(mMediaPlayer.getDuration()));
 
 		// send the new song as the update media info intent
-		localBroadcastManager.sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra(SONG, song));
+		localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra("isPlaying", mMediaPlayer.isPlaying()).putExtra(SONG, song));
 		mHandler.postDelayed(mUpdateTime, 25);
 	}
 
@@ -389,6 +387,10 @@ public class MediaService extends Service implements
 		localBroadcastManager.sendBroadcast(new Intent(REPEAT_STATE).putExtra(REPEAT_STATE, repeatAll));
 	}
 
+	public boolean getShuffle() {
+		return shuffle;
+	}
+
 	private void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
 		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
@@ -453,7 +455,7 @@ public class MediaService extends Service implements
 			if (getState() != stoppedState) {
 				Song song = playlist.get(playlistPosition);
 				// send the new song as the update media info intent
-				localBroadcastManager.sendBroadcast(new Intent(Intents.UPDATEMEDIAINFO).putExtra(SONG, song));
+				localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra("isPlaying", mMediaPlayer.isPlaying()).putExtra(SONG, song));
 			}
 		}
 	};

@@ -15,7 +15,6 @@ import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.activities.MusicSearch;
 import ca.efriesen.lydia.activities.WebActivity;
 import ca.efriesen.lydia.services.MediaService;
-import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Album;
 import ca.efriesen.lydia_common.media.Song;
 
@@ -67,7 +66,7 @@ public class HomeScreenFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
 		final FragmentManager manager = getFragmentManager();
 		final Activity activity = getActivity();

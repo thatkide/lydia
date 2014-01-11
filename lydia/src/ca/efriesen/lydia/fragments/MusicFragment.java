@@ -111,6 +111,13 @@ public class MusicFragment extends ListFragment {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		// send a broadcast to the media service asking if anything is playing.  the listview will get the info and update accordingly
+		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		homeState.onDestroy();

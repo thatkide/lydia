@@ -36,7 +36,7 @@ public class LastFM extends Plugin {
 
 		Caller.getInstance().setCache(null);
 
-		context.registerReceiver(updateMusicReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		context.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 //		context.registerReceiver(songFinishedReceiver, new IntentFilter(Intents.SONGFINISHED));
 		context.registerReceiver(mediaStateReceiver, new IntentFilter(Intents.MEDIASTATE));
 

@@ -139,7 +139,7 @@ public class HardwareManagerService extends Service {
 		arduino.setDevices(devices);
 
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
-		registerReceiver(mediaInfoReceiver, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 		registerReceiver(bluetoothManagerReceiver, new IntentFilter(Intents.BLUETOOTHMANAGER));
 	}
 

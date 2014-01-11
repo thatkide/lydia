@@ -14,7 +14,6 @@ import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Constants;
-import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.services.MediaService;
 
@@ -162,7 +161,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		});
 
 		// register a receiver to update the media info
-		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(Intents.UPDATEMEDIAINFO));
+		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
 		// register a receiver to listen for the usb stick being unmounted.  when unmounted kill the update thread
 		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
@@ -171,7 +170,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
 		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaService.REPEAT_STATE));
 		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaService.SHUFFLE_STATE));
-		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
 	@Override

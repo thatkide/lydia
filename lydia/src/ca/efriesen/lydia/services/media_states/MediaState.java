@@ -46,7 +46,7 @@ public abstract class MediaState {
 
 	public void playPause() {
 		Log.d(TAG, "playpause " + getClass().getName());
-		mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.IS_PLAYING).putExtra("isPlaying", mediaPlayer.isPlaying()));
+		mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra("isPlaying", mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
 	};
 
 	public void previous() {

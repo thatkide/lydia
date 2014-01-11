@@ -39,7 +39,7 @@ public class AlbumState implements MusicFragmentState {
 	public AlbumState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
 	public boolean onBackPressed() {
@@ -94,9 +94,13 @@ public class AlbumState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.hasExtra(MediaService.SONG)) {
-				currentAlbum = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum();
-				adapter.notifyDataSetChanged();
+			try {
+				if (intent.hasExtra(MediaService.SONG)) {
+					currentAlbum = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum();
+					adapter.notifyDataSetChanged();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	};

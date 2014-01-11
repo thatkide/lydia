@@ -41,7 +41,7 @@ public class SongState implements MusicFragmentState {
 	public SongState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.IS_PLAYING));
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
 	public boolean onBackPressed() {
@@ -87,9 +87,13 @@ public class SongState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.hasExtra(MediaService.SONG)) {
-				currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
-				adapter.notifyDataSetChanged();
+			try {
+				if (intent.hasExtra(MediaService.SONG)) {
+					currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
+					adapter.notifyDataSetChanged();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	};
@@ -124,7 +128,6 @@ public class SongState implements MusicFragmentState {
 			// If we populate all the songs, it's SLOW
 			// If we don't we get one at a time, so it's turned off for now
 //			songDuration.setText(song.getDurationString());
-
 
 			if (currentSong != null && song.getId() == currentSong.getId()) {
 				songTitle.setTypeface(null, Typeface.BOLD_ITALIC);
