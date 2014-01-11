@@ -23,6 +23,7 @@ import ca.efriesen.lydia_common.media.Song;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by eric on 1/5/2014.
@@ -37,6 +38,7 @@ public class SongState implements MusicFragmentState {
 	private Artist artist;
 	private SongAdapter adapter;
 	private Song currentSong;
+	private ListView view;
 
 	public SongState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
@@ -70,7 +72,7 @@ public class SongState implements MusicFragmentState {
 		} else {
 			songs = new ArrayList<Media>(Arrays.asList(medias));
 		}
-		ListView view = (ListView) activity.findViewById(android.R.id.list);
+		view = (ListView) activity.findViewById(android.R.id.list);
 		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
 		view.setAdapter(adapter);
 	}
@@ -88,9 +90,13 @@ public class SongState implements MusicFragmentState {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			try {
-				if (intent.hasExtra(MediaService.SONG)) {
-					currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
-					adapter.notifyDataSetChanged();
+				if (musicFragment.getState() == musicFragment.getSongState()) {
+					if (intent.hasExtra(MediaService.SONG)) {
+						currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
+						int pos = songs.indexOf(currentSong);
+						adapter.notifyDataSetChanged();
+						view.setSelection(pos);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

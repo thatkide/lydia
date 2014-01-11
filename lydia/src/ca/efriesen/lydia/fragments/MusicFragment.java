@@ -67,6 +67,10 @@ public class MusicFragment extends ListFragment {
 		return songState;
 	}
 
+	public MusicFragmentState getState() {
+		return musicFragmentState;
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
 		super.onActivityCreated(savedInstance);
