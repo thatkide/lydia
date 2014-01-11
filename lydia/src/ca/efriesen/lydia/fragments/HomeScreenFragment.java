@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.*;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -312,14 +313,21 @@ public class HomeScreenFragment extends Fragment {
 					PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("currentAlbum", album.getId()).commit();
 					// set the background of the button to the album art
 
-					BitmapDrawable bitmapDrawable = new BitmapDrawable(getActivity().getResources(), album.getAlbumArt(getActivity().getApplicationContext()));
+					Bitmap bitmap = album.getAlbumArt(getActivity().getApplicationContext());
 
-					// create a drawable from the bitmap, and set the background of the music button to the file
-					music.setBackground(bitmapDrawable);
-					// remove the record image
-					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-					// remove the text on the button
-					music.setText("");
+					if (bitmap != null) {
+						BitmapDrawable bitmapDrawable = new BitmapDrawable(getActivity().getResources(), bitmap);
+						// create a drawable from the bitmap, and set the background of the music button to the file
+						music.setBackground(bitmapDrawable);
+						// remove the record image
+						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+						// remove the text on the button
+						music.setText("");
+					} else {
+						music.setBackgroundResource(R.drawable.button_bg);
+						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
+						music.setText(R.string.music);
+					}
 				} catch (Exception e) {
 					music.setBackgroundResource(R.drawable.button_bg);
 					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
