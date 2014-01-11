@@ -426,7 +426,7 @@ public class MediaService extends Service implements
 	private BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String command = intent.getStringExtra("command");
+			String command = intent.getStringExtra(MEDIA_COMMAND);
 			if (command.equals(NEXT)) {
 				mediaState.next();
 			} else if (command.equals(PREVIOUS)) {

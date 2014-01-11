@@ -29,7 +29,6 @@ public abstract class MediaState {
 	}
 
 	public void next() {
-		Log.d(TAG, "next " + getClass().getName());
 		// move to next item in playlist
 		if (mediaService.playlistPosition < mediaService.playlist.size()-1) {
 			mediaService.playlistPosition++;
@@ -45,12 +44,10 @@ public abstract class MediaState {
 	public void play() {};
 
 	public void playPause() {
-		Log.d(TAG, "playpause " + getClass().getName());
-		mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra("isPlaying", mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
+		mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra(MediaService.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
 	};
 
 	public void previous() {
-		Log.d(TAG, "previous " + getClass().getName());
 		// move to next item in playlist
 		if (mediaService.playlistPosition > 0) {
 			mediaService.playlistPosition--;
@@ -64,7 +61,6 @@ public abstract class MediaState {
 	};
 
 	public void setSong(Song song) {
-		Log.d(TAG, "setsong " + getClass().getName());
 		Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, song.getId());
 		try {
 			mediaPlayer.setDataSource(context, uri);
@@ -77,7 +73,6 @@ public abstract class MediaState {
 	}
 
 	public void stop() {
-		Log.d(TAG, "stop " + getClass().getName());
 		mediaService.mHandler.removeCallbacks(mediaService.mUpdateTime);
 		mediaService.setState(mediaService.getStoppedState());
 		mediaPlayer.stop();

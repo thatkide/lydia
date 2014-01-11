@@ -74,7 +74,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
-					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SET_POSITION).putExtra(MediaService.SET_POSITION, progress));
+					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SET_POSITION).putExtra(MediaService.SET_POSITION, progress));
 				}
 			}
 
@@ -106,21 +106,21 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		playPause.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PLAY_PAUSE));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PLAY_PAUSE));
 			}
 		});
 
 		next.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.NEXT));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 			}
 		});
 
 		previous.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.PREVIOUS));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
 			}
 		});
 
@@ -132,7 +132,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		repeat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.REPEAT));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.REPEAT));
 			}
 		});
 
@@ -146,7 +146,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			@Override
 			public boolean onLongClick(View v) {
 				Toast.makeText(activity, getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE_PLAY));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SHUFFLE_PLAY));
 				// we return true, saying we've handled this.. don't let anybody else do anything
 				return true;
 			}
@@ -156,7 +156,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		shuffle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.SHUFFLE));
+				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SHUFFLE));
 			}
 		});
 
