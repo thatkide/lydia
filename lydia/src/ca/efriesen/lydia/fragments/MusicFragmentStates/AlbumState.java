@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,10 +40,23 @@ public class AlbumState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) { }
+
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getArtistState());
 		musicFragment.setView();
 		return true;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		return false;
 	}
 
 	public void onDestroy() {

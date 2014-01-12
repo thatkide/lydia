@@ -51,7 +51,7 @@ public class Dashboard extends Activity {
 			}
 		});
 
-		checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
+//		checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
 
 //		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //				.detectAll()
@@ -65,7 +65,7 @@ public class Dashboard extends Activity {
 		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
 			String build = "0.01-7";
 			BugSenseHandler.addCrashExtraData("build", build);
-			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
+//			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
 		// set the entire view to a gesture overlay

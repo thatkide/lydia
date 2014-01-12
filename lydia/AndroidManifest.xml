@@ -109,6 +109,9 @@
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
 				  android:windowSoftInputMode="stateHidden"/>
 
+		<activity android:name=".activities.PlaylistManager"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+
 
 		<service android:name=".services.HardwareManagerService" android:process="ca.efriesen.lydia.hardwareManager"/>
 

@@ -23,22 +23,17 @@ import ca.efriesen.lydia.services.MediaService;
  */
 public class MusicFragment extends ListFragment {
 
-//	private ArrayList<Media> medias;
-
-	// the possible states of the view
-	public static enum SELECTED {home, artist, album, songs, search};
-
 	// bind to the media service
 	public MediaService mediaService;
 
 	private static final String TAG = "lydia media music fragment";
-
 
 	private MusicFragmentState homeState;
 	private MusicFragmentState artistState;
 	private MusicFragmentState albumState;
 	private MusicFragmentState songState;
 	private MusicFragmentState musicFragmentState;
+	private MusicFragmentState playlistState;
 
 	public LocalBroadcastManager localBroadcastManager;
 
@@ -67,9 +62,14 @@ public class MusicFragment extends ListFragment {
 		return songState;
 	}
 
+	public MusicFragmentState getPlaylistState() {
+		return playlistState;
+	}
+
 	public MusicFragmentState getState() {
 		return musicFragmentState;
 	}
+
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
@@ -81,6 +81,7 @@ public class MusicFragment extends ListFragment {
 		artistState = new ArtistState(this);
 		albumState = new AlbumState(this);
 		songState = new SongState(this);
+		playlistState = new PlaylistState(this);
 		musicFragmentState = homeState;
 		// set to the home view
 		musicFragmentState.setView(false);
@@ -106,6 +107,10 @@ public class MusicFragment extends ListFragment {
 		});
 	}
 
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		musicFragmentState.onActivityResult(requestCode, resultCode, intent);
+	}
+
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
@@ -128,6 +133,7 @@ public class MusicFragment extends ListFragment {
 		artistState.onDestroy();
 		albumState.onDestroy();
 		songState.onDestroy();
+		playlistState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);
 		} catch (Exception e) {
@@ -142,20 +148,13 @@ public class MusicFragment extends ListFragment {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		Log.d(TAG, "menu stuff");
-		if (v.getId() == android.R.id.list) {
-//			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//			menu.setHeaderTitle(getString(R.string.playlist));
-//			menu.add(Menu.NONE, 0, 0, getString(R.string.new_playlist));
-		}
+		super.onCreateContextMenu(menu, v, menuInfo);
+		musicFragmentState.onCreateContextMenu(menu, v, menuInfo);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// compare the title clicked, vs ones we're interested in
-//		if (getString(R.string.new_playlist).equalsIgnoreCase((String)item.getTitle())) {
-//			startActivity(new Intent(getActivity(), NewPlaylist.class));
-//		}
+		musicFragmentState.onContextItemSelected(item);
 		return true;
 	}
 
