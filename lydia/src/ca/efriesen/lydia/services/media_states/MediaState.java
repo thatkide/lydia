@@ -29,16 +29,18 @@ public abstract class MediaState {
 	}
 
 	public void next() {
-		// move to next item in playlist
-		if (mediaService.playlistPosition < mediaService.playlist.size()-1) {
-			mediaService.playlistPosition++;
-			// if we've reached the end
-			// start at the beginning again (if repeat is on)
-		} else {
-			if (mediaService.repeatAll) {
-				mediaService.playlistPosition = 0;
+		try {
+			// move to next item in playlist
+			if (mediaService.playlistPosition < mediaService.playlist.size()-1) {
+				mediaService.playlistPosition++;
+				// if we've reached the end
+				// start at the beginning again (if repeat is on)
+			} else {
+				if (mediaService.repeatAll) {
+					mediaService.playlistPosition = 0;
+				}
 			}
-		}
+		} catch (NullPointerException e) { }
 	}
 
 	public void play() {};
@@ -48,16 +50,18 @@ public abstract class MediaState {
 	};
 
 	public void previous() {
-		// move to next item in playlist
-		if (mediaService.playlistPosition > 0) {
-			mediaService.playlistPosition--;
-			// if we've reached the end
-			// start at the beginning again (if repeat is on)
-		} else {
-			if (mediaService.repeatAll) {
-				mediaService.playlistPosition = mediaService.playlist.size()-1;
+		try {
+			// move to next item in playlist
+			if (mediaService.playlistPosition > 0) {
+				mediaService.playlistPosition--;
+				// if we've reached the end
+				// start at the beginning again (if repeat is on)
+			} else {
+				if (mediaService.repeatAll) {
+					mediaService.playlistPosition = mediaService.playlist.size()-1;
+				}
 			}
-		}
+		} catch (NullPointerException e) { }
 	};
 
 	public void setSong(Song song) {
