@@ -124,7 +124,7 @@ public class PlaylistState implements MusicFragmentState {
 		// get the artist from the arraylist
 		Playlist playlist = (Playlist)playlists.get(position);
 		// transition states and set the view
-		musicFragment.setState(musicFragment.getSongState());
+		musicFragment.setState(musicFragment.getPlaylistSongState());
 		musicFragment.setView(playlist);
 
 	}

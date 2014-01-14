@@ -31,7 +31,8 @@ public class MusicFragment extends ListFragment {
 	private MusicFragmentState homeState;
 	private MusicFragmentState artistState;
 	private MusicFragmentState albumState;
-	private MusicFragmentState songState;
+	private MusicFragmentState albumSongState;
+	private MusicFragmentState playlistSongState;
 	private MusicFragmentState musicFragmentState;
 	private MusicFragmentState playlistState;
 
@@ -58,9 +59,11 @@ public class MusicFragment extends ListFragment {
 		return homeState;
 	}
 
-	public MusicFragmentState getSongState() {
-		return songState;
+	public MusicFragmentState getAlbumSongState() {
+		return albumSongState;
 	}
+
+	public MusicFragmentState getPlaylistSongState() { return playlistSongState; }
 
 	public MusicFragmentState getPlaylistState() {
 		return playlistState;
@@ -80,7 +83,8 @@ public class MusicFragment extends ListFragment {
 		homeState = new HomeState(this);
 		artistState = new ArtistState(this);
 		albumState = new AlbumState(this);
-		songState = new SongState(this);
+		albumSongState = new AlbumSongState(this);
+		playlistSongState = new PlaylistSongState(this);
 		playlistState = new PlaylistState(this);
 		musicFragmentState = homeState;
 		// set to the home view
@@ -132,7 +136,8 @@ public class MusicFragment extends ListFragment {
 		homeState.onDestroy();
 		artistState.onDestroy();
 		albumState.onDestroy();
-		songState.onDestroy();
+		albumSongState.onDestroy();
+		playlistSongState.onDestroy();
 		playlistState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);

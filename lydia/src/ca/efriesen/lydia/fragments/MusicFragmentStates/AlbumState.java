@@ -67,7 +67,7 @@ public class AlbumState implements MusicFragmentState {
 
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// transition states and set the view
-		musicFragment.setState(musicFragment.getSongState());
+		musicFragment.setState(musicFragment.getAlbumSongState());
 		musicFragment.setView(artist, (Album)albums.get(position));
 	}
 
