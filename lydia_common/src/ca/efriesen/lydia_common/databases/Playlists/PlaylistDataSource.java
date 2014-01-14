@@ -1,10 +1,11 @@
-package ca.efriesen.lydia.databases.Playlists;
+package ca.efriesen.lydia_common.databases.Playlists;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import ca.efriesen.lydia_common.media.Playlist;
 
 import java.util.ArrayList;
 
@@ -31,6 +32,25 @@ public class PlaylistDataSource {
 		dbHelper.close();
 	}
 
+	public Playlist getPlaylist(int id) {
+		String SELECTION = PlaylistOpenHelper.COLUMN_ID + " = " + id;
+
+		Cursor cursor = database.query(
+				PlaylistOpenHelper.TABLE_NAME,
+				PROJECTION,
+				SELECTION,
+				null,
+				null,
+				null,
+				null
+		);
+
+		cursor.moveToFirst();
+		Playlist playlist = cursorToPlaylist(cursor);
+		cursor.close();
+		return playlist;
+	}
+
 	public ArrayList<Playlist> getPlaylists() {
 		ArrayList<Playlist> playlists = new ArrayList<Playlist>();
 
@@ -50,7 +70,7 @@ public class PlaylistDataSource {
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			Playlist playlist = cursorToMessage(cursor);
+			Playlist playlist = cursorToPlaylist(cursor);
 			playlists.add(playlist);
 			cursor.moveToNext();
 		}
@@ -60,7 +80,7 @@ public class PlaylistDataSource {
 	}
 
 	public Playlist createPlaylist(String name) {
-		Playlist playlist = new Playlist();
+		Playlist playlist = new Playlist(context);
 		ContentValues values = new ContentValues();
 		values.put(PlaylistOpenHelper.NAME, name);
 
@@ -70,7 +90,7 @@ public class PlaylistDataSource {
 			// if successful, get the newly added playlist to be returned
 			Cursor cursor = database.query(PlaylistOpenHelper.TABLE_NAME, PROJECTION, PlaylistOpenHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
 			cursor.moveToFirst();
-			playlist = cursorToMessage(cursor);
+			playlist = cursorToPlaylist(cursor);
 			cursor.close();
 		} else {
 			// error id
@@ -89,9 +109,9 @@ public class PlaylistDataSource {
 		database.update(PlaylistOpenHelper.TABLE_NAME, values, PlaylistOpenHelper.COLUMN_ID + " = " + playlist.getId(), null);
 	}
 
-	private Playlist cursorToMessage(Cursor cursor) {
-		Playlist playlist = new Playlist();
-		playlist.setId(cursor.getLong(cursor.getColumnIndex(PlaylistOpenHelper.COLUMN_ID)));
+	private Playlist cursorToPlaylist(Cursor cursor) {
+		Playlist playlist = new Playlist(context);
+		playlist.setId(cursor.getInt(cursor.getColumnIndex(PlaylistOpenHelper.COLUMN_ID)));
 		playlist.setName(cursor.getString(cursor.getColumnIndex(PlaylistOpenHelper.NAME)));
 
 		return playlist;

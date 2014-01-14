@@ -4,16 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.databases.Playlists.Playlist;
-import ca.efriesen.lydia.databases.Playlists.PlaylistDataSource;
+import ca.efriesen.lydia_common.media.Playlist;
+import ca.efriesen.lydia_common.databases.Playlists.PlaylistDataSource;
 
 /**
  * Created by eric on 1/11/2014.
@@ -35,13 +33,14 @@ public class PlaylistManager extends Activity implements View.OnClickListener {
 		saveButton.setOnClickListener(this);
 		playlistName = (EditText) findViewById(R.id.playlist_name);
 
-		if (intent.hasExtra(Playlist.PLAYLIST)) {
+		if (intent.hasExtra(Playlist.PLAYLIST_ID)) {
 			edit = true;
-			playlist = (Playlist) intent.getSerializableExtra(Playlist.PLAYLIST);
+			int playlist_id = intent.getIntExtra(Playlist.PLAYLIST_ID, 0);
+			playlist = Playlist.get(getApplicationContext(), playlist_id);
 			playlistName.setText(playlist.getName());
 		} else {
 			edit = false;
-			playlist = new Playlist();
+			playlist = new Playlist(getApplicationContext());
 		}
 	}
 

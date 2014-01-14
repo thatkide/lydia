@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaylistManager;
-import ca.efriesen.lydia.databases.Playlists.Playlist;
+import ca.efriesen.lydia_common.media.Playlist;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Media;
 
@@ -30,10 +29,11 @@ public class PlaylistState implements MusicFragmentState {
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayAdapter<Playlist> adapter;
-	private ArrayList<Playlist> playlists;
+	private ArrayList playlists;
 
 	private static final int DeleteId = 0;
 	private static final int EditId = 1;
+	private static final int PlayId = 2;
 
 	public PlaylistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
@@ -65,8 +65,9 @@ public class PlaylistState implements MusicFragmentState {
 
 		// it was, open the playlist context menu
 		menu.setHeaderTitle(playlist.getName());
-		menu.add(Menu.NONE, DeleteId, 0, activity.getString(R.string.delete));
+		menu.add(Menu.NONE, PlayId, 0, activity.getString(R.string.play));
 		menu.add(Menu.NONE, EditId, 0, activity.getString(R.string.edit));
+		menu.add(Menu.NONE, DeleteId, 0, activity.getString(R.string.delete));
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class PlaylistState implements MusicFragmentState {
 		switch (item.getItemId()) {
 			case DeleteId: {
 				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-				builder.setMessage("Really delete playlist " + playlist.getName()).setTitle(activity.getString(R.string.delete));
+				builder.setMessage(activity.getString(R.string.delete_playlist_confirm) + " \"" + playlist.getName() + "\"").setTitle(activity.getString(R.string.delete));
 				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
@@ -103,7 +104,10 @@ public class PlaylistState implements MusicFragmentState {
 				break;
 			}
 			case EditId: {
-				musicFragment.startActivityForResult(new Intent(activity, PlaylistManager.class).putExtra(Playlist.PLAYLIST, playlist), 1);
+				musicFragment.startActivityForResult(new Intent(activity, PlaylistManager.class).putExtra(Playlist.PLAYLIST_ID, playlist.getId()), 1);
+				break;
+			}
+			case PlayId: {
 				break;
 			}
 		}
@@ -117,6 +121,11 @@ public class PlaylistState implements MusicFragmentState {
 
 	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
+		// get the artist from the arraylist
+		Playlist playlist = (Playlist)playlists.get(position);
+		// transition states and set the view
+		musicFragment.setState(musicFragment.getSongState());
+		musicFragment.setView(playlist);
 
 	}
 
