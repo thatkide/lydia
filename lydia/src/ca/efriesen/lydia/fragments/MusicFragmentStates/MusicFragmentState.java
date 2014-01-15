@@ -14,7 +14,6 @@ import java.util.ArrayList;
  */
 public interface MusicFragmentState {
 
-	public void onActivityResult(int requestCode, int resultCode, Intent intent);
 	public boolean onBackPressed();
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo);
 	public boolean onContextItemSelected(MenuItem item);

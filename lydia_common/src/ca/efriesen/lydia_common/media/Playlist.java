@@ -12,6 +12,7 @@ import java.util.ArrayList;
  */
 public class Playlist extends Media implements Serializable {
 
+	private static final String TAG = "lydia playlist.java";
 	public static final String PLAYLIST_ID = "ca.efriesen.lydia.Playlist";
 
 	private Context context;
@@ -36,10 +37,16 @@ public class Playlist extends Media implements Serializable {
 	}
 
 	public void setName(String name) {
+		name = name.trim();
 		this.name = name;
+
+		PlaylistDataSource dataSource = new PlaylistDataSource(context);
+		dataSource.open();
+		dataSource.createOrUpdate(this);
+		dataSource.close();
 	}
 
-	public void delete(Context context) {
+	public void delete() {
 		PlaylistSongsDataSource songsDataSource = new PlaylistSongsDataSource(context);
 		songsDataSource.open();
 		songsDataSource.removeAllSongs(this);

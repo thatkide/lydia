@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.PlaylistManager;
+import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia_common.media.Playlist;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Media;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by eric on 1/11/2014.
  */
-public class PlaylistState implements MusicFragmentState {
+public class PlaylistState implements MusicFragmentState, DialogInterface.OnDismissListener {
 
 	private static final String TAG = "lydia playlist state";
 
@@ -38,12 +38,6 @@ public class PlaylistState implements MusicFragmentState {
 	public PlaylistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// update the arraylist and notify the adapter.
-		updateView();
 	}
 
 	@Override
@@ -88,7 +82,7 @@ public class PlaylistState implements MusicFragmentState {
 				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
-						playlist.delete(activity);
+						playlist.delete();
 						updateView();
 					}
 				});
@@ -104,7 +98,11 @@ public class PlaylistState implements MusicFragmentState {
 				break;
 			}
 			case EditId: {
-				musicFragment.startActivityForResult(new Intent(activity, PlaylistManager.class).putExtra(Playlist.PLAYLIST_ID, playlist.getId()), 1);
+				// update view
+				AlertDialog.Builder builder = NewPlaylistAlert.build(activity, playlist.getId());
+				builder.setOnDismissListener(this);
+				builder.show();
+
 				break;
 			}
 			case PlayId: {
@@ -151,5 +149,11 @@ public class PlaylistState implements MusicFragmentState {
 		playlists.clear();
 		playlists.addAll(Playlist.getAllPlaylists(activity));
 		adapter.notifyDataSetChanged();
+	}
+
+	// This is called on dialog dismissal
+	@Override
+	public void onDismiss(DialogInterface dialogInterface) {
+		updateView();
 	}
 }

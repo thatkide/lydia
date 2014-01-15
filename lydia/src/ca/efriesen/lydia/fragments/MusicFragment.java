@@ -111,10 +111,6 @@ public class MusicFragment extends ListFragment {
 		});
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		musicFragmentState.onActivityResult(requestCode, resultCode, intent);
-	}
-
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);

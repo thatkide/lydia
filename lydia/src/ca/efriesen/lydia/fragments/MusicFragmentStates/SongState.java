@@ -38,8 +38,6 @@ abstract public class SongState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) { }
 
 	@Override
 	public boolean onBackPressed() {

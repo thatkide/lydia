@@ -1,15 +1,12 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.app.AlertDialog;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.PlaylistManager;
+import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.*;
 
@@ -20,6 +17,7 @@ import java.util.ArrayList;
  */
 public class AlbumSongState extends SongState {
 
+	private static final String TAG = "lydia albumsongstate";
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayList<Song> songs;
@@ -63,8 +61,9 @@ public class AlbumSongState extends SongState {
 
 		switch (item.getItemId()) {
 			case NewPlaylistId: {
-				// Open the new playlist dialog
-				activity.startActivity(new Intent(activity, PlaylistManager.class));
+//				// Open the new playlist dialog
+				AlertDialog.Builder builder = NewPlaylistAlert.build(activity);
+				builder.show();
 				break;
 			}
 			default: {

@@ -79,34 +79,34 @@ public class PlaylistDataSource {
 		return playlists;
 	}
 
-	public Playlist createPlaylist(String name) {
-		Playlist playlist = new Playlist(context);
+	public Playlist createOrUpdate(Playlist playlist) {
 		ContentValues values = new ContentValues();
-		values.put(PlaylistOpenHelper.NAME, name);
+		values.put(PlaylistOpenHelper.NAME, playlist.getName());
 
-		long insertId = database.insert(PlaylistOpenHelper.TABLE_NAME, null, values);
-		// insert will return -1 on error
-		if (insertId != -1) {
-			// if successful, get the newly added playlist to be returned
-			Cursor cursor = database.query(PlaylistOpenHelper.TABLE_NAME, PROJECTION, PlaylistOpenHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
-			cursor.moveToFirst();
-			playlist = cursorToPlaylist(cursor);
-			cursor.close();
+		// edit an existing list
+		if (playlist.getId() > 0) {
+			database.update(PlaylistOpenHelper.TABLE_NAME, values, PlaylistOpenHelper.COLUMN_ID + " = " + playlist.getId(), null);
+		// insert a new list
 		} else {
-			// error id
-			playlist.setId(-1);
+			long insertId = database.insert(PlaylistOpenHelper.TABLE_NAME, null, values);
+			// insert will return -1 on error
+			if (insertId != -1) {
+				// if successful, get the newly added playlist to be returned
+				Cursor cursor = database.query(PlaylistOpenHelper.TABLE_NAME, PROJECTION, PlaylistOpenHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
+				cursor.moveToFirst();
+				playlist = cursorToPlaylist(cursor);
+				cursor.close();
+			} else {
+				// error id
+				playlist.setId(-1);
+			}
 		}
+
 		return playlist;
 	}
 
 	public void deletePlaylist(Playlist playlist) {
 		database.delete(PlaylistOpenHelper.TABLE_NAME, PlaylistOpenHelper.COLUMN_ID + " = " + playlist.getId(), null);
-	}
-
-	public void editPlaylist(Playlist playlist) {
-		ContentValues values = new ContentValues();
-		values.put(PlaylistOpenHelper.NAME, playlist.getName());
-		database.update(PlaylistOpenHelper.TABLE_NAME, values, PlaylistOpenHelper.COLUMN_ID + " = " + playlist.getId(), null);
 	}
 
 	private Playlist cursorToPlaylist(Cursor cursor) {

@@ -41,9 +41,6 @@ public class ArtistState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) { }
-
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getHomeState());
 		musicFragment.setView();

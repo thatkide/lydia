@@ -1,8 +1,8 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,7 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.PlaylistManager;
+import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia.fragments.HomeScreenFragment;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Artist;
@@ -49,9 +49,6 @@ public class HomeState implements MusicFragmentState {
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {}
-
-	@Override
 	public boolean onBackPressed() {
 		musicFragment.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
@@ -84,7 +81,8 @@ public class HomeState implements MusicFragmentState {
 		switch (item.getItemId()) {
 			case NewPlaylistId: {
 				// Open the new playlist dialog
-				activity.startActivity(new Intent(activity, PlaylistManager.class));
+				AlertDialog.Builder builder = NewPlaylistAlert.build(activity);
+				builder.show();
 				break;
 			}
 		}
