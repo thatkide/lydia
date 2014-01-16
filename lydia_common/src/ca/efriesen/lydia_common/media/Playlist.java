@@ -46,12 +46,25 @@ public class Playlist extends Media implements Serializable {
 		dataSource.close();
 	}
 
-	public void delete() {
+	public long getCount() {
+		PlaylistSongsDataSource songsDataSource = new PlaylistSongsDataSource(context);
+		songsDataSource.open();
+		long count = songsDataSource.getCount(this);
+		songsDataSource.close();
+		return count;
+	}
+
+	public void clear() {
 		PlaylistSongsDataSource songsDataSource = new PlaylistSongsDataSource(context);
 		songsDataSource.open();
 		songsDataSource.removeAllSongs(this);
 		songsDataSource.close();
+	}
 
+	public void delete() {
+		// remove all songs from the list
+		clear();
+		// then actually remove the list
 		PlaylistDataSource dataSource = new PlaylistDataSource(context);
 		dataSource.open();
 		dataSource.deletePlaylist(this);
@@ -62,6 +75,13 @@ public class Playlist extends Media implements Serializable {
 		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
 		dataSource.open();
 		dataSource.addSong(this, song);
+		dataSource.close();
+	}
+
+	public void addSongs(ArrayList<Song> songs) {
+		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
+		dataSource.open();
+		dataSource.addSongs(this, songs);
 		dataSource.close();
 	}
 

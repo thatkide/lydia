@@ -29,6 +29,7 @@
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
 	<string name="chrome">Chrome</string>
+	<string name="clear_playlist_confirm">Really clear playlist</string>
 	<string name="close">Close</string>
 	<string name="contacts">Contacts</string>
 	<string name="current_value">Current Sensor Value</string>

@@ -2,20 +2,18 @@ package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.graphics.Typeface;
+import android.view.*;
+import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia_common.media.Playlist;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Media;
+import ca.efriesen.lydia_common.media.Song;
 
 import java.util.ArrayList;
 
@@ -34,6 +32,7 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 	private static final int DeleteId = 0;
 	private static final int EditId = 1;
 	private static final int PlayId = 2;
+	private static final int ClearId = 3;
 
 	public PlaylistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
@@ -61,6 +60,7 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 		menu.setHeaderTitle(playlist.getName());
 		menu.add(Menu.NONE, PlayId, 0, activity.getString(R.string.play));
 		menu.add(Menu.NONE, EditId, 0, activity.getString(R.string.edit));
+		menu.add(Menu.NONE, ClearId, 0, activity.getString(R.string.clear));
 		menu.add(Menu.NONE, DeleteId, 0, activity.getString(R.string.delete));
 	}
 
@@ -84,12 +84,13 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 					public void onClick(DialogInterface dialogInterface, int i) {
 						playlist.delete();
 						updateView();
+						dialogInterface.dismiss();
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
-						// do nothing but close the dialog
+						dialogInterface.dismiss();
 					}
 				});
 
@@ -106,6 +107,31 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 				break;
 			}
 			case PlayId: {
+				// play the selected list
+				musicFragment.mediaService.setPlaylist(playlist.getSongs(), 0);
+				musicFragment.mediaService.play();
+				break;
+			}
+			case ClearId: {
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				builder.setMessage(activity.getString(R.string.clear_playlist_confirm) + " \"" + playlist.getName() + "\"").setTitle(activity.getString(R.string.clear));
+				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						playlist.clear();
+						updateView();
+						dialogInterface.dismiss();
+					}
+				});
+				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
+
+				AlertDialog dialog = builder.create();
+				dialog.show();
 				break;
 			}
 		}
@@ -134,7 +160,7 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 		// ensure we can click on things
 		view.setEnabled(true);
 		// set the adapter to a new array of options set above
-		adapter = new ArrayAdapter<Playlist>(activity, android.R.layout.simple_list_item_1, playlists);
+		adapter = new PlaylistAdapter(activity, R.layout.playlist_state_row, playlists);
 		view.setAdapter(adapter);
 		// get the list and register a menu listener for it
 		musicFragment.registerForContextMenu(view);
@@ -155,5 +181,34 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 	@Override
 	public void onDismiss(DialogInterface dialogInterface) {
 		updateView();
+	}
+
+	class PlaylistAdapter extends ArrayAdapter<Playlist> {
+
+		private final Context context;
+		private final ArrayList<Playlist> playlists;
+		private final int layoutId;
+
+		public PlaylistAdapter(Context context, int layoutId, ArrayList<Playlist> playlists) {
+			super(context, layoutId, playlists);
+			this.context = context;
+			this.layoutId = layoutId;
+			this.playlists = playlists;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View rowView = inflater.inflate(layoutId, parent, false);
+
+			TextView playlistName = (TextView) rowView.findViewById(R.id.row_playlist_name);
+			TextView playlistCount = (TextView) rowView.findViewById(R.id.row_playlist_song_count);
+
+			Playlist playlist = playlists.get(position);
+			playlistName.setText(playlist.getName());
+			playlistCount.setText(String.valueOf(playlist.getCount()));
+
+			return rowView;
+		}
 	}
 }

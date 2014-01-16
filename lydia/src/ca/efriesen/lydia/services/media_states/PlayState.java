@@ -24,7 +24,6 @@ public class PlayState extends MediaState {
 
 	@Override
 	public void next() {
-		Log.d(TAG, "next " + getClass().getName());
 		super.next();
 		mediaService.stop();
 		mediaService.setState(mediaService.getPlayingState());
@@ -33,7 +32,6 @@ public class PlayState extends MediaState {
 
 	@Override
 	public void previous() {
-		Log.d(TAG, "previous " + getClass().getName());
 		super.previous();
 		mediaService.stop();
 		mediaService.setState(mediaService.getPlayingState());
@@ -42,14 +40,12 @@ public class PlayState extends MediaState {
 
 	@Override
 	public void play() {
-		Log.d(TAG, "play " + getClass().getName());
 		mediaService.stop();
 		mediaService.getState().setSong(mediaService.playlist.get(mediaService.playlistPosition));
 	}
 
 	@Override
 	public void playPause() {
-		Log.d(TAG, "playpause " + getClass().getName());
 		mediaPlayer.pause();
 		mediaService.setState(mediaService.getPausedState());
 		// call super after we pause, then we will send the paused state

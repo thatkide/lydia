@@ -3,9 +3,9 @@ package ca.efriesen.lydia_common.databases.Playlists;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import ca.efriesen.lydia_common.media.Playlist;
 import ca.efriesen.lydia_common.media.Song;
@@ -36,6 +36,12 @@ public class PlaylistSongsDataSource {
 		dbHelper.close();
 	}
 
+	public long getCount(Playlist playlist) {
+		SQLiteStatement sqLiteStatement = database.compileStatement("SELECT COUNT(*) FROM " + PlaylistSongsOpenHelper.TABLE_NAME +  " WHERE " + PlaylistSongsOpenHelper.PLAYLIST_ID + "='" + playlist.getId() + "';");
+		long count = sqLiteStatement.simpleQueryForLong();
+		return count;
+	}
+
 	private int getNextOrder(Playlist playlist) {
 
 		String SELECTION = PlaylistSongsOpenHelper.PLAYLIST_ID + " = " + playlist.getId();
@@ -62,6 +68,27 @@ public class PlaylistSongsDataSource {
 			cursor.close();
 			return 1;
 		}
+	}
+
+	public void addSongs(Playlist playlist, ArrayList<Song> songs) {
+		// using the sql in this fashion vs contentValues is SIGNIFICANTLY faster.  it's not really noticeable on one insert, but when you add an entire artist to a playlist, it's very noticeable
+		int startOrder = getNextOrder(playlist);
+		String sql = "INSERT INTO " + PlaylistSongsOpenHelper.TABLE_NAME + " VALUES (null,?,?,?);";
+		SQLiteStatement statement = database.compileStatement(sql);
+		database.beginTransaction();
+		for (Song song : songs) {
+			statement.clearBindings();
+			// song id
+			statement.bindLong(1, song.getId());
+			// order
+			statement.bindLong(2, startOrder++);
+			// playlist id
+			statement.bindLong(3, playlist.getId());
+			statement.execute();
+		}
+		database.setTransactionSuccessful();
+		database.endTransaction();
+
 	}
 
 	public boolean addSong(Playlist playlist, Song song) {
