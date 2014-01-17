@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/update">
+		<Preference
+			android:title="@string/check_for_update"
+			android:key="checkForUpdate">
+			<intent android:action=".activities.settings.UpdateActivity" />
+			</Preference>
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/wifi">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference
 			android:key="systemWiFi"

@@ -46,12 +46,12 @@ public class Dashboard extends Activity {
 			@Override
 			public void update(Observable observable, Object o) {
 				if (checker.isUpdateAvailable()) {
-					checker.downloadAndInstall("https://github.com/ericfri/lydia/raw/master/lydia_signed.apk");
+					checker.downloadAndInstall(getString(R.string.update_apk_url));
 				}
 			}
 		});
 
-//		checker.checkForUpdateByVersionCode("https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt");
+//		checker.checkForUpdateByVersionCode(getString(R.string.update_url));
 
 //		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //				.detectAll()

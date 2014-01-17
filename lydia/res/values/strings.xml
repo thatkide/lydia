@@ -28,6 +28,7 @@
 	<string name="calendar">Calendar</string>
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
+	<string name="check_for_update">Check for update</string>
 	<string name="chrome">Chrome</string>
 	<string name="clear_playlist_confirm">Really clear playlist</string>
 	<string name="close">Close</string>
@@ -144,6 +145,7 @@
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>
 	<string name="unpairing_device">Unpairing device</string>
+	<string name="update">Update</string>
 	<string name="use_alarm">Use alarm</string>
 	<string name="use_arduino">Use Arduino to communicate with other hardware</string>
 	<string name="use_bluetooth">Use Bluetooth</string>
@@ -163,4 +165,7 @@
 	<string name="wipers">Wipers</string>
 
 	<string name="title_activity_display_message">New Message</string>
+
+	<string name="update_apk_url">https://github.com/ericfri/lydia/raw/master/lydia_signed.apk</string>
+	<string name="update_url">https://raw.github.com/ericfri/lydia/master/lydia/apk_version.txt</string>
 </resources>
