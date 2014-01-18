@@ -93,6 +93,27 @@ public class Playlist extends Media implements Serializable {
 		return songs;
 	}
 
+	public void reOrder() {
+		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
+		dataSource.open();
+		dataSource.setOrder(this);
+		dataSource.close();
+	}
+
+	public void removeSong(int id, boolean reOrder) {
+		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
+		dataSource.open();
+		dataSource.removeSong(this, id, reOrder);
+		dataSource.close();
+	}
+
+	public void removeSong(int id) {
+		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
+		dataSource.open();
+		dataSource.removeSong(this, id);
+		dataSource.close();
+	}
+
 	public void removeSong(Song song) {
 		PlaylistSongsDataSource dataSource = new PlaylistSongsDataSource(context);
 		dataSource.open();

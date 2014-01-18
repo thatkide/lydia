@@ -133,7 +133,9 @@ public class Artist extends Media implements Serializable {
 
 		ArrayList<Artist> fullList = new ArrayList<Artist>();
 		fullList.add(all);
-		fullList.addAll(artists);
+		if (artists != null) {
+			fullList.addAll(artists);
+		}
 
 		return fullList;
 	}

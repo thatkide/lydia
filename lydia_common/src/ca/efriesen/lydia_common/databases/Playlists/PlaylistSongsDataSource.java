@@ -129,7 +129,12 @@ public class PlaylistSongsDataSource {
 		while (!cursor.isAfterLast()) {
 			int id = cursor.getInt(cursor.getColumnIndex(PlaylistSongsOpenHelper.SONG_ID));
 			Song song = Song.getSong(context, id);
-			songs.add(song);
+			if (song != null) {
+				songs.add(song);
+			} else {
+				playlist.removeSong(id, false);
+				playlist.reOrder();
+			}
 			cursor.moveToNext();
 		}
 
@@ -137,7 +142,7 @@ public class PlaylistSongsDataSource {
 		return songs;
 	}
 
-	private void setOrder(Playlist playlist) {
+	public void setOrder(Playlist playlist) {
 		String SELECTION = PlaylistSongsOpenHelper.PLAYLIST_ID + " = " + playlist.getId();
 		String order = PlaylistSongsOpenHelper.ORDER + " ASC";
 		Cursor cursor = database.query(
@@ -171,14 +176,24 @@ public class PlaylistSongsDataSource {
 		}
 	}
 
-	public boolean removeSong(Playlist playlist, Song song) {
-		int numRows = database.delete(PlaylistSongsOpenHelper.TABLE_NAME, PlaylistSongsOpenHelper.SONG_ID + " = " + song.getId() + " AND " + PlaylistSongsOpenHelper.PLAYLIST_ID + " = " + playlist.getId(), null);
+	public boolean removeSong(Playlist playlist, int id) {
+		return removeSong(playlist, id, true);
+	}
+
+	public boolean removeSong(Playlist playlist, int id, boolean reOrder) {
+		int numRows = database.delete(PlaylistSongsOpenHelper.TABLE_NAME, PlaylistSongsOpenHelper.SONG_ID + " = " + id + " AND " + PlaylistSongsOpenHelper.PLAYLIST_ID + " = " + playlist.getId(), null);
 		if (numRows > 0) {
-			setOrder(playlist);
+			if (reOrder) {
+				setOrder(playlist);
+			}
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean removeSong(Playlist playlist, Song song) {
+		return removeSong(playlist, song.getId());
 	}
 
 }

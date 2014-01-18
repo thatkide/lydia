@@ -3,6 +3,7 @@ package ca.efriesen.lydia_common.media;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -143,14 +144,19 @@ public class Song extends Media implements Serializable {
 		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
 		// reset the cursor the the first item
 		cursor.moveToFirst();
-		// create a new song object
-		Song song = new Song(context);
-		// pass the song the cursor data
-		song.setCursorData(cursor);
-		// close
-		cursor.close();
-		// and return the song
-		return song;
+		if (cursor.getCount() > 0) {
+			// create a new song object
+			Song song = new Song(context);
+			// pass the song the cursor data
+			song.setCursorData(cursor);
+			// close
+			cursor.close();
+			// and return the song
+			return song;
+		} else {
+			cursor.close();
+			return null;
+		}
 	}
 
 	@Override
