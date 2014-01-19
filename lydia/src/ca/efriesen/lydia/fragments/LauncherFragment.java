@@ -55,57 +55,62 @@ public class LauncherFragment extends Fragment implements
 
 	// returns an array of appinfos of the installed packages we can launch
 	private static ArrayList<AppInfo> getInstalledPackages(Context context) {
-		PackageManager packageManager = context.getPackageManager();
-		// create our new arrays
-		ArrayList<AppInfo> appInfos = new ArrayList<AppInfo>();
-		// get the list of all installed apps
-		List<PackageInfo> installedApps = packageManager.getInstalledPackages(0);
-		// get a list of activites with the "Action Main" intent
-		List<ResolveInfo> activityList = packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN, null), 0);
+		// rare time when the package manager dies the app will crash.  this should fix it, at least stop the crash.
+		try {
+			PackageManager packageManager = context.getPackageManager();
+			// create our new arrays
+			ArrayList<AppInfo> appInfos = new ArrayList<AppInfo>();
+			// get the list of all installed apps
+			List<PackageInfo> installedApps = packageManager.getInstalledPackages(0);
+			// get a list of activites with the "Action Main" intent
+			List<ResolveInfo> activityList = packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN, null), 0);
 
-		// loop over the installed apps, and get the package info
-		for (PackageInfo info : installedApps) {
-			// create a new appinfo object
-			AppInfo appInfo = new AppInfo();
-			// we set package name here because we test on it later
-			appInfo.setPackageName(info.packageName);
+			// loop over the installed apps, and get the package info
+			for (PackageInfo info : installedApps) {
+				// create a new appinfo object
+				AppInfo appInfo = new AppInfo();
+				// we set package name here because we test on it later
+				appInfo.setPackageName(info.packageName);
 
-			// loop over all the activites with the "main intent"
-			for (ResolveInfo resolveInfo : activityList) {
-				// if the current packages matches one of the activies
-				if (info.packageName.equals(resolveInfo.activityInfo.applicationInfo.packageName)) {
-					// set the attributes needed
-					appInfo.setClassName(resolveInfo.activityInfo.name);
-					appInfo.setAppName(info.applicationInfo.loadLabel(packageManager).toString());
-					appInfo.setVersionName(info.versionName);
-					appInfo.setVersionCode(info.versionCode);
-					appInfo.setIcon(info.applicationInfo.loadIcon(packageManager));
+				// loop over all the activites with the "main intent"
+				for (ResolveInfo resolveInfo : activityList) {
+					// if the current packages matches one of the activies
+					if (info.packageName.equals(resolveInfo.activityInfo.applicationInfo.packageName)) {
+						// set the attributes needed
+						appInfo.setClassName(resolveInfo.activityInfo.name);
+						appInfo.setAppName(info.applicationInfo.loadLabel(packageManager).toString());
+						appInfo.setVersionName(info.versionName);
+						appInfo.setVersionCode(info.versionCode);
+						appInfo.setIcon(info.applicationInfo.loadIcon(packageManager));
 
-					// create a new intent to stuff into the appinfo object
-					Intent launchIntent = new Intent();
-					ComponentName component = new ComponentName(appInfo.getPackageName(), appInfo.getClassName());
-					launchIntent.setComponent(component);
-					launchIntent.setAction(Intent.ACTION_MAIN);
-					appInfo.setLaunchIntent(launchIntent);
+						// create a new intent to stuff into the appinfo object
+						Intent launchIntent = new Intent();
+						ComponentName component = new ComponentName(appInfo.getPackageName(), appInfo.getClassName());
+						launchIntent.setComponent(component);
+						launchIntent.setAction(Intent.ACTION_MAIN);
+						appInfo.setLaunchIntent(launchIntent);
 
-					// add the object to the array that will be returned
-					appInfos.add(appInfo);
-					break;
+						// add the object to the array that will be returned
+						appInfos.add(appInfo);
+						break;
+					}
 				}
+
 			}
 
+			// sort the list by appname ignoring case
+			Collections.sort(appInfos, new Comparator<AppInfo>() {
+				@Override
+				public int compare(AppInfo appInfo, AppInfo appInfo2) {
+					return appInfo.getAppName().compareToIgnoreCase(appInfo2.getAppName());
+				}
+			});
+
+			// return the list
+			return appInfos;
+		} catch (Exception e) {
+			return null;
 		}
-
-		// sort the list by appname ignoring case
-		Collections.sort(appInfos, new Comparator<AppInfo>() {
-			@Override
-			public int compare(AppInfo appInfo, AppInfo appInfo2) {
-				return appInfo.getAppName().compareToIgnoreCase(appInfo2.getAppName());
-			}
-		});
-
-		// return the list
-		return appInfos;
 	}
 
 	@Override
