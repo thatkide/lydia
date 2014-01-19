@@ -168,6 +168,7 @@ public class Album extends Media implements Serializable {
 		ArrayList<Song> songs = MediaUtils.cursorToArray(Song.class, cursor, context);
 		cursor.close();
 
+		// check if we got any songs. if we did, return them, otherwise return an empty arraylist
 		if (songs != null) {
 			return songs;
 		} else {
