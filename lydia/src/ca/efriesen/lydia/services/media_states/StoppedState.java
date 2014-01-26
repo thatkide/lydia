@@ -35,9 +35,10 @@ public class StoppedState extends MediaState {
 
 	@Override
 	public void play() {
-		Log.d(TAG, "play " + getClass().getName());
-		mediaService.setState(mediaService.getPlayingState());
-		mediaService.getState().setSong(mediaService.playlist.get(mediaService.playlistPosition));
+		if (mediaService.playlist != null) {
+			mediaService.setState(mediaService.getPlayingState());
+			mediaService.getState().setSong(mediaService.playlist.get(mediaService.playlistPosition));
+		}
 	}
 
 }

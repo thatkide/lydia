@@ -125,21 +125,26 @@ public class PlaylistSongsDataSource {
 				order
 		);
 
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			int id = cursor.getInt(cursor.getColumnIndex(PlaylistSongsOpenHelper.SONG_ID));
-			Song song = Song.getSong(context, id);
-			if (song != null) {
-				songs.add(song);
-			} else {
-				playlist.removeSong(id, false);
-				playlist.reOrder();
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				int id = cursor.getInt(cursor.getColumnIndex(PlaylistSongsOpenHelper.SONG_ID));
+				Song song = Song.getSong(context, id);
+				if (song != null) {
+					songs.add(song);
+				} else {
+					playlist.removeSong(id, false);
+					playlist.reOrder();
+				}
+				cursor.moveToNext();
 			}
-			cursor.moveToNext();
-		}
 
-		cursor.close();
-		return songs;
+			cursor.close();
+			return songs;
+		} else {
+			cursor.close();
+			return new ArrayList<Song>();
+		}
 	}
 
 	public void setOrder(Playlist playlist) {
