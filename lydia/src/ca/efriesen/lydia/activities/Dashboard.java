@@ -5,12 +5,15 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
 import android.os.*;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
 import ca.efriesen.lydia.fragments.Settings.SystemSettingsFragment;
 import ca.efriesen.lydia.plugins.LastFM;
@@ -18,7 +21,6 @@ import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
-import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -26,8 +28,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class Dashboard extends Activity {
-	private static final String TAG = "lydia Dashboard Activity";
+	private static final String TAG = "accessory";//lydia Dashboard Activity";
 	private BluetoothAdapter mBluetoothAdapter = null;
+
 
 	// plugins
 	private LastFM lastFm;
@@ -36,11 +39,20 @@ public class Dashboard extends Activity {
 	private Class homeScreenClass;
 	private Class passengerControlsClass;
 
+	//the first part of this string have to be the package name
+	private static final String ACTION_USB_PERMISSION = "ca.efriesen.lydia.action.USB_PERMISSION";
+	private UsbManager mUsbManager;
+	private PendingIntent mPermissionIntent;
+	private boolean mPermissionRequestPending;
+	private UsbAccessory mUsbAccessory;
+
 	/**
 	 * Called when the activities is first created.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstance) {
+		super.onCreate(savedInstance);
+
 		final UpdateChecker checker = new UpdateChecker(this, true);
 		checker.addObserver(new Observer() {
 			@Override
@@ -53,34 +65,11 @@ public class Dashboard extends Activity {
 
 //		checker.checkForUpdateByVersionCode(getString(R.string.update_url));
 
-//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//				.detectAll()
-//				.penaltyLog()
-//				.penaltyDeath()
-//				.build());
-		Log.d(TAG, "oncreate");
-		super.onCreate(savedInstance);
-
 		// don't include bug sense it the key hasn't been changed
 		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
 //			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
-
-		// set the entire view to a gesture overlay
-//		GestureOverlayView overlayView = new GestureOverlayView(this);
-		// inflate our xml
-//		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
-		// add the xml to the gesture overlay
-//		overlayView.addView(inflate);
-		// send all gestures to our listener
-//		overlayView.addOnGesturePerformedListener(new GestureListener(this, getApplicationContext()));
-
-//		overlayView.setGestureColor(Color.DKGRAY);
-//		overlayView.setUncertainGestureColor(Color.TRANSPARENT);
-		// set the content for the new overlay
-//		setContentView(overlayView);
 		setContentView(R.layout.dashboard);
-//		setContentView(inflate);
 
 		// start the hardware managerservice
 		startService(new Intent(this, HardwareManagerService.class));
@@ -101,7 +90,11 @@ public class Dashboard extends Activity {
 		// initialize all plugins
 		lastFm = new LastFM(this);
 
-		Log.d(TAG, "oncreate finished");
+		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		registerReceiver(mUsbReceiver, filter);
 	}
 
 	@Override
@@ -130,6 +123,41 @@ public class Dashboard extends Activity {
 		// listen for battery broadcasts
 		registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
+		// get list of accessories
+		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+		// get first accessory
+		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+
+		if (mUsbAccessory != null) {
+			Log.d(TAG, "stop service");
+			stopService(new Intent(this, ArduinoService.class));
+		}
+
+		// if we got a valid accessory
+		if (accessory != null) {
+			mUsbAccessory = accessory;
+			// if we have permission
+			if (mUsbManager.hasPermission(accessory)) {
+				Log.d(TAG, "starting in onresume");
+				// start the arduino service
+				Intent i = new Intent(this, ArduinoService.class);
+				i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
+				startService(i);
+			// otherwise ask for permission
+			} else {
+				synchronized (mUsbReceiver) {
+					if (mPermissionRequestPending) {
+						mUsbManager.requestPermission(accessory, mPermissionIntent);
+						mPermissionRequestPending = true;
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
 	}
 
 	@Override
@@ -157,6 +185,9 @@ public class Dashboard extends Activity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			unregisterReceiver(mUsbReceiver);
+		} catch (Exception e) {}
 	}
 
 	// set the home screen we came from.
@@ -345,4 +376,30 @@ public class Dashboard extends Activity {
 			return mDialog;
 		}
 	}
+
+	// Receiver for the USB intents
+	// this is fired on attach and permission granted
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			// check if permission intent
+			if (ACTION_USB_PERMISSION.equals(action)) {
+				synchronized (this) {
+					// if permission was granted
+					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+						Log.d(TAG, "starting from broadcast receiver");
+						// start the service and pass the intent
+						Intent i = new Intent(getApplicationContext(), ArduinoService.class);
+						i.putExtras(intent);
+						startService(i);
+					}
+					mPermissionRequestPending = false;
+				}
+			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+
+			}
+		}
+	};
+
 }
