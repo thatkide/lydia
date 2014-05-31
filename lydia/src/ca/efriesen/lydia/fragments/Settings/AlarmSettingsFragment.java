@@ -1,13 +1,10 @@
 package ca.efriesen.lydia.fragments.Settings;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
 
