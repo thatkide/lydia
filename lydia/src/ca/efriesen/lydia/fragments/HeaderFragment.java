@@ -164,7 +164,8 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
 		// register a receiver to listen for the usb stick being unmounted.  when unmounted kill the update thread
-		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
+		// FIXME
+//		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
 
 		// register the local broadcasts from the service
 		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
@@ -182,7 +183,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		try {
 			activity.unregisterReceiver(cardUnmountedReceiver);
 		} catch (Exception e) {}
-
 		try {
 			localBroadcastManager.unregisterReceiver(mediaProgressReceiver);
 		} catch (Exception e) {}
@@ -234,7 +234,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 			TextView titleView = (TextView) activity.findViewById(R.id.song_title);
 
 			// duration info
-			ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.song_progress_bar);
+			ProgressBar progressBar = (SeekBar) activity.findViewById(R.id.song_progress_bar);
 			TextView lengthView = (TextView) activity.findViewById(R.id.song_length);
 
 			// update the internal vars about the artist and album. so when we click the text it takes us to the correct listing
@@ -260,7 +260,7 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			TextView currentPosition = (TextView) activity.findViewById(R.id.song_progress_text);
-			ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.song_progress_bar);
+			ProgressBar progressBar = (SeekBar) activity.findViewById(R.id.song_progress_bar);
 
 			currentPosition.setText(intent.getStringExtra("currentPositionString"));
 			progressBar.setProgress(intent.getIntExtra("currentPositionInt", 0));
