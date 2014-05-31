@@ -16,15 +16,10 @@ import ca.efriesen.lydia.databases.BluetoothDeviceDataSource;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.messages.PhoneCall;
 import ca.efriesen.lydia_common.messages.SMS;
-import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
 import ca.efriesen.lydia_common.media.Song;
 import ca.efriesen.lydia.databases.MessagesDataSource;
-import ca.efriesen.lydia.devices.*;
-import ca.efriesen.lydia.interfaces.SerialIO;
-import ca.efriesen.lydia.devices.LightSensor;
-import ca.efriesen.lydia.devices.Device;
-import ca.efriesen.lydia.devices.TemperatureSensor;
+
 import java.util.ArrayList;
 
 /**
@@ -43,10 +38,6 @@ public class HardwareManagerService extends Service {
 
 	// message storage stuff
 	MessagesDataSource messagesDataSource;
-
-	// list of devices
-	private ArrayList<Device> devices;
-	private Arduino arduino;
 
 	// Thread var
 	private volatile boolean connectThreadAlive = true;
@@ -93,7 +84,7 @@ public class HardwareManagerService extends Service {
 
 		// start it in the foreground so it doesn't get killed
 		Notification.Builder builder = new Notification.Builder(this)
-				.setSmallIcon(R.drawable.home)
+				.setSmallIcon(R.drawable.device_access_bluetooth)
 				.setContentTitle("Hardware Manager")
 				.setContentText("Hardware Manager");
 
@@ -104,39 +95,6 @@ public class HardwareManagerService extends Service {
 		// Add a notification
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(1, builder.build());
-
-		// setup the arduino
-		arduino = new Arduino(this, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("autoUpgradeFirmware", true));
-		arduino.initialize();
-
-		registerReceiver(upgradeFirmwareReceiver, new IntentFilter("upgradeFirmware"));
-
-		// populate the devices array
-		// The device constructor takes a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
-		devices = new ArrayList<Device>();
-		devices.add(new Alarm(this, Constants.ALARM, null));
-		devices.add(new LightSensor(this, Constants.LIGHTSENSOR, Intents.LIGHTVALUE));
-		devices.add(new MJLJReceiver(this, Constants.MJLJ, null));
-//		devices.add(new PressureSensor(this, Constants.FLPRESSURESENSOR, Intents.));
-		devices.add(new TemperatureSensor(this, Constants.INSIDETEMPERATURESENSOR, Intents.INSIDETEMPERATURE));
-		devices.add(new TemperatureSensor(this, Constants.OUTSIDETEMPERATURESENSOR, Intents.OUTISETEMPERATURE));
-
-		devices.add(new Defroster(this, Constants.REARWINDOWDEFROSTER, Intents.DEFROSTER));
-		devices.add(new Seats(this, Constants.DRIVERSEAT, Intents.SEATHEAT));
-		devices.add(new Seats(this, Constants.PASSENGERSEAT, Intents.SEATHEAT));
-		devices.add(new Windows(this, Constants.WINDOWS, Intents.WINDOWCONTROL));
-		devices.add(new Wipers(this, Constants.WIPE, Intents.WIPE));
-
-		// add the serial io manager to each serial io sensor
-		for (Device device : devices) {
-			if (device instanceof SerialIO) {
-				((SerialIO) device).setIOManager(arduino.getSerialManager());
-			}
-		}
-
-		// pass in the devices to the arduino
-		// in the Arduino class we will filter out so we only have the devices we need
-		arduino.setDevices(devices);
 
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
 		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
@@ -151,10 +109,6 @@ public class HardwareManagerService extends Service {
 		try {
 			unregisterReceiver(bluetoothStateReceiver);
 		} catch (Exception e) {}
-		// tell each sensor to cleanup
-		for (Device s : devices) {
-			s.cleanUp();
-		}
 		try {
 			unregisterReceiver(mediaInfoReceiver);
 		} catch (Exception e) {}
@@ -164,10 +118,7 @@ public class HardwareManagerService extends Service {
 		try {
 			unregisterReceiver(smsReplyReceiver);
 		} catch (Exception e) {	}
-		try {
-			unregisterReceiver(upgradeFirmwareReceiver);
-		} catch (Exception e) {}
-		arduino.cleanUp();
+//		arduino.cleanUp();
 	}
 
 
@@ -304,14 +255,6 @@ public class HardwareManagerService extends Service {
 
 		connectBluetooth.start();
 	}
-
-	private BroadcastReceiver upgradeFirmwareReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "stk - upgrading firmware");
-			arduino.upgradeFirmware();
-		}
-	};
 
 	private BroadcastReceiver smsReplyReceiver = new BroadcastReceiver() {
 		@Override

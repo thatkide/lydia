@@ -21,23 +21,23 @@ public class Constants {
 
 	// These are for serial commands sent to the arduino
 	// 160 - 176
-	final public static int DRIVERSEAT = 171;
-	final public static int DWINDOWUP = 163;
-	final public static int DWINDOWDOWN = 164;
-	final public static int DWINDOWSTOP = 165;
-	final public static int GETTEMPERATURE = 162;
-	final public static int GETLIGHT = 175;
-	final public static int LIGHTSENSOR = 176;
-	final public static int INSIDETEMPERATURESENSOR = 160; // 0xA0
-	final public static int OUTSIDETEMPERATURESENSOR = 161; // 0xA1
-	final public static int PASSENGERSEAT = 172;
-	final public static int PWINDOWUP = 166;
-	final public static int PWINDOWDOWN = 167;
-	final public static int PWINDOWSTOP = 168;
-	final public static int REARWINDOWDEFROSTER = 173;
-	final public static int SCREENLOCK = 169;
-	final public static int SCREENUNLOCK = 170;
-	final public static int WIPE = 174;
+	final public static byte DRIVERSEAT = (byte)171;
+	final public static byte DWINDOWUP = (byte)163;
+	final public static byte DWINDOWDOWN = (byte)164;
+	final public static byte DWINDOWSTOP = (byte)165;
+	final public static byte GETTEMPERATURE = (byte)162;
+	final public static byte GETLIGHT = (byte)175;
+	final public static byte LIGHTSENSOR = (byte)176;
+	final public static byte INSIDETEMPERATURESENSOR = (byte)160; // 0xA0
+	final public static byte OUTSIDETEMPERATURESENSOR = (byte)161; // 0xA1
+	final public static byte PASSENGERSEAT = (byte)172;
+	final public static byte PWINDOWUP = (byte)166;
+	final public static byte PWINDOWDOWN = (byte)167;
+	final public static byte PWINDOWSTOP = (byte)168;
+	final public static byte REARWINDOWDEFROSTER = (byte)173;
+	final public static byte SCREENLOCK = (byte)169;
+	final public static byte SCREENUNLOCK = (byte)170;
+	final public static byte WIPE = (byte)174;
 
 	// MJLJ commands
 	final public static int MJLJ = 182;
