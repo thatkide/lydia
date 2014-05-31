@@ -4,22 +4,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import ca.efriesen.lydia.interfaces.SerialIO;
+import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
-import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
-import java.nio.ByteBuffer;
 
 /**
  * Created by eric on 2013-05-28.
  */
-public class LightSensor extends Device implements SerialIO{
+public class LightSensor extends Device{
 	private Context context;
-	private SerialInputOutputManager serialInputOutputManager = null;
+	private ArduinoService.ArduinoListener listener;
 
-	public LightSensor(Context context, int id, String intentFilter) {
-		super(context, id, intentFilter);
+	public LightSensor(Context context) {
 		this.context = context;
 		context.registerReceiver(getLightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
 	}
@@ -29,29 +26,26 @@ public class LightSensor extends Device implements SerialIO{
 		context.unregisterReceiver(getLightValueReceiver);
 	}
 
+	@Override
+	public void setListener(ArduinoService.ArduinoListener listener) {
+		this.listener = listener;
+	}
+
+	@Override
+	public void parseData(int sender, int length, int[] data, int checksum) {
+
+	}
+
+	@Override
+	public void write(byte[] data) {
+
+	}
+
 	public BroadcastReceiver getLightValueReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				write(ByteBuffer.allocate(4).putInt(Constants.GETLIGHT).array());
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-			}
+//			listener.writeData(Constants.GETLIGHT);
 		}
 	};
 
-	@Override
-	public void setIOManager(Object serialInputOutputManager) {
-		this.serialInputOutputManager = (SerialInputOutputManager) serialInputOutputManager;
-	}
-
-	@Override
-	public void write(byte[] command) {
-		if (serialInputOutputManager == null) {
-			throw new NullPointerException("Serial IO Manager is null");
-		}
-		// write the bytes to the arduino
-		serialInputOutputManager.writeAsync(command);
-
-	}
 }

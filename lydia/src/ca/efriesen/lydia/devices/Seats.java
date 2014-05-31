@@ -4,27 +4,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
-import ca.efriesen.lydia.interfaces.SerialIO;
-import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
-import java.nio.ByteBuffer;
+import ca.efriesen.lydia.services.ArduinoService;
+import ca.efriesen.lydia_common.includes.Intents;
 
 /**
  * Created by eric on 2013-05-28.
  */
-public class Seats extends Device implements SerialIO {
+public class Seats extends Device {
 	private static final String TAG = "seats";
 
 	private Context context;
-	private SerialInputOutputManager serialInputOutputManager = null;
+	private byte id;
+	private ArduinoService.ArduinoListener listener;
 
-	public Seats(Context context, int id, String intentFilter) {
-		super(context, id, intentFilter);
+	public Seats(Context context, byte id) {
 		this.context = context;
+		this.id = id;
 
-		context.registerReceiver(seatsReceiver, new IntentFilter(intentFilter));
+		context.registerReceiver(seatsReceiver, new IntentFilter(Intents.SEATHEAT));
 	}
+
 
 	@Override
 	public void cleanUp() {
@@ -35,34 +34,34 @@ public class Seats extends Device implements SerialIO {
 		}
 	}
 
+	@Override
+	public void setListener(ArduinoService.ArduinoListener listener) {
+		this.listener = listener;
+	}
+
+	@Override
+	public void parseData(int sender, int length, int[] data, int checksum) {
+
+	}
+
+	@Override
+	public void write(byte[] data) {
+
+	}
+
+
 	private BroadcastReceiver seatsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int seatId = intent.getIntExtra("seatId", 0);
+			byte seatId = intent.getByteExtra("seatId", (byte)0);
 			int temperature = intent.getIntExtra("temp", 0);
 
 			// is this driver or passenger seat0
-			if (seatId == getId()) {
-				Log.d(TAG, "setting seat " + getId() + " to " + temperature);
-				// convert the int to a byte array
-				write(ByteBuffer.allocate(4).putInt(getId()).array());
-				// convert the int to a byte array
-				write(ByteBuffer.allocate(4).putInt(temperature).array());
+			if (seatId == id) {
+				// create the new data array.  the seat id, the length of the data, and the data
+				byte data[] = {id, 1, (byte)temperature};
+			//	listener.writeData(data);
 			}
 		}
 	};
-
-	@Override
-	public void setIOManager(Object serialInputOutputManager) {
-		this.serialInputOutputManager = (SerialInputOutputManager) serialInputOutputManager;
-	}
-
-	@Override
-	public void write(byte[] command) {
-		if (serialInputOutputManager == null) {
-			return;
-		}
-		// write the bytes to the arduino
-		serialInputOutputManager.writeAsync(command);
-	}
 }

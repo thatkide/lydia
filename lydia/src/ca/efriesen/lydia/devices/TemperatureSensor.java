@@ -4,23 +4,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import ca.efriesen.lydia.interfaces.SerialIO;
+import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
-import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created by eric on 2013-05-28.
  */
-public class TemperatureSensor extends Device implements SerialIO {
+public class TemperatureSensor extends Device {
 	private Context context;
-	private SerialInputOutputManager serialInputOutputManager = null;
+	private String intentFilter;
+	private ArduinoService.ArduinoListener listener;
 
-	public TemperatureSensor(Context context, int id, String intentFilter) {
-		super(context, id, intentFilter);
+	public TemperatureSensor(Context context, String intentFilter) {
 		this.context = context;
+		this.intentFilter = intentFilter;
 		context.registerReceiver(getTemperatureReceiver, new IntentFilter(Intents.GETTEMPERATURE));
 	}
 
@@ -29,25 +27,27 @@ public class TemperatureSensor extends Device implements SerialIO {
 		context.unregisterReceiver(getTemperatureReceiver);
 	}
 
+	@Override
+	public void setListener(ArduinoService.ArduinoListener listener) {
+		this.listener = listener;
+	}
+
+
+	@Override
+	public void parseData(int sender, int length, int[] data, int checksum) {
+		int temp = ((data[0] << 8) | (data[1] & 0xFF));
+		context.sendBroadcast(new Intent(intentFilter).putExtra(intentFilter, String.valueOf(temp)));
+	}
+
+	@Override
+	public void write(byte[] data) {
+
+	}
+
 	public BroadcastReceiver getTemperatureReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				write(ByteBuffer.allocate(4).putInt(Constants.GETTEMPERATURE).array());
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-			}
+		//	listener.writeData(Constants.GETTEMPERATURE);
 		}
 	};
-
-	@Override
-	public void setIOManager(Object serialInputOutputManager) {
-		this.serialInputOutputManager = (SerialInputOutputManager) serialInputOutputManager;
-	}
-
-	@Override
-	public void write(byte[] command) {
-		// write the bytes to the arduino
-		serialInputOutputManager.writeAsync(command);
-	}
 }

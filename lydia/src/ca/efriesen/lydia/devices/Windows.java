@@ -8,17 +8,17 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.interfaces.SerialIO;
+import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.includes.Intents;
-import com.hoho.android.usbserial.util.SerialInputOutputManager;
+//import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.nio.ByteBuffer;
 
 /**
  * Created by eric on 2013-05-28.
  */
-public class Windows extends Device implements SerialIO {
+public class Windows extends Device {
 	private static final String TAG = "windows";
 
 	// timers for the ui control buttons
@@ -26,10 +26,9 @@ public class Windows extends Device implements SerialIO {
 	private static Long buttonDownTime, buttonUpTime;
 
 	private Context context;
-	private SerialInputOutputManager serialInputOutputManager = null;
+//	private SerialInputOutputManager serialInputOutputManager = null;
 
-	public Windows(Context context, int id, String intentFilter) {
-		super(context, id, intentFilter);
+	public Windows(Context context, String intentFilter) {
 		this.context = context;
 
 		context.registerReceiver(windowsReceiver, new IntentFilter(intentFilter));
@@ -42,6 +41,16 @@ public class Windows extends Device implements SerialIO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void setListener(ArduinoService.ArduinoListener listener) {
+
+	}
+
+	@Override
+	public void parseData(int sender, int length, int[] data, int checksum) {
+
 	}
 
 	private BroadcastReceiver windowsReceiver = new BroadcastReceiver() {
@@ -90,16 +99,10 @@ public class Windows extends Device implements SerialIO {
 		}
 	};
 
-	@Override
-	public void setIOManager(Object serialInputOutputManager) {
-		this.serialInputOutputManager = (SerialInputOutputManager) serialInputOutputManager;
-	}
-
-	@Override
 	public void write(byte[] command) {
 		try {
 			// write the bytes to the arduino
-			serialInputOutputManager.writeAsync(command);
+//			serialInputOutputManager.writeAsync(command);
 		} catch (NullPointerException e) {}
 	}
 
