@@ -9,12 +9,11 @@ public class Intents {
 	// intents used in serial comms with arduino
 	public static final String ALARM = "ca.efriesen.lydia.Alarm";
 	public static final String DEFROSTER = "ca.efriesen.lydia.DEFROSTER";
-	public static final String INSIDETEMPERATURE = "ca.efriesen.lydia.INSIDETEMPERATURE";
 	public static final String GETTEMPERATURE = "ca.efriesen.lydia.GETTEMPERATURE";
+	public static final String INSIDETEMPERATURE = "ca.efriesen.lydia.INSIDETEMPERATURE";
 	public static final String LIGHTVALUE = "ca.efriesen.lydia.LIGHTVALUE";
 	public static final String LOCKSCREEN = "ca.efriesen.lydia.LOCKSCREEN";
-	public static final String MJLJ = "ca.efriesen.lydia.MJLJ";
-	public static final String OUTISETEMPERATURE = "ca.efriesen.lydia.OUTSIDETEMPERATURE";
+	public static final String OUTSIDETEMPERATURE = "ca.efriesen.lydia.OUTSIDETEMPERATURE";
 	public static final String RFID = "ca.efriesen.lydia.RFID";
 	public static final String SEATHEAT = "ca.efriesen.lydia.SEATHEAT";
 	public static final String UNLOCKSCREEN = "ca.efriesen.lydia.UNLOCKSCREEN";

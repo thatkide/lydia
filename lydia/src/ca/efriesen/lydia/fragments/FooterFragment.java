@@ -168,7 +168,7 @@ public class FooterFragment extends Fragment {
 		IntentFilter insideTemperature = new IntentFilter(Intents.INSIDETEMPERATURE);
 		activity.registerReceiver(insideTemperatureReceiver, insideTemperature);
 
-		IntentFilter outsideTemperature = new IntentFilter(Intents.OUTISETEMPERATURE);
+		IntentFilter outsideTemperature = new IntentFilter(Intents.OUTSIDETEMPERATURE);
 		activity.registerReceiver(outsideTemperatureReceiver, outsideTemperature);
 
 		// bluetooth stuff
@@ -217,7 +217,7 @@ public class FooterFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			TextView outsideTemp = (TextView) getActivity().findViewById(R.id.outside_temperature);
-			outsideTemp.setText("Outside: " + intent.getStringExtra(Intents.OUTISETEMPERATURE) + "\u2103");
+			outsideTemp.setText("Outside: " + intent.getStringExtra(Intents.OUTSIDETEMPERATURE) + "\u2103");
 		}
 	};
 
