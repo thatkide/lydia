@@ -19,9 +19,13 @@
 	<string name="auto_arm_summary">Enables/disables auto arming</string>
 	<string name="auto_arm_delay">Auto arm delay</string>
 	<string name="auto_arm_delay_summary">Delay before automatically arming in seconds</string>
+	<string name="auto_brightness">Automatic Brightness</string>
+	<string name="auto_brightness_summary">Automatically adjust the backlight based on ambient light</string>
 	<string name="auto_upgrade_firmware">Automatically upgrade Arduino firmware</string>
 	<string name="auto_find_slaves">Automatically find slave devices</string>
 	<string name="back">Back</string>
+	<string name="backlight">Backlight Brightness</string>
+	<string name="backlight_summary">Set the backlight brightness of the gauges</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="button_scan">Search for devices</string>
 	<string name="cancel">Cancel</string>
@@ -50,6 +54,7 @@
 	<string name="filter">Filter</string>
 	<string name="friday">Friday</string>
     <string name="friday_abbr">Fri</string>
+	<string name="gauge_backlight">Brightness of Gauge Backlight</string>
 	<string name="gauge_cluster">Gauge Cluster</string>
 	<string name="google">Google</string>
 	<string name="home">Home</string>
@@ -126,6 +131,11 @@
 	<string name="sms">SMS</string>
 	<string name="sms_received">SMS Received</string>
 	<string name="song_title">Title</string>
+	<string name="speedometer">Speedometer</string>
+	<string name="speedo_input_pulses">Speedometer Input pulses per Km</string>
+	<string name="speedo_input_pulses_summary">Number of pulses the wheel generates per Km</string>
+	<string name="speedo_output_pulses">Speedometer Output Pulses per Km</string>
+	<string name="speedo_output_pulses_summary">Needs to match what the gauge expects.</string>
 	<string name="status">Status</string>
 	<string name="stop">Stop</string>
 	<string name="sunday">Sunday</string>

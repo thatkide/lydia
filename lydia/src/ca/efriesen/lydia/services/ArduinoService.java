@@ -25,6 +25,7 @@ import java.util.Arrays;
 public class ArduinoService extends Service {
 
 	private static final String TAG = "accessory";
+	public static final String ACCESSORY_READY = "ca.efriesen.lydia.AccessoryReady";
 
 	private Arduino arduino;
 	private SparseArray<Device> devices;
@@ -36,6 +37,7 @@ public class ArduinoService extends Service {
 	private ParcelFileDescriptor mFileDescriptor;
 	private Thread thread;
 	private UsbAccessory mAccessory = null;
+	private boolean accessoryReadyBroadcastSent = false;
 
 	private final IBinder mBinder = new ArduinoBinder();
 
@@ -44,10 +46,10 @@ public class ArduinoService extends Service {
 		@Override
 		public void writeData(byte data[], int from) {
 			// data has "I have this much data, here it is."  It's missing the "hey you, it's me part"
-			// create new array one size bigger
+			// create new array three bytes bigger
 			byte temp[] = new byte[data.length+3];
 
-			// copy the array, and move up one position
+			// copy the array, and move up two positions
 			System.arraycopy(data, 0, temp, 2, data.length);
 			temp[0] = (byte)from; // hey you (we need the recipient first)
 			temp[1] = Device.id; // it's me
@@ -61,17 +63,6 @@ public class ArduinoService extends Service {
 			// send the data over the wire
 			try {
 				mOutputStream.write(temp);
-			} catch (IOException e) {
-				Log.e(TAG, "", e);
-			} catch (NullPointerException e) {
-				Log.e(TAG, "", e);
-			}
-		}
-
-		@Override
-		public void writeData(int data, int id) {
-			try {
-				mOutputStream.write(data);
 			} catch (IOException e) {
 				Log.e(TAG, "", e);
 			} catch (NullPointerException e) {
@@ -133,19 +124,6 @@ public class ArduinoService extends Service {
 		devices.put(Master.id, new Master(this));
 		devices.put(IdiotLights.id, new IdiotLights(this));
 
-//		devices.add(new Alarm(this, Constants.ALARM, null));
-//		devices.put(Constants.LIGHTSENSOR, new LightSensor(this));
-//		devices.add(new MJLJReceiver(this, Constants.MJLJ, null));
-//		devices.add(new PressureSensor(this, Constants.FLPRESSURESENSOR, Intents.));
-//		devices.put(Constants.INSIDETEMPERATURESENSOR, new TemperatureSensor(this, Intents.INSIDETEMPERATURE));
-//		devices.put(Constants.OUTSIDETEMPERATURESENSOR, new TemperatureSensor(this, Intents.OUTSIDETEMPERATURE));
-
-//		devices.put(Constants.REARWINDOWDEFROSTER, new Defroster(this, Intents.DEFROSTER));
-//		devices.put(Constants.DRIVERSEAT, new Seats(this, Constants.DRIVERSEAT));
-//		devices.put(Constants.PASSENGERSEAT, new Seats(this, Constants.PASSENGERSEAT));
-//		devices.add(new Windows(this, Constants.WINDOWS, Intents.WINDOWCONTROL));
-//		devices.add(new Wipers(this, Constants.WIPE, Intents.WIPE));
-
 		// pass in the devices to the arduino.
 		// set the listener above to all devices
 		arduino.setDevices(devices, listener);
@@ -193,6 +171,7 @@ public class ArduinoService extends Service {
 
 	private void closeAccessory() {
 		Log.d(TAG, "close accessory");
+		accessoryReadyBroadcastSent = false;
 		if (thread != null && thread.isAlive()) {
 			thread.interrupt();
 		}
@@ -227,39 +206,37 @@ public class ArduinoService extends Service {
 				try {
 					ret = mInputStream.read(buffer);
 				} catch (Exception e) {
-					Log.d(TAG, "read error");
-					Log.d(TAG, e.toString());
+					Log.e(TAG, "read error");
+					Log.e(TAG, e.toString());
 					closeAccessory();
 					break;
 				}
 
+				// send a braodcast once the accessory is connected
+				if (!accessoryReadyBroadcastSent) {
+					ArduinoService.this.sendBroadcast(new Intent(ACCESSORY_READY));
+					accessoryReadyBroadcastSent = true;
+				}
 				// bytes are signed.  we need the unsigned version.  Thus the & 0xFF
 				// we don't care about who's receiving.  if it's sent to the master, we inspect it
-				if (buffer[0] == 0x7e) {
-					int recipient = buffer[1] & 0xFF;
-					int sender = buffer[2] & 0xFF;
-					int length = buffer[3];
-//					Log.d(TAG, "recip " + recipient + " sender " + sender + " length " + length);
-					// the data starts at position 3, so the end is 3 plus the length.
-					byte data[] = Arrays.copyOfRange(buffer, 4, 4 + length);
-					// create a new array of ints the same length as the data portion
-//					int dataInt[] = new int[data.length];
-//					Log.d(TAG, "dataint is " + dataInt.length + " long");
-					// loop over everything in the data array
-//					for (int i = 0; i < data.length; i++) {
-//						// convert the byte into an int, and convert the signed into "unsigned". (java doesn't have unsigned, that's why we need an int for a larger data type)
-//						dataInt[i] = data[i] & 0xFF;
-////						Log.d(TAG, "data " + i + " is " + data[i]);
-//					}
-					// get the checksum
-					int checksum = buffer[length + 4] & 0xFF;
-
-//					Log.d(TAG, "checksum is " + checksum + " calculated is " + getChecksum(dataInt));
-//					Log.d(TAG, "read done");
-					int dataInt[] = getIntArray(data);
-					if (checksum == getChecksum(dataInt)) {
-						arduino.parseData(sender, length, dataInt, checksum);
+				try {
+					if (buffer[0] == 0x7e) {
+						int recipient = buffer[1] & 0xFF;
+						int sender = buffer[2] & 0xFF;
+						int length = buffer[3];
+						// the data starts at position 3, so the end is 3 plus the length.
+						byte data[] = Arrays.copyOfRange(buffer, 4, 4 + length);
+						// get the checksum
+						int checksum = buffer[length + 4] & 0xFF;
+						// get an int array from the bytes.  this "converts" to our unsigned version
+						int dataInt[] = getIntArray(data);
+						// if the received checksum equals the calculated checksum, send the data off
+						if (checksum == getChecksum(dataInt)) {
+							arduino.parseData(sender, length, dataInt, checksum);
+						}
 					}
+				} catch (IllegalArgumentException e) {
+					Log.e(TAG, e.toString());
 				}
 			}
 		}
@@ -294,6 +271,5 @@ public class ArduinoService extends Service {
 	// provide both byte array and int methods.
 	public interface ArduinoListener {
 		public void writeData(byte data[], int from);
-		public void writeData(int data, int from);
 	}
 }

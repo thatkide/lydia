@@ -29,6 +29,7 @@ public class Windows extends Device {
 //	private SerialInputOutputManager serialInputOutputManager = null;
 
 	public Windows(Context context, String intentFilter) {
+		super(context);
 		this.context = context;
 
 		context.registerReceiver(windowsReceiver, new IntentFilter(intentFilter));

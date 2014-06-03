@@ -1,13 +1,9 @@
 package ca.efriesen.lydia.devices;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.services.ArduinoService;
 
 /**
@@ -20,7 +16,7 @@ public class IdiotLights extends Device {
 	// the id is the same as the physical devices i2c address
 	public static final int id = 12;
 
-	public static final String IDIOTLIGHTSWRITE = "ca.efriesen.lydia.IdiotLightsWrite";
+	public static final String WRITE = "ca.efriesen.lydia.IdiotlightsWrite";
 
 	// Intent strings
 	public static final String IDIOTLIGHTS = "ca.efriesen.lydia.IdiotLights";
@@ -29,11 +25,15 @@ public class IdiotLights extends Device {
 	public static final String CURRENTSPEED = "ca.efriesen.lydia.CurrentSpeed";
 
 	// idiot light commands
+	// These all MUST match what's defined in the Arduino code, or else they won't work
 	public static final int FUEL = 100;
 	public static final int RPM = 101;
 	public static final int SPEED = 102;
 	public static final int BACKLIGHT = 103;
-
+	public static final int BACKLIGHTBRIGHTNESS = 108;
+	public static final int BACKLIGHTAUTOBRIGHTNESS = 109;
+	public static final int SPEEDOINPULSES = 110;
+	public static final int SPEEDOOUTPULSES = 111;
 
 	// use the context for broadcasts
 	// don't use localbroadcast manager because the arduino service runs in it's own process, and it won't work
@@ -41,13 +41,16 @@ public class IdiotLights extends Device {
 	private ArduinoService.ArduinoListener listener;
 
 	public IdiotLights(Context context) {
+		super(context);
 		this.context = context;
-		context.registerReceiver(receiver, new IntentFilter(IDIOTLIGHTSWRITE));
+		context.registerReceiver(receiver, new IntentFilter(WRITE));
+		context.registerReceiver(accessoryReadyReceiver, new IntentFilter(ArduinoService.ACCESSORY_READY));
 	}
 
 	@Override
 	public void cleanUp() {
 		this.context.unregisterReceiver(receiver);
+		this.context.unregisterReceiver(accessoryReadyReceiver);
 	}
 
 	@Override
@@ -66,17 +69,43 @@ public class IdiotLights extends Device {
 				break;
 			}
 			case RPM: {
-				// make a "word" from the two bytes.  Shift the first one over 8 bits, and combine it with the second
-				int rpm = ((data[1] << 8) | (data[2] & 0xFF));
 //				Log.d(TAG, "got rpm info: " + rpm);
-				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTRPM, String.valueOf(rpm)));
+				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTRPM, String.valueOf(Helpers.word(data[1], data[2]))));
 				break;
 			}
 			case SPEED: {
-				// make a "word" from the two bytes.  Shift the first one over 8 bits, and combine it with the second
-				int speed = ((data[1] << 8) | (data[2] & 0xFF));
 //				Log.d(TAG, "got speed info: " + speed);
-				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTSPEED, String.valueOf(speed)));
+				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTSPEED, String.valueOf(Helpers.word(data[1], data[2]))));
+				break;
+			}
+			case BACKLIGHTBRIGHTNESS: {
+				// convert the value received to a range of 0.0-1.0
+				float value = data[1] / (float)256;
+				// store the value for the slider
+				// get the shared prefs here.  this ensures we got an updated copy
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putFloat("backlightBrightness", value).apply();
+				break;
+			}
+			case BACKLIGHTAUTOBRIGHTNESS: {
+				// data[1] > 0 returns boolean true/false
+				// get the shared prefs here.  this ensures we got an updated copy
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putBoolean("backlightAutoBrightness", data[1] > 0).apply();
+				break;
+			}
+			case SPEEDOINPULSES: {
+				Log.d(TAG, "got speedo in pulses " + Helpers.word(data[1], data[2]));
+				// get the shared prefs here.  this ensures we got an updated copy
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putString("speedoInputPulses", String.valueOf(Helpers.word(data[1], data[2]))).apply();
+				break;
+			}
+			case SPEEDOOUTPULSES: {
+				Log.d(TAG, "got speedo out pulses " + Helpers.word(data[1], data[2]));
+				// get the shared prefs here.  this ensures we got an updated copy
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putString("speedoOutputPulses", String.valueOf(Helpers.word(data[1], data[2]))).apply();
 				break;
 			}
 		}
@@ -92,10 +121,27 @@ public class IdiotLights extends Device {
 		public void onReceive(Context context, Intent intent) {
 			Bundle data = intent.getExtras();
 			byte command = data.getByte("command");
-			byte value = data.getByte("value");
+			byte values[] = data.getByteArray("values");
 
-			byte d[] = {2, command, value};
+			byte d[] = new byte[values.length+2];
+			d[0] = (byte)(values.length+1);
+			d[1] = command;
+			for (int i=0; i<values.length; i++) {
+				d[i+2] = values[i];
+			}
 			write(d);
+		}
+	};
+
+	// send the data out once the accessory is ready
+	private BroadcastReceiver accessoryReadyReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// request some data from the slaves.  ensures out shared prefs are up to date
+			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
+			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
+			getData(IdiotLights.SPEEDOINPULSES);
+			getData(IdiotLights.SPEEDOOUTPULSES);
 		}
 	};
 }

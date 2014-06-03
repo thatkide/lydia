@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="Settings">
+	<PreferenceCategory android:title="@string/backlight">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference
-			android:key="backlight"
-			android:title="Backlight" />
+			android:key="backlightAutoBrightness"
+			android:title="@string/auto_brightness"
+			android:summary="@string/auto_brightness_summary"
+			android:defaultValue="false"
+			android:disableDependentsState="true"/>
+		<net.jayschwa.android.preference.SliderPreference
+			android:key="backlightBrightness"
+			android:title="@string/backlight"
+			android:summary="@string/backlight_summary"
+			android:dialogMessage="@string/gauge_backlight"
+			android:dependency="backlightAutoBrightness" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/speedometer">
+		<EditTextPreference android:key="speedoInputPulses"
+			android:title="@string/speedo_input_pulses"
+			android:inputType="number"
+			android:summary="@string/speedo_input_pulses_summary" />
+		<EditTextPreference android:key="speedoOutputPulses"
+			android:title="@string/speedo_output_pulses"
+			android:inputType="number"
+			android:summary="@string/speedo_output_pulses_summary" />
 	</PreferenceCategory>
 </PreferenceScreen>

@@ -19,6 +19,7 @@ public class Defroster extends Device {
 
 	// constructor.  get the required info and pass it to the super class
 	public Defroster(Context context, String intentFilter) {
+		super(context);
 		this.context = context;
 
 		// register the broadcast receiver
