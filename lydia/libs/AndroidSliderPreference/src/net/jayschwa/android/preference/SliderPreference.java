@@ -23,6 +23,7 @@ public class SliderPreference extends DialogPreference {
 	protected float mValue;
 	protected int mSeekBarValue;
 	protected CharSequence[] mSummaries;
+	private boolean autoUpdate = false;
 
 	/**
 	 * @param context
@@ -130,6 +131,9 @@ public class SliderPreference extends DialogPreference {
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
 					SliderPreference.this.mSeekBarValue = progress;
+					if (autoUpdate) {
+						onDialogClosed(true);
+					}
 				}
 			}
 		});
@@ -143,6 +147,10 @@ public class SliderPreference extends DialogPreference {
 			setValue(newValue);
 		}
 		super.onDialogClosed(positiveResult);
+	}
+
+	public void setAutoUpdate(boolean autoUpdate) {
+		this.autoUpdate = autoUpdate;
 	}
 
 	// TODO: Save and restore preference state.
