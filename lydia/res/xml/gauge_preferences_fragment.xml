@@ -16,13 +16,20 @@
 			android:dependency="backlightAutoBrightness" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/speedometer">
+		<Preference
+				android:title="@string/calibrate_speedo"
+				android:summary="@string/calibrate_speedo_summary" >
+			<intent android:action=".activities.CalibrateSpeedoActivity" />
+		</Preference>
 		<EditTextPreference android:key="speedoInputPulses"
 			android:title="@string/speedo_input_pulses"
 			android:inputType="number"
-			android:summary="@string/speedo_input_pulses_summary" />
+			android:summary="@string/speedo_input_pulses_summary"
+			android:dialogMessage="@string/speedo_input_pulses_dialog_message"/>
 		<EditTextPreference android:key="speedoOutputPulses"
 			android:title="@string/speedo_output_pulses"
 			android:inputType="number"
-			android:summary="@string/speedo_output_pulses_summary" />
+			android:summary="@string/speedo_output_pulses_summary"
+			android:dialogMessage="@string/speedo_output_pulses_dialog_message"/>
 	</PreferenceCategory>
 </PreferenceScreen>

@@ -80,6 +80,14 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".activities.settings.CalibrateSpeedoActivity"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			<intent-filter>
+				<action android:name=".activities.CalibrateSpeedoActivity" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+
 		<activity android:name=".activities.MusicSearch"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
 				  android:windowSoftInputMode="stateAlwaysVisible"/>

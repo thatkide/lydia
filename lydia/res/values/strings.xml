@@ -30,6 +30,13 @@
 	<string name="button_scan">Search for devices</string>
 	<string name="cancel">Cancel</string>
 	<string name="calendar">Calendar</string>
+	<string name="calibrate_speedo">Calibrate Speedometer Input</string>
+	<string name="calibrate_speedo_finish">Finish Calibration</string>
+	<string name="calibrate_speedo_instructions">In order to calibrate the speedometer you need to have a pre-marked 2 kilometer (or mile) distance.  If you use miles the gauge will read in miles, if you use kiometers, it will read kilometers.
+	When you are ready, press the \"Start Calibration\" button and drive the distance.  You should see the counter increase.  When you get to the end of your marked area, press \"Finish Calibration\".
+	Remember, the accuracy of the pre-marked distance will directly affect the accuracy of the speedometer.</string>
+	<string name="calibrate_speedo_start">Start Calibration</string>
+	<string name="calibrate_speedo_summary">Calibrates the input pulses for the speedometer</string>
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
 	<string name="check_for_update">Check for update</string>
@@ -133,8 +140,10 @@
 	<string name="song_title">Title</string>
 	<string name="speedometer">Speedometer</string>
 	<string name="speedo_input_pulses">Speedometer Input pulses per Km</string>
+	<string name="speedo_input_pulses_dialog_message">Once calibrated this shouldn\'t need to change.  Unless different size tires are installed.</string>
 	<string name="speedo_input_pulses_summary">Number of pulses the wheel generates per Km</string>
 	<string name="speedo_output_pulses">Speedometer Output Pulses per Km</string>
+	<string name="speedo_output_pulses_dialog_message">This needs to match what the speedometer expects as an input.</string>
 	<string name="speedo_output_pulses_summary">Needs to match what the gauge expects.</string>
 	<string name="status">Status</string>
 	<string name="stop">Stop</string>

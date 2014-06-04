@@ -23,15 +23,17 @@ public class IdiotLights extends Device {
 	public static final String CURRENTFUEL = "ca.efriesen.lydia.CurrentFuel";
 	public static final String CURRENTRPM = "ca.efriesen.lydia.CurrentRPM";
 	public static final String CURRENTSPEED = "ca.efriesen.lydia.CurrentSpeed";
+	public static final String SPEEDOCALIBRATINGPULSES = "ca.efriesen.lydia.SpeedoCalibratingPulses";
 
 	// idiot light commands
 	// These all MUST match what's defined in the Arduino code, or else they won't work
+	public static final int BACKLIGHT = 103;
+	public static final int BACKLIGHTAUTOBRIGHTNESS = 109;
+	public static final int BACKLIGHTBRIGHTNESS = 108;
+	public static final int CALIBRATE = 112;
 	public static final int FUEL = 100;
 	public static final int RPM = 101;
 	public static final int SPEED = 102;
-	public static final int BACKLIGHT = 103;
-	public static final int BACKLIGHTBRIGHTNESS = 108;
-	public static final int BACKLIGHTAUTOBRIGHTNESS = 109;
 	public static final int SPEEDOINPULSES = 110;
 	public static final int SPEEDOOUTPULSES = 111;
 
@@ -95,10 +97,12 @@ public class IdiotLights extends Device {
 				break;
 			}
 			case SPEEDOINPULSES: {
-				Log.d(TAG, "got speedo in pulses " + Helpers.word(data[1], data[2]));
+				int pulses = Helpers.word(data[1], data[2]);
+//				Log.d(TAG, "got speedo in pulses " + pulses);
 				// get the shared prefs here.  this ensures we got an updated copy
 				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-				sharedPreferences.edit().putString("speedoInputPulses", String.valueOf(Helpers.word(data[1], data[2]))).apply();
+				sharedPreferences.edit().putString("speedoInputPulses", String.valueOf(pulses)).apply();
+				context.sendBroadcast(new Intent(SPEEDOCALIBRATINGPULSES).putExtra("pulses", pulses));
 				break;
 			}
 			case SPEEDOOUTPULSES: {
