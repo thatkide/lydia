@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.devices.Master;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.includes.Intents;
 
@@ -156,7 +157,6 @@ public class FooterFragment extends Fragment {
 			public void onStopTrackingTouch(SeekBar seekBar) {}
 		});
 
-		activity.registerReceiver(mLightSensorReceiver, new IntentFilter(Intents.LIGHTVALUE));
 
 		// filter for volume changed intent fired by the hardware buttons
 		IntentFilter filter = new IntentFilter();
@@ -164,12 +164,10 @@ public class FooterFragment extends Fragment {
 		// register the receiver to the main activity
 		activity.registerReceiver(mReceiver, filter);
 
-		// register the temperature receivers
-		IntentFilter insideTemperature = new IntentFilter(Intents.INSIDETEMPERATURE);
-		activity.registerReceiver(insideTemperatureReceiver, insideTemperature);
-
-		IntentFilter outsideTemperature = new IntentFilter(Intents.OUTSIDETEMPERATURE);
-		activity.registerReceiver(outsideTemperatureReceiver, outsideTemperature);
+		// register the light and temperature receivers
+		activity.registerReceiver(mLightSensorReceiver, new IntentFilter(Master.LIGHTVALUE));
+		activity.registerReceiver(insideTemperatureReceiver, new IntentFilter(Master.INSIDETEMPERATURE));
+		activity.registerReceiver(outsideTemperatureReceiver, new IntentFilter(Master.OUTSIDETEMPERATURE));
 
 		// bluetooth stuff
 		activity.registerReceiver(bluetoothManager, new IntentFilter(Intents.BLUETOOTHMANAGER));
@@ -209,7 +207,7 @@ public class FooterFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			TextView insideTemp = (TextView) getActivity().findViewById(R.id.inside_temperature);
-			insideTemp.setText("Inside: " + intent.getStringExtra(Intents.INSIDETEMPERATURE) + "\u2103");
+			insideTemp.setText("Inside: " + intent.getStringExtra(Master.INSIDETEMPERATURE) + "\u2103");
 		}
 	};
 
@@ -217,7 +215,7 @@ public class FooterFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			TextView outsideTemp = (TextView) getActivity().findViewById(R.id.outside_temperature);
-			outsideTemp.setText("Outside: " + intent.getStringExtra(Intents.OUTSIDETEMPERATURE) + "\u2103");
+			outsideTemp.setText("Outside: " + intent.getStringExtra(Master.OUTSIDETEMPERATURE) + "\u2103");
 		}
 	};
 
@@ -238,7 +236,7 @@ public class FooterFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Activity activity = getActivity();
-			int brightness = Integer.parseInt(intent.getStringExtra(Intents.LIGHTVALUE));
+			int brightness = Integer.parseInt(intent.getStringExtra(Master.LIGHTVALUE));
 			ImageView dayNight = (ImageView) activity.findViewById(R.id.day_night);
 
 			// get the values store in the preferences

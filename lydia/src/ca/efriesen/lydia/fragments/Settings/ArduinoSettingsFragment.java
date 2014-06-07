@@ -7,6 +7,7 @@ import android.preference.*;
 import android.util.Log;
 import android.view.View;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.devices.Master;
 import ca.efriesen.lydia_common.includes.Intents;
 
 /**
@@ -76,15 +77,15 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 		manager.findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
 		manager.findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
 
-		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
+		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Master.LIGHTVALUE));
 	}
 
 	private BroadcastReceiver lightValueReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			try {
-				findPreference("minLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Intents.LIGHTVALUE));
-				findPreference("maxLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Intents.LIGHTVALUE));
+//				findPreference("minLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Master.LIGHTVALUE));
+//				findPreference("maxLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Master.LIGHTVALUE));
 			} catch (NullPointerException e) { e.printStackTrace();}
 		}
 	};
