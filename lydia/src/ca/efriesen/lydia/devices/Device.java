@@ -26,14 +26,13 @@ abstract public class Device {
 	abstract public void cleanUp();
 	abstract public void setListener(ArduinoService.ArduinoListener listener);
 	abstract public void parseData(int sender, int length, int[] data, int checksum);
-	abstract public void write(byte[] data);
 
 	protected void getData(int value) {
 		Class <? extends Device> device = this.getClass();
 		try {
 			Field f = device.getField("WRITE");
 			byte values[] = {(byte)value};
-			// send out a request for the current backlight brightness.  this ensures our slider and arduino are in sync
+			// send out a request for the current value passed.  this ensures our preference and arduino are in sync
 			Bundle data = new Bundle();
 			data.putByte("command", (byte)Device.GETVALUE);
 			data.putByteArray("values", values);

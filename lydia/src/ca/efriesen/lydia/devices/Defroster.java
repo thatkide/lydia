@@ -46,7 +46,6 @@ public class Defroster extends Device {
 
 	}
 
-	@Override
 	public void write(byte[] data) {
 
 	}

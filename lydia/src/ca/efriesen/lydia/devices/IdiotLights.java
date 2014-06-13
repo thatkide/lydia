@@ -1,5 +1,6 @@
 package ca.efriesen.lydia.devices;
 
+import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,8 @@ public class IdiotLights extends Device {
 	public static final int CALIBRATE = 112;
 	public static final int FUEL = 100;
 	public static final int RPM = 101;
+	public static final int SPEAKER = 113;
+	public static final int SPEAKERVOLUME = 114;
 	public static final int SPEED = 102;
 	public static final int SPEEDOINPULSES = 110;
 	public static final int SPEEDOOUTPULSES = 111;
@@ -65,18 +68,14 @@ public class IdiotLights extends Device {
 		int command = data[0];
 		switch (command) {
 			case FUEL: {
-				int fuel = data[1];
-//				Log.d(TAG, "got fuel info: " + fuel);
-				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTFUEL, String.valueOf(fuel)));
+				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTFUEL, String.valueOf(data[1])));
 				break;
 			}
 			case RPM: {
-//				Log.d(TAG, "got rpm info: " + rpm);
 				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTRPM, String.valueOf(Helpers.word(data[1], data[2]))));
 				break;
 			}
 			case SPEED: {
-//				Log.d(TAG, "got speed info: " + speed);
 				context.sendBroadcast(new Intent(IdiotLights.IDIOTLIGHTS).putExtra(CURRENTSPEED, String.valueOf(Helpers.word(data[1], data[2]))));
 				break;
 			}
@@ -96,9 +95,21 @@ public class IdiotLights extends Device {
 				sharedPreferences.edit().putBoolean("backlightAutoBrightness", data[1] > 0).apply();
 				break;
 			}
+			case SPEAKER: {
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putBoolean("speaker", data[1] > 0).apply();
+				break;
+			}
+			case SPEAKERVOLUME: {
+				float value = data[1] / (float)10;
+
+				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+				sharedPreferences.edit().putFloat("speakerVolume", value).apply();
+				Log.d(TAG, "got volume " + value);
+				break;
+			}
 			case SPEEDOINPULSES: {
 				int pulses = Helpers.word(data[1], data[2]);
-//				Log.d(TAG, "got speedo in pulses " + pulses);
 				// get the shared prefs here.  this ensures we got an updated copy
 				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 				sharedPreferences.edit().putString("speedoInputPulses", String.valueOf(pulses)).apply();
@@ -106,7 +117,6 @@ public class IdiotLights extends Device {
 				break;
 			}
 			case SPEEDOOUTPULSES: {
-				Log.d(TAG, "got speedo out pulses " + Helpers.word(data[1], data[2]));
 				// get the shared prefs here.  this ensures we got an updated copy
 				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 				sharedPreferences.edit().putString("speedoOutputPulses", String.valueOf(Helpers.word(data[1], data[2]))).apply();
@@ -115,27 +125,23 @@ public class IdiotLights extends Device {
 		}
 	}
 
-	@Override
-	public void write(byte[] data) {
-		listener.writeData(data, id);
-	}
-
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Bundle data = intent.getExtras();
-			byte command = data.getByte("command");
-			byte values[] = data.getByteArray("values");
-
-			byte d[] = new byte[values.length+2];
-			d[0] = (byte)(values.length+1);
-			d[1] = command;
-			for (int i=0; i<values.length; i++) {
-				d[i+2] = values[i];
-			}
-			write(d);
+			// write the data out passing the id
+			listener.writeData(intent, id);
 		}
 	};
+
+	// take the activity, command, and values to send, and broadcast them back up to our self (static vs non-static).  Then it will be sent up to the listener and sent over the wire
+	public static void writeData(Activity activity, int COMMAND, byte[] values) {
+		// create a new bundle
+		Bundle bundle = new Bundle();
+		bundle.putByte("command", (byte) COMMAND);
+		bundle.putByteArray("values", values);
+		// send a broadcast with the data
+		activity.sendBroadcast(new Intent(IdiotLights.WRITE).putExtras(bundle));
+	}
 
 	// send the data out once the accessory is ready
 	private BroadcastReceiver accessoryReadyReceiver = new BroadcastReceiver() {
@@ -144,6 +150,8 @@ public class IdiotLights extends Device {
 			// request some data from the slaves.  ensures out shared prefs are up to date
 			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
 			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
+			getData(IdiotLights.SPEAKER);
+			getData(IdiotLights.SPEAKERVOLUME);
 			getData(IdiotLights.SPEEDOINPULSES);
 			getData(IdiotLights.SPEEDOOUTPULSES);
 		}

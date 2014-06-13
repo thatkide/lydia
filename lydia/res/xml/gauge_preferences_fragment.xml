@@ -15,10 +15,20 @@
 			android:dialogMessage="@string/gauge_backlight"
 			android:dependency="backlightAutoBrightness" />
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/speaker">
+		<ca.efriesen.lydia.includes.CustomSwitchPreference
+			android:key="speaker"
+			android:title="@string/speaker_title"
+			android:summary="@string/speaker_summary" />
+		<net.jayschwa.android.preference.SliderPreference
+			android:key="speakerVolume"
+			android:title="@string/speaker_volume"
+			android:summary="@string/speaker_volume_summary" />
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/speedometer">
 		<Preference
-				android:title="@string/calibrate_speedo"
-				android:summary="@string/calibrate_speedo_summary" >
+			android:title="@string/calibrate_speedo"
+			android:summary="@string/calibrate_speedo_summary" >
 			<intent android:action=".activities.CalibrateSpeedoActivity" />
 		</Preference>
 		<EditTextPreference android:key="speedoInputPulses"

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -44,25 +45,40 @@ public class ArduinoService extends Service {
 	// create a new listener to pass to all the sensors.  they use this to send data out via the arduino
 	private ArduinoListener listener = new ArduinoListener() {
 		@Override
-		public void writeData(byte data[], int from) {
+		public void writeData(Intent intent, int from) {
+			// get the bundle from the intent
+			Bundle bundle = intent.getExtras();
+			// get the command in the bundle
+			byte command = bundle.getByte("command");
+			// get the values array
+			byte values[] = bundle.getByteArray("values");
+
 			// data has "I have this much data, here it is."  It's missing the "hey you, it's me part"
 			// create new array three bytes bigger
-			byte temp[] = new byte[data.length+3];
+			byte dataToSend[] = new byte[values.length+5];
 
 			// copy the array, and move up two positions
-			System.arraycopy(data, 0, temp, 2, data.length);
-			temp[0] = (byte)from; // hey you (we need the recipient first)
-			temp[1] = Device.id; // it's me
+			dataToSend[0] = (byte)from; // hey you (we need the recipient first)
+			dataToSend[1] = Device.id; // it's me
+			dataToSend[2] = (byte)(values.length+1); // I have this much data
+			dataToSend[3] = command; // this is the command
+
+			// copy the values into the datatosend array
+			System.arraycopy(values, 0, dataToSend, 4, values.length);
+
+			// We use this new array to calculate the checksum
+			// FIXME.  We need to checksum EVERYTHING not just the data
 			// we need to remove the initial length from the data array, or our checksum will be incorrect
-			byte checksum[] = new byte[data.length-1];
+			byte checksum[] = new byte[values.length+1];
 			// copy the data into a new array to get the checksum
-			System.arraycopy(data, 1, checksum, 0, checksum.length);
+			System.arraycopy(dataToSend, 3, checksum, 0, checksum.length);
+
 			// copy the checksum into our array to be sent over the wire
-			temp[temp.length-1] = (byte)getChecksum(getIntArray(checksum));
+			dataToSend[dataToSend.length-1] = (byte)getChecksum(from, Device.id, values.length+1, getIntArray(checksum));
 
 			// send the data over the wire
 			try {
-				mOutputStream.write(temp);
+				mOutputStream.write(dataToSend);
 			} catch (IOException e) {
 				Log.e(TAG, "", e);
 			} catch (NullPointerException e) {
@@ -131,13 +147,13 @@ public class ArduinoService extends Service {
 
 	@Override
 	public void onDestroy() {
+		Log.d(TAG, "on destroy");
 		super.onDestroy();
+		closeAccessory();
 		// tell each sensor to cleanup
 		for (int i=0, size = devices.size(); i<size; i++) {
 			devices.valueAt(i).cleanUp();
 		}
-
-		closeAccessory();
 	}
 
 	public class ArduinoBinder extends Binder {
@@ -154,18 +170,22 @@ public class ArduinoService extends Service {
 	private void openAccessory(UsbAccessory accessory) {
 		Log.d(TAG, "open accessory");
 
-		mFileDescriptor = mUsbManager.openAccessory(accessory);
-		if (mFileDescriptor != null) {
-			Log.d(TAG, "accessory opened");
-			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-			mInputStream = new FileInputStream(fd);
-			mOutputStream = new FileOutputStream(fd);
-			mAccessory = accessory;
+		if (mUsbManager.hasPermission(accessory)) {
+			mFileDescriptor = mUsbManager.openAccessory(accessory);
+			if (mFileDescriptor != null) {
+				Log.d(TAG, "accessory opened");
+				FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+				mInputStream = new FileInputStream(fd);
+				mOutputStream = new FileOutputStream(fd);
+				mAccessory = accessory;
 
-			thread = new Thread(null, commRunnable, TAG);
-			thread.start();
+				thread = new Thread(null, commRunnable, TAG);
+				thread.start();
+			} else {
+				Log.d(TAG, "accessory open failed");
+			}
 		} else {
-			Log.d(TAG, "accessory open failed");
+			Log.d(TAG, "accessory permission denied");
 		}
 	}
 
@@ -186,6 +206,7 @@ public class ArduinoService extends Service {
 				mOutputStream.close();
 			}
 		} catch (IOException e) {
+			Log.e(TAG, e.toString());
 		} finally {
 			mFileDescriptor = null;
 			mInputStream = null;
@@ -197,10 +218,14 @@ public class ArduinoService extends Service {
 	private Runnable commRunnable = new Runnable() {
 		@Override
 		public void run() {
-//			Log.d(TAG, "Start new thread for accessory");
+			Log.d(TAG, "Start new thread for accessory");
 			int ret = 0;
 			byte[] buffer = new byte[255];
 
+			int recipient;
+			int sender;
+			int length;
+			int checksum;
 			while (ret >= 0) {
 //				Log.d(TAG, "start read");
 				try {
@@ -214,6 +239,7 @@ public class ArduinoService extends Service {
 
 				// send a braodcast once the accessory is connected
 				if (!accessoryReadyBroadcastSent) {
+					Log.d(TAG, "send broadcast accessory is ready");
 					ArduinoService.this.sendBroadcast(new Intent(ACCESSORY_READY));
 					accessoryReadyBroadcastSent = true;
 				}
@@ -221,17 +247,17 @@ public class ArduinoService extends Service {
 				// we don't care about who's receiving.  if it's sent to the master, we inspect it
 				try {
 					if (buffer[0] == 0x7e) {
-						int recipient = buffer[1] & 0xFF;
-						int sender = buffer[2] & 0xFF;
-						int length = buffer[3];
+						recipient = buffer[1] & 0xFF;
+						sender = buffer[2] & 0xFF;
+						length = buffer[3];
 						// the data starts at position 3, so the end is 3 plus the length.
 						byte data[] = Arrays.copyOfRange(buffer, 4, 4 + length);
 						// get the checksum
-						int checksum = buffer[length + 4] & 0xFF;
+						checksum = buffer[length + 4] & 0xFF;
 						// get an int array from the bytes.  this "converts" to our unsigned version
 						int dataInt[] = getIntArray(data);
 						// if the received checksum equals the calculated checksum, send the data off
-						if (checksum == getChecksum(dataInt)) {
+						if (checksum == getChecksum(sender, recipient, length, dataInt)) {
 							arduino.parseData(sender, length, dataInt, checksum);
 						}
 					}
@@ -257,12 +283,15 @@ public class ArduinoService extends Service {
 	}
 
 	// calculate the checksum of the data we received
-	private int getChecksum(int[] data) {
+	private int getChecksum(int sender, int receiver, int length, int[] data) {
 //		Log.d(TAG, "get checksum");
 		int XOR = 0;
+		XOR ^= sender;
+		XOR ^= receiver;
+		XOR ^= length;
 		for(int d : data) {
 //			Log.d(TAG, "data " + d);
-			XOR = XOR ^ d;
+			XOR ^= d;
 		}
 		return XOR;
 	}
@@ -270,6 +299,6 @@ public class ArduinoService extends Service {
 	// new listener interface.
 	// provide both byte array and int methods.
 	public interface ArduinoListener {
-		public void writeData(byte data[], int from);
+		public void writeData(Intent intent, int from);
 	}
 }

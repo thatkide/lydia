@@ -66,9 +66,5 @@ public class Master extends Device {
 		}
 	}
 
-	@Override
-	public void write(byte[] data) {
-		listener.writeData(data, id);
-	}
 
 }

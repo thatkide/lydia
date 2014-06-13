@@ -24,7 +24,7 @@
 	<string name="auto_upgrade_firmware">Automatically upgrade Arduino firmware</string>
 	<string name="auto_find_slaves">Automatically find slave devices</string>
 	<string name="back">Back</string>
-	<string name="backlight">Backlight Brightness</string>
+	<string name="backlight">Backlight</string>
 	<string name="backlight_summary">Set the backlight brightness of the gauges</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="button_scan">Search for devices</string>
@@ -138,6 +138,11 @@
 	<string name="sms">SMS</string>
 	<string name="sms_received">SMS Received</string>
 	<string name="song_title">Title</string>
+	<string name="speaker">Speaker</string>
+	<string name="speaker_summary">Beep speaker on inital powerup</string>
+	<string name="speaker_title">Speaker</string>
+	<string name="speaker_volume">Speaker Volume</string>
+	<string name="speaker_volume_summary">Adjust the volume of the speaker</string>
 	<string name="speedometer">Speedometer</string>
 	<string name="speedo_input_pulses">Speedometer Input pulses per Km</string>
 	<string name="speedo_input_pulses_dialog_message">Once calibrated this shouldn\'t need to change.  Unless different size tires are installed.</string>
