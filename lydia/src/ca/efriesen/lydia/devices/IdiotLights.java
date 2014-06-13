@@ -35,7 +35,8 @@ public class IdiotLights extends Device {
 	public static final int FUEL = 100;
 	public static final int RPM = 101;
 	public static final int SPEAKER = 113;
-	public static final int SPEAKERVOLUME = 114;
+	public static final int SPEAKERVOLUMESAVE = 114;
+	public static final int SPEAKERVOLUMETEST = 115;
 	public static final int SPEED = 102;
 	public static final int SPEEDOINPULSES = 110;
 	public static final int SPEEDOOUTPULSES = 111;
@@ -100,7 +101,7 @@ public class IdiotLights extends Device {
 				sharedPreferences.edit().putBoolean("speaker", data[1] > 0).apply();
 				break;
 			}
-			case SPEAKERVOLUME: {
+			case SPEAKERVOLUMETEST: {
 				float value = data[1] / (float)10;
 
 				SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
@@ -151,7 +152,7 @@ public class IdiotLights extends Device {
 			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
 			getData(IdiotLights.BACKLIGHTAUTOBRIGHTNESS);
 			getData(IdiotLights.SPEAKER);
-			getData(IdiotLights.SPEAKERVOLUME);
+			getData(IdiotLights.SPEAKERVOLUMETEST);
 			getData(IdiotLights.SPEEDOINPULSES);
 			getData(IdiotLights.SPEEDOOUTPULSES);
 		}

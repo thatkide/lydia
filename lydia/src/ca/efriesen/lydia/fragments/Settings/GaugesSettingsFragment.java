@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.devices.IdiotLights;
 import ca.efriesen.lydia.includes.Helpers;
+import net.jayschwa.android.preference.SliderPreferenceCallback;
 import net.jayschwa.android.preference.SliderPreference;
 
 /**
@@ -35,11 +35,11 @@ public class GaugesSettingsFragment extends PreferenceFragment {
 			} else if(s.equalsIgnoreCase("speaker")) {
 				byte value[] = {(sharedPreferences.getBoolean("speaker", false) ? (byte) 1 : (byte) 0)};
 				IdiotLights.writeData(activity, IdiotLights.SPEAKER, value);
-			// Speaker Volume
+			// Speaker Volume test
 			} else if (s.equalsIgnoreCase("speakerVolume")) {
 				// convert the float of the slider (0.0 - 1.0) to a range of 0-10
-				byte value[] = {(byte)Math.round(sharedPreferences.getFloat("speakerVolume", 0) * 10)};
-				IdiotLights.writeData(activity, IdiotLights.SPEAKERVOLUME, value);
+				byte value[] = {(byte) Math.round(sharedPreferences.getFloat("speakerVolume", 0) * 10)};
+				IdiotLights.writeData(activity, IdiotLights.SPEAKERVOLUMETEST, value);
 			// Speedo input pulses
 			} else if(s.equalsIgnoreCase("speedoInputPulses")) {
 				int pulses = Integer.parseInt(sharedPreferences.getString("speedoInputPulses", "0"));
@@ -59,8 +59,22 @@ public class GaugesSettingsFragment extends PreferenceFragment {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.gauge_preferences_fragment);
 		// get the backlight slider and set it to auto update.  this allows us to change the value without having to press ok every time to see it
-		SliderPreference sliderPreference = (SliderPreference) findPreference("backlightBrightness");
-		sliderPreference.setAutoUpdate(true);
+		SliderPreference backlightBrightness = (SliderPreference) findPreference("backlightBrightness");
+		backlightBrightness.setAutoUpdate(true);
+
+		SliderPreference speakerVolume = (SliderPreference) findPreference("speakerVolume");
+		speakerVolume.setAutoUpdate(true);
+		// set a onDialogClosed for our volume slider
+		speakerVolume.sliderPreferenceCallback = new SliderPreferenceCallback() {
+			@Override
+			public void onDialogClosed(boolean positiveResult) {
+				if (positiveResult) {
+					// convert the float of the slider (0.0 - 1.0) to a range of 0-10
+					byte value[] = {(byte) Math.round(sharedPreferences.getFloat("speakerVolume", 0) * 10)};
+					IdiotLights.writeData(activity, IdiotLights.SPEAKERVOLUMESAVE, value);
+				}
+			}
+		};
 	}
 
 	@Override

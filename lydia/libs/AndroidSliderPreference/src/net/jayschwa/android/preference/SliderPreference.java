@@ -24,6 +24,7 @@ public class SliderPreference extends DialogPreference {
 	protected int mSeekBarValue;
 	protected CharSequence[] mSummaries;
 	private boolean autoUpdate = false;
+	public SliderPreferenceCallback sliderPreferenceCallback;
 
 	/**
 	 * @param context
@@ -132,7 +133,8 @@ public class SliderPreference extends DialogPreference {
 				if (fromUser) {
 					SliderPreference.this.mSeekBarValue = progress;
 					if (autoUpdate) {
-						onDialogClosed(true);
+						// update the info, but don't do the callback
+						onDialogClosed(true, false);
 					}
 				}
 			}
@@ -142,9 +144,23 @@ public class SliderPreference extends DialogPreference {
 
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
-		final float newValue = (float) mSeekBarValue / SEEKBAR_RESOLUTION;
-		if (positiveResult && callChangeListener(newValue)) {
-			setValue(newValue);
+		onDialogClosed(positiveResult, true);
+	}
+
+	protected void onDialogClosed(boolean positiveResult, boolean doCallback) {
+		if (doCallback) {
+			try {
+				sliderPreferenceCallback.onDialogClosed(positiveResult);
+			} catch (NullPointerException e) {
+				// No callback defined.  Do nothing
+			}
+		}
+		// only save the data if ok was pressed
+		if (positiveResult) {
+			final float newValue = (float) mSeekBarValue / SEEKBAR_RESOLUTION;
+			if (positiveResult && callChangeListener(newValue)) {
+				setValue(newValue);
+			}
 		}
 		super.onDialogClosed(positiveResult);
 	}

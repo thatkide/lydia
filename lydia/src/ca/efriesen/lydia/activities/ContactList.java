@@ -41,7 +41,7 @@ public class ContactList extends Activity implements LoaderManager.LoaderCallbac
 		SELECTION = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '1'";
 		ORDER = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
 
-		// init loader (unique id, args for the loader constructor, callback implementation)
+		// init loader (unique id, args for the loader constructor, onDialogClosed implementation)
 		getLoaderManager().initLoader(contactLoader, null, this);
 		String[] fromColumns = {ContactsContract.Contacts.DISPLAY_NAME};
 		int[] toViews = {android.R.id.text1};
