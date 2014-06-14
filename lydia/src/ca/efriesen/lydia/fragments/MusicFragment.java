@@ -59,15 +59,11 @@ public class MusicFragment extends ListFragment {
 		return homeState;
 	}
 
-	public MusicFragmentState getAlbumSongState() {
-		return albumSongState;
-	}
+	public MusicFragmentState getAlbumSongState() { return albumSongState; }
 
 	public MusicFragmentState getPlaylistSongState() { return playlistSongState; }
 
-	public MusicFragmentState getPlaylistState() {
-		return playlistState;
-	}
+	public MusicFragmentState getPlaylistState() { return playlistState; }
 
 	public MusicFragmentState getState() {
 		return musicFragmentState;

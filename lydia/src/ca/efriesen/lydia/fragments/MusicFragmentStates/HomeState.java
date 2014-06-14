@@ -11,9 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia.fragments.HomeScreenFragment;
 import ca.efriesen.lydia.fragments.MusicFragment;
+import ca.efriesen.lydia.fragments.RadioFragment;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
 
@@ -31,6 +33,7 @@ public class HomeState implements MusicFragmentState {
 	private static final int PlaylistsID = 0;
 	private static final  int ArtistsId = 1;
 	private static final int AlbumsId = 2;
+	private static final int RadioId = 3;
 
 	// context menu ids
 	private static final int NewPlaylistId = 100;
@@ -46,6 +49,7 @@ public class HomeState implements MusicFragmentState {
 		options.add(PlaylistsID, activity.getString(R.string.playlists));
 		options.add(ArtistsId, activity.getString(R.string.artists));
 		options.add(AlbumsId, activity.getString(R.string.albums));
+		options.add(RadioId, activity.getString(R.string.radio));
 	}
 
 	@Override
@@ -115,6 +119,16 @@ public class HomeState implements MusicFragmentState {
 			case PlaylistsID: {
 				musicFragment.setState(musicFragment.getPlaylistState());
 				musicFragment.setView();
+				break;
+			}
+			case RadioId: {
+				activity.getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
+						.replace(R.id.home_screen_fragment, new RadioFragment(), "radioFragment")
+						.addToBackStack(null)
+						.commit();
+				((Dashboard) activity).setHomeScreenClass(HomeScreenFragment.class);
+
 				break;
 			}
 		}
