@@ -15,33 +15,21 @@
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
-			<Button	android:id="@+id/navigation"
-				android:text="@string/navigation"
-				android:drawableTop="@drawable/compass"
+			<Button	android:id="@+id/home0"
 				style="@style/DashboardRoundTopLeft"/>
-			<Button android:id="@+id/music"
-				android:text="@string/music"
-				android:drawableTop="@drawable/vinyl"
+			<Button android:id="@+id/home1"
 				style="@style/DashboardControls"/>
-			<Button android:id="@+id/air_ride"
-				android:text="@string/air_ride"
-				android:drawableTop="@drawable/jet_engine"
+			<Button android:id="@+id/home2"
 				style="@style/DashboardRoundTopRight"/>
 		</LinearLayout>
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
-			<Button android:id="@+id/phone_controls"
-				android:text="@string/phone"
-				android:drawableTop="@drawable/phone"
+			<Button android:id="@+id/home3"
 				style="@style/DashboardRoundBottomLeft"/>
-			<Button android:id="@+id/all_applications"
-				android:text="@string/all_apps"
-				android:drawableTop="@drawable/android"
+			<Button android:id="@+id/home4"
 				style="@style/DashboardControls"/>
-			<Button android:id="@+id/google"
-				android:text="@string/google"
-				android:drawableTop="@drawable/chrome"
+			<Button android:id="@+id/home5"
 				style="@style/DashboardRoundBottomRight"/>
 		</LinearLayout>
 	</LinearLayout>

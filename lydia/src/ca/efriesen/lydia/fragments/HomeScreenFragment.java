@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -15,9 +16,13 @@ import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.activities.MusicSearch;
 import ca.efriesen.lydia.activities.WebActivity;
+import ca.efriesen.lydia.controllers.ButtonController;
+import ca.efriesen.lydia.controllers.ButtonControllers.*;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.Album;
 import ca.efriesen.lydia_common.media.Song;
+
+import java.util.ArrayList;
 
 /**
  * User: eric
@@ -69,6 +74,73 @@ public class HomeScreenFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
+		int numButtons = 6;
+
+		for (int i=0; i<numButtons; i++) {
+			// get the resource id for the button
+			int resId = getResources().getIdentifier("home" + i, "id", getActivity().getPackageName());
+			// get the button
+			Button button = (Button) getActivity().findViewById(resId);
+			button.setOnClickListener(new ButtonController(getActivity()));
+		}
+
+		Bundle navBundle = new Bundle();
+		navBundle.putString("title", getString(R.string.navigation));
+		navBundle.putString("drawable", "compass");
+		navBundle.putString("action", NavigationButton.ACTION);
+
+		Bundle musicBundle = new Bundle();
+		musicBundle.putString("title", getString(R.string.music));
+		musicBundle.putString("drawable", "vinyl");
+		musicBundle.putString("action", MusicButton.ACTION);
+
+		Bundle airRideBundle = new Bundle();
+		airRideBundle.putString("title", getString(R.string.air_ride));
+		airRideBundle.putString("drawable", "jet_engine");
+		airRideBundle.putString("action", AirRideButton.ACTION);
+
+		Bundle phoneBundle = new Bundle();
+		phoneBundle.putString("title", getString(R.string.phone));
+		phoneBundle.putString("drawable", "phone");
+		phoneBundle.putString("action", PhoneButton.ACTION);
+
+		Bundle androidBundle = new Bundle();
+		androidBundle.putString("title", getString(R.string.all_apps));
+		androidBundle.putString("drawable", "android");
+		androidBundle.putString("action", AndroidButton.ACTION);
+
+		Bundle chromeBundle = new Bundle();
+		chromeBundle.putString("title", getString(R.string.chrome));
+		chromeBundle.putString("drawable", "chrome");
+		chromeBundle.putString("action", ChromeButton.ACTION);
+
+		ArrayList<Bundle> buttons = new ArrayList<Bundle>();
+		buttons.add(navBundle);
+		buttons.add(musicBundle);
+		buttons.add(airRideBundle);
+		buttons.add(phoneBundle);
+		buttons.add(androidBundle);
+		buttons.add(chromeBundle);
+
+		// loop over all buttons
+		for (int i=0; i<buttons.size(); i++) {
+			// get the bundle of info
+			Bundle bundle = buttons.get(i);
+			// get the resource id for the button
+			int resId = getResources().getIdentifier("home" + i, "id", getActivity().getPackageName());
+			// get the button
+			Button button = (Button) getActivity().findViewById(resId);
+			// set the text to the proper title
+			button.setText(bundle.getString("title"));
+			// get the image resource id
+			int imgId = getResources().getIdentifier(bundle.getString("drawable"), "drawable", getActivity().getPackageName());
+			// get the drawable
+			Drawable img = getActivity().getResources().getDrawable(imgId);
+			// set it to the top on the button
+			button.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
+			button.setTag(bundle);
+		}
+
 		final FragmentManager manager = getFragmentManager();
 		final Activity activity = getActivity();
 
@@ -99,106 +171,40 @@ public class HomeScreenFragment extends Fragment {
 			}
 		});
 
-		Button chrome = (Button) getActivity().findViewById(R.id.google);
-		chrome.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-//				Intent chrome = new Intent(Intent.ACTION_MAIN);
-//				chrome.setComponent(ComponentName.unflattenFromString("com.android.chrome/.Main"));
-//				chrome.addCategory(Intent.CATEGORY_LAUNCHER);
-//				startActivity(chrome);
-
-				startActivity(new Intent(getActivity(), WebActivity.class));
-			}
-		});
-
-		// map on the homescreen that opens the map fragment
-		Button map = (Button) getActivity().findViewById(R.id.navigation);
-		map.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-						.replace(R.id.home_screen_container_fragment, new MapContainerFragment(), "homeScreenContainerFragment")
-						.addToBackStack(null)
-						.commit();
-				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
-			}
-		});
-
-		Button musicButton = (Button) activity.findViewById(R.id.music);
-		musicButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MusicFragment musicFragment = new MusicFragment();
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-						.replace(R.id.home_screen_fragment, musicFragment, "musicFragment")
-						.addToBackStack(null)
-						.commit();
-			}
-		});
-
-		// create the popup window for the music button
-		musicPopup = new PopupMenu(activity.getApplicationContext(), activity.findViewById(R.id.music));
-		musicPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				switch (item.getItemId()) {
-					case RANDOM: {
-						Toast.makeText(getActivity().getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-//						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
-						break;
-					}
-					case SEARCH: {
-						startActivity(new Intent(getActivity(), MusicSearch.class));
-						break;
-					}
-					case PLAYLISTS: {
-					}
-				}
-				return false;
-			}
-		});
-		// add(GroupID, ItemID, Order, Title
-		musicPopup.getMenu().add(Menu.NONE, PLAYLISTS, Menu.NONE, R.string.playlists);
-		musicPopup.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, R.string.random);
-		musicPopup.getMenu().add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
-
-		musicButton.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				// show the music popup window
-				musicPopup.show();
-				return true;
-			}
-		});
-
-		Button phoneButton = (Button) activity.findViewById(R.id.phone_controls);
-		phoneButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-						.replace(R.id.home_screen_fragment, new PhoneFragment(), "phoneFragment")
-						.addToBackStack(null)
-						.commit();
-				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
-			}
-		});
-
-		Button allApps = (Button) activity.findViewById(R.id.all_applications);
-		allApps.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-						.replace(R.id.home_screen_fragment, new LauncherFragment(), "launcherFragment")
-						.addToBackStack(null)
-						.commit();
-				((Dashboard)getActivity()).setHomeScreenClass(HomeScreenFragment.class);
-			}
-		});
+//		// create the popup window for the music button
+//		musicPopup = new PopupMenu(activity.getApplicationContext(), activity.findViewById(R.id.home1));
+//		musicPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//			@Override
+//			public boolean onMenuItemClick(MenuItem item) {
+//				switch (item.getItemId()) {
+//					case RANDOM: {
+//						Toast.makeText(getActivity().getApplicationContext(), getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
+////						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
+//						break;
+//					}
+//					case SEARCH: {
+//						startActivity(new Intent(getActivity(), MusicSearch.class));
+//						break;
+//					}
+//					case PLAYLISTS: {
+//					}
+//				}
+//				return false;
+//			}
+//		});
+//		// add(GroupID, ItemID, Order, Title
+//		musicPopup.getMenu().add(Menu.NONE, PLAYLISTS, Menu.NONE, R.string.playlists);
+//		musicPopup.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, R.string.random);
+//		musicPopup.getMenu().add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
+//
+//		musicButton.setOnLongClickListener(new View.OnLongClickListener() {
+//			@Override
+//			public boolean onLongClick(View v) {
+//				// show the music popup window
+//				musicPopup.show();
+//				return true;
+//			}
+//		});
 	}
 
 	@Override
@@ -212,86 +218,6 @@ public class HomeScreenFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-
-//		Button statusButton = (Button) getActivity().findViewById(R.id.status);
-//		statusButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Fragment statusFragment = new EngineStatusFragment();
-//				FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-//				transaction.add(getId(), statusFragment, "status").commit();
-//			}
-//		});
-
-//		SeekBar brightness = (SeekBar) getActivity().findViewById(R.id.brightness);
-//		brightness.setMax(255);
-//		brightness.setProgress(25);
-//
-//		brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//			@Override
-//			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-//				Intent updateBrightness = new Intent(HardwareManagerService.UPDATEBRIGHTNESS);
-//				updateBrightness.putExtra("light", myIOIOService.TAILLIGHTBRIGHTNESS);
-//				updateBrightness.putExtra("brightness", i);
-//				getActivity().sendBroadcast(updateBrightness);
-//			}
-//
-//			@Override
-//			public void onStartTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//
-//			@Override
-//			public void onStopTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//		});
-
-//		SeekBar brakeLights = (SeekBar) getActivity().findViewById(R.id.brake_lights);
-//		brakeLights.setMax(255);
-//		brakeLights.setProgress(50);
-//		brakeLights.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//			@Override
-//			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-//				Intent updateBrightness = new Intent(HardwareManagerService.UPDATEBRIGHTNESS);
-//				updateBrightness.putExtra("light", myIOIOService.BRAKELIGHTBRIGHTNESS);
-//				updateBrightness.putExtra("brightness", i);
-//				getActivity().sendBroadcast(updateBrightness);
-//			}
-//
-//			@Override
-//			public void onStartTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//
-//			@Override
-//			public void onStopTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//		});
-//
-//		SeekBar signalLighs = (SeekBar) getActivity().findViewById(R.id.signal_lights);
-//		signalLighs.setMax(255);
-//		brakeLights.setProgress(50);
-//		brakeLights.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//			@Override
-//			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-//				Intent updateBrightness = new Intent(HardwareManagerService.UPDATEBRIGHTNESS);
-//				updateBrightness.putExtra("light", myIOIOService.SIGNALLIGHTBRIGHTNESS);
-//				updateBrightness.putExtra("brightness", i);
-//				getActivity().sendBroadcast(updateBrightness);
-//			}
-//
-//			@Override
-//			public void onStartTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//
-//			@Override
-//			public void onStopTrackingTouch(SeekBar seekBar) {
-//				//To change body of implemented methods use File | Settings | File Templates.
-//			}
-//		});
 	}
 
 	@Override
@@ -307,7 +233,7 @@ public class HomeScreenFragment extends Fragment {
 			Album album = song.getAlbum();
 			try {
 				// find the music button on the home screen
-				Button music = (Button) getActivity().findViewById(R.id.music);
+				Button music = (Button) getActivity().findViewById(R.id.home1);
 				try {
 					// save the album id
 					PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("currentAlbum", album.getId()).commit();
