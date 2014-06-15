@@ -9,8 +9,7 @@ public class AirRideButton extends MyButton {
 
 	public static final String ACTION = "AirRideButton";
 
-	@Override
-	public void onClick(Activity activity) {
+	public AirRideButton(Activity activity) {
 
 	}
 }

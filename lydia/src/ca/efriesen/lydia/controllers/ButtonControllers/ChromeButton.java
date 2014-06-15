@@ -11,8 +11,15 @@ public class ChromeButton extends MyButton {
 
 	public static final String ACTION = "ChromeButton";
 
+	private Activity activity;
+
+	public ChromeButton(Activity activity) {
+		this.activity = activity;
+	}
+
 	@Override
-	public void onClick(Activity activity) {
+	public void onClick() {
 		activity.startActivity(new Intent(activity, WebActivity.class));
 	}
+
 }

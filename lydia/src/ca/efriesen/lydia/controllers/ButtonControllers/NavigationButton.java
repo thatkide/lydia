@@ -13,8 +13,14 @@ public class NavigationButton extends MyButton{
 
 	public static final String ACTION = "NavigationButton";
 
+	private Activity activity;
+
+	public NavigationButton(Activity activity) {
+		this.activity = activity;
+	}
+
 	@Override
-	public void onClick(Activity activity) {
+	public void onClick() {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 				.replace(R.id.home_screen_container_fragment, new MapContainerFragment(), "homeScreenContainerFragment")
@@ -23,4 +29,5 @@ public class NavigationButton extends MyButton{
 		((Dashboard)activity).setHomeScreenClass(HomeScreenFragment.class);
 
 	}
+
 }

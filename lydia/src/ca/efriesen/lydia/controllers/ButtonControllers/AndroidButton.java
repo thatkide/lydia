@@ -13,8 +13,14 @@ public class AndroidButton extends MyButton {
 
 	public static final String ACTION = "AndroidButton";
 
+	private Activity activity;
+
+	public AndroidButton(Activity activity) {
+		this.activity = activity;
+	}
+
 	@Override
-	public void onClick(Activity activity) {
+	public void onClick() {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
 				.replace(R.id.home_screen_fragment, new LauncherFragment(), "launcherFragment")
@@ -22,4 +28,5 @@ public class AndroidButton extends MyButton {
 				.commit();
 		((Dashboard)activity).setHomeScreenClass(HomeScreenFragment.class);
 	}
+
 }

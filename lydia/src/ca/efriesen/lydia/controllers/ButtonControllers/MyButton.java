@@ -7,5 +7,10 @@ import android.app.Activity;
  */
 public abstract class MyButton {
 
-	abstract public void onClick(Activity activity);
+	public void onClick() {	};
+	public boolean onLongClick() {
+		return false;
+	};
+
+	public void cleanUp() { };
 }

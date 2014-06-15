@@ -13,8 +13,14 @@ public class PhoneButton extends MyButton {
 
 	public static final String ACTION = "PhoneButton";
 
+	private Activity activity;
+
+	public PhoneButton(Activity activity) {
+		this.activity = activity;
+	}
+
 	@Override
-	public void onClick(Activity activity) {
+	public void onClick() {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
 				.replace(R.id.home_screen_fragment, new PhoneFragment(), "phoneFragment")
@@ -23,4 +29,5 @@ public class PhoneButton extends MyButton {
 		((Dashboard)activity).setHomeScreenClass(HomeScreenFragment.class);
 
 	}
+
 }
