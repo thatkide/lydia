@@ -93,6 +93,21 @@ public class MusicButton extends MyButton {
 		} catch (IllegalArgumentException e) { }
 	}
 
+	@Override
+	public String getAction() {
+		return ACTION;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Open Music";
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {

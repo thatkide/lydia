@@ -29,4 +29,19 @@ public class AndroidButton extends MyButton {
 		((Dashboard)activity).setHomeScreenClass(HomeScreenFragment.class);
 	}
 
+	@Override
+	public String getAction() {
+		return ACTION;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Open Application launcher";
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
 }

@@ -2,16 +2,17 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import android.widget.Button;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.controllers.ButtonControllers.*;
-import java.util.ArrayList;
+import ca.efriesen.lydia.databases.*;
+
+import java.util.List;
 
 /**
  * User: eric
@@ -57,9 +58,19 @@ public class HomeScreenFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		final Activity activity = getActivity();
 
-		int numButtons = 6;
+		// get the controller and db stuff
 		buttonController = new ButtonController(activity);
+		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(activity);
+		dataSource.open();
 
+		// get the buttons in our area
+		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(1);
+		// close the db, we don't need it any more
+		dataSource.close();
+
+		int numButtons = 6;
+
+		// tell every button to call the button controller, it will decide your fate
 		for (int i=0; i<numButtons; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier("home" + i, "id", activity.getPackageName());
@@ -69,62 +80,37 @@ public class HomeScreenFragment extends Fragment {
 			button.setOnLongClickListener(buttonController);
 		}
 
-		Bundle navBundle = new Bundle();
-		navBundle.putString("title", getString(R.string.navigation));
-		navBundle.putString("drawable", "compass");
-		navBundle.putString("action", NavigationButton.ACTION);
+		// this block ensures we always have a settings button on screen somewhere
+		if (!buttonController.hasValidSettingsButton()) {
+			// start at 0
+			int position = 0;
+			// if we have a full screen but no settings
+			if (buttons.size() == numButtons) {
+				// remove the last button and set it to the settings button
+				buttons.remove(position = numButtons-1);
+			// we don't have a full screen, but we also don't have a settings button
+			} else {
+				// loop over all the settings and find the next empty position
+				for (ca.efriesen.lydia.databases.Button button : buttons) {
+					// if our current selected position is in use, increment it.  the buttons are in position order from sqlite
+					if (position == button.getPosition()) {
+						position++;
+					}
+				}
+			}
+			// Hard code the settings button to always show up if nothing else is on screen
+			ca.efriesen.lydia.databases.Button settingsBundle = new ca.efriesen.lydia.databases.Button();
+			settingsBundle.setDisplayArea(1);
+			settingsBundle.setPosition(position);
+			settingsBundle.setTitle(getString(R.string.settings));
+			settingsBundle.setAction(SettingsButton.ACTION);
+			settingsBundle.setDrawable("settings");
+			settingsBundle.setUsesDrawable(true);
 
-		Bundle musicBundle = new Bundle();
-		musicBundle.putString("title", getString(R.string.music));
-		musicBundle.putString("drawable", "vinyl");
-		musicBundle.putString("action", MusicButton.ACTION);
-
-		Bundle airRideBundle = new Bundle();
-		airRideBundle.putString("title", getString(R.string.air_ride));
-		airRideBundle.putString("drawable", "jet_engine");
-		airRideBundle.putString("action", AirRideButton.ACTION);
-
-		Bundle phoneBundle = new Bundle();
-		phoneBundle.putString("title", getString(R.string.phone));
-		phoneBundle.putString("drawable", "phone");
-		phoneBundle.putString("action", PhoneButton.ACTION);
-
-		Bundle androidBundle = new Bundle();
-		androidBundle.putString("title", getString(R.string.all_apps));
-		androidBundle.putString("drawable", "android");
-		androidBundle.putString("action", AndroidButton.ACTION);
-
-		Bundle chromeBundle = new Bundle();
-		chromeBundle.putString("title", getString(R.string.chrome));
-		chromeBundle.putString("drawable", "chrome");
-		chromeBundle.putString("action", ChromeButton.ACTION);
-
-		ArrayList<Bundle> buttons = new ArrayList<Bundle>();
-		buttons.add(navBundle);
-		buttons.add(musicBundle);
-		buttons.add(airRideBundle);
-		buttons.add(phoneBundle);
-		buttons.add(androidBundle);
-		buttons.add(chromeBundle);
-
-		// loop over all buttons
-		for (int i=0; i<buttons.size(); i++) {
-			// get the bundle of info
-			Bundle bundle = buttons.get(i);
-			// get the resource id for the button
-			int resId = getResources().getIdentifier("home" + i, "id", activity.getPackageName());
-			// get the button
-			Button button = (Button) activity.findViewById(resId);
-			// set the text to the proper title
-			button.setText(bundle.getString("title"));
-			// get the image resource id
-			int imgId = getResources().getIdentifier(bundle.getString("drawable"), "drawable", activity.getPackageName());
-			// get the drawable
-			Drawable img = activity.getResources().getDrawable(imgId);
-			// set it to the top on the button
-			button.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
-			button.setTag(bundle);
+			buttons.add(settingsBundle);
 		}
+
+		buttonController.populateButton(buttons);
 
 		final Button homeScreenNext = (Button) activity.findViewById(R.id.home_screen_next);
 		final Button homeScreenPrev = (Button) activity.findViewById(R.id.home_screen_previous);
@@ -170,5 +156,4 @@ public class HomeScreenFragment extends Fragment {
 		super.onResume();
 //		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
 	}
-
 }

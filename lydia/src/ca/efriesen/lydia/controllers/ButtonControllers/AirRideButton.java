@@ -12,4 +12,19 @@ public class AirRideButton extends MyButton {
 	public AirRideButton(Activity activity) {
 
 	}
+
+	@Override
+	public String getAction() {
+		return ACTION;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Open Air Ride Screen";
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
 }

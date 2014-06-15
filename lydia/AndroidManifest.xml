@@ -80,6 +80,30 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".activities.settings.HomeScreenEditorActivity"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			<intent-filter>
+				<action android:name=".activities.settings.HomeScreenActivity" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".activities.settings.ButtonEditor"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			<intent-filter>
+				<action android:name=".activities.settings.ButtonEditor" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".activities.settings.IconSelector"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			<intent-filter>
+				<action android:name=".activities.settings.IconSelector" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+
 		<activity android:name=".activities.settings.CalibrateSpeedoActivity"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
 			<intent-filter>

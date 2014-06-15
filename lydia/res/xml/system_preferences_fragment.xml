@@ -8,6 +8,11 @@
 			<intent android:action=".activities.settings.UpdateActivity" />
 			</Preference>
 	</PreferenceCategory>
+	<PreferenceCategory android:title="Home Screen">
+		<Preference android:title="Setup Home Screen">
+			<intent android:action=".activities.settings.HomeScreenActivity" />
+		</Preference>
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/wifi">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference
 			android:key="systemWiFi"

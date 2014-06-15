@@ -30,4 +30,19 @@ public class PhoneButton extends MyButton {
 
 	}
 
+	@Override
+	public String getAction() {
+		return ACTION;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Open Phone Controls";
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
 }

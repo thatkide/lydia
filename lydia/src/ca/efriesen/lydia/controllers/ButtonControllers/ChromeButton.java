@@ -22,4 +22,19 @@ public class ChromeButton extends MyButton {
 		activity.startActivity(new Intent(activity, WebActivity.class));
 	}
 
+	@Override
+	public String getAction() {
+		return ACTION;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Open Chrome activity";
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+
 }
