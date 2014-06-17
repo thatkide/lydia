@@ -1,11 +1,16 @@
 package ca.efriesen.lydia.activities.settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
@@ -14,11 +19,21 @@ import java.util.List;
 /**
  * Created by eric on 2014-06-14.
  */
-public class HomeScreenEditorActivity extends Activity {
+public class HomeScreenEditorActivity extends Activity implements View.OnClickListener {
 
 	private static final String TAG = "homescreen editor";
 
 	private ButtonController buttonController;
+	private SharedPreferences sharedPreferences;
+	private int numHomeScreens;
+	// always start on screen 1
+	private int selectedScreen = 0;
+
+	private Button prev;
+	private Button delete;
+	private Button addNew;
+	private Button next;
+	private RadioGroup radioGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +42,37 @@ public class HomeScreenEditorActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.home_screen_layout);
 
+		// we'll store basic info in shared prefs, and more complicated info in sqlite
+		sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+
 		buttonController = new ButtonController(this);
 		buttonController.setAdmin(true);
-		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
-		dataSource.open();
-		// get the buttons in our area
-		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(1);
-		// close the db, we don't need it any more
-		dataSource.close();
 
 		int numButtons = 6;
+		numHomeScreens = sharedPreferences.getInt("numHomeScreens", 1);
+
+		prev = (Button) findViewById(R.id.button_prev_screen);
+		delete = (Button) findViewById(R.id.button_delete_screen);
+		addNew = (Button) findViewById(R.id.button_add_screen);
+		next = (Button) findViewById(R.id.button_next_screen);
+		radioGroup = (RadioGroup) findViewById(R.id.radio_button_container);
+
+		// draw radio buttons
+		for (int i=0; i<numHomeScreens; i++) {
+			RadioButton radioButton = new RadioButton(this);
+			radioButton.setId(i);
+			if (i == 0) {
+				radioButton.setChecked(true);
+			}
+			radioGroup.addView(radioButton);
+		}
+
+		drawScreen();
+
+		addNew.setOnClickListener(this);
+		delete.setOnClickListener(this);
+		next.setOnClickListener(this);
+		prev.setOnClickListener(this);
 
 		// tell every button to call the button controller, it will decide your fate
 		for (int i=0; i<numButtons; i++) {
@@ -48,16 +84,13 @@ public class HomeScreenEditorActivity extends Activity {
 			button.setOnLongClickListener(buttonController);
 		}
 
-		// this draws the buttons that are actually populated
-		buttonController.populateButton(buttons);
-
 		// provide a callback to refresh the buttons once the long click has finished deleting the button from the db
 		buttonController.homeScreenActivityCallback = new HomeScreenActivityCallback() {
 			@Override
 			public void onLayoutChange(List<ca.efriesen.lydia.databases.Button> buttons) {
 				// refresh the onscreen display
 				buttonController.clearButtons();
-				buttonController.populateButton(buttons);
+				buttonController.populateButton(buttons, selectedScreen);
 			}
 		};
 	}
@@ -66,4 +99,89 @@ public class HomeScreenEditorActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		buttonController.onActivityResult(requestCode, resultCode, data);
 	}
+
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+			case R.id.button_add_screen: {
+				sharedPreferences.edit().putInt("numHomeScreens", ++numHomeScreens).apply();
+				RadioButton radioButton = new RadioButton(this);
+				radioButton.setId(numHomeScreens);
+				radioGroup.addView(radioButton);
+				drawScreen();
+				break;
+			}
+			case R.id.button_delete_screen: {
+				if (numHomeScreens > 1) {
+					radioGroup.removeViewAt(selectedScreen);
+					// remove the screen from the db and update the others
+					ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
+					dataSource.open();
+					dataSource.removeHomeScreen(selectedScreen, numHomeScreens);
+					// close the db, we don't need it any more
+					dataSource.close();
+
+					sharedPreferences.edit().putInt("numHomeScreens", --numHomeScreens).apply();
+				}
+				// if we've deleted the last screen, set selected to one less
+				if (selectedScreen >= numHomeScreens) {
+					selectedScreen = numHomeScreens-1;
+				}
+				drawScreen();
+				break;
+			}
+			case R.id.button_next_screen: {
+				selectedScreen++;
+				drawScreen();
+				break;
+			}
+			case R.id.button_prev_screen: {
+				selectedScreen--;
+				drawScreen();
+				break;
+			}
+		}
+	}
+
+	private void drawScreen() {
+		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
+		dataSource.open();
+		// get the buttons in our area
+		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(selectedScreen);
+		// close the db, we don't need it any more
+		dataSource.close();
+
+		// this draws the buttons that are actually populated
+		buttonController.populateButton(buttons, selectedScreen);
+
+		// start off with add buttons hidden
+		int prevVis = View.INVISIBLE;
+		int nextVis = View.INVISIBLE;
+		int delVis = View.INVISIBLE;
+
+		// if we have more than one home screen, enable next and delete
+		if (numHomeScreens > 1) {
+			nextVis = View.VISIBLE;
+			delVis = View.VISIBLE;
+		}
+
+		// if our selected screen isn't the first, show the previous button
+		if (selectedScreen != 0) {
+			prevVis = View.VISIBLE;
+		}
+
+		//if we're on the last scree, rehide next
+		if (selectedScreen == numHomeScreens-1) {
+			nextVis = View.INVISIBLE;
+		}
+
+		// set the visibility
+		prev.setVisibility(prevVis);
+		next.setVisibility(nextVis);
+		delete.setVisibility(delVis);
+
+		RadioButton button = (RadioButton) radioGroup.getChildAt(selectedScreen);
+		button.setChecked(true);
+	}
+
 }

@@ -37,7 +37,7 @@ public class NavigationButton extends MyButton{
 
 	@Override
 	public String getDescription() {
-		return "Open Maps";
+		return "Open Navigation";
 	}
 
 	@Override

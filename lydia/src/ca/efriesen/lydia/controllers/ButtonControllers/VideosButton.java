@@ -3,13 +3,16 @@ package ca.efriesen.lydia.controllers.ButtonControllers;
 import android.app.Activity;
 
 /**
- * Created by eric on 2014-06-14.
+ * Created by eric on 2014-06-15.
  */
-public class AirRideButton extends MyButton {
+public class VideosButton extends MyButton {
 
-	public static final String ACTION = "AirRideButton";
+	public static final String ACTION = "VideosButton";
 
-	public AirRideButton(Activity activity) {
+	private Activity activity;
+
+	public VideosButton(Activity activity) {
+		this.activity = activity;
 	}
 
 	@Override
@@ -19,7 +22,7 @@ public class AirRideButton extends MyButton {
 
 	@Override
 	public String getDescription() {
-		return "Open Air Ride Screen";
+		return "Opens Videos.  Currently does nothing";
 	}
 
 	@Override

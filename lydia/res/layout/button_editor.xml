@@ -18,7 +18,7 @@
 		style="@style/DashboardControls"
 		android:clickable="true" android:layout_alignTop="@+id/button_title_hr"
 		android:layout_centerHorizontal="true"/>
-	<EditText android:inputType="textCapSentences"
+	<EditText android:inputType="textCapWords"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/button_title_text" android:layout_alignBottom="@+id/button_background"

@@ -34,11 +34,16 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		// add all the possible actions and classes
 		buttons.put(AirRideButton.ACTION, new AirRideButton(activity));
 		buttons.put(AndroidButton.ACTION, new AndroidButton(activity));
+		buttons.put(CalendarButton.ACTION, new CalendarButton(activity));
 		buttons.put(ChromeButton.ACTION, new ChromeButton(activity));
+		buttons.put(ContactsButton.ACTION, new ContactsButton(activity));
+		buttons.put(EngineStatusButton.ACTION, new EngineStatusButton(activity));
 		buttons.put(MusicButton.ACTION, new MusicButton(activity));
 		buttons.put(NavigationButton.ACTION, new NavigationButton(activity));
 		buttons.put(PhoneButton.ACTION, new PhoneButton(activity));
 		buttons.put(SettingsButton.ACTION, new SettingsButton(activity));
+		buttons.put(VideosButton.ACTION, new VideosButton(activity));
+		buttons.put(WeatherButton.ACTION, new WeatherButton(activity));
 	}
 
 	public ArrayList<MyButton> getButtons() {
@@ -48,7 +53,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		Collections.sort(list, new Comparator<MyButton>() {
 			@Override
 			public int compare(MyButton o, MyButton o2) {
-				return o.getAction().compareToIgnoreCase(o2.getAction());
+				return o.getDescription().compareToIgnoreCase(o2.getDescription());
 			}
 		});
 		return list;
@@ -111,8 +116,13 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	}
 
 	public void clearButtons() {
+		String idName = "home";
+		if (admin) {
+			idName = "settings_home";
+		}
+
 		for (int i=0; i<6; i++) {
-			int resId = activity.getResources().getIdentifier("settings_home" + i, "id", activity.getPackageName());
+			int resId = activity.getResources().getIdentifier(idName + i, "id", activity.getPackageName());
 			// get the button
 			Button button = (Button) activity.findViewById(resId);
 			// remove the text
@@ -124,12 +134,20 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		}
 	}
 
+
 	public void populateButton(List<ca.efriesen.lydia.databases.Button> buttons) {
+		populateButton(buttons, 1);
+	}
+
+	// the area being passed is only for the admin activity.  it passes it up to the button editor so the button appears on the proper screen
+	public void populateButton(List<ca.efriesen.lydia.databases.Button> buttons, int area) {
 		int numButtons = 6;
 		String idName = "home";
 		if (admin) {
 			idName = "settings_home";
 		}
+
+		clearButtons();
 
 		if (admin) {
 			// set defaults, override them after
@@ -138,7 +156,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 				// get the button
 				Button button = (Button) activity.findViewById(resId);
 				ca.efriesen.lydia.databases.Button myButton = new ca.efriesen.lydia.databases.Button();
-				myButton.setDisplayArea(1);
+				myButton.setDisplayArea(area);
 				myButton.setPosition(i);
 				button.setTag(myButton);
 			}

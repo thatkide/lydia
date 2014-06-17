@@ -101,6 +101,19 @@ public class ButtonConfigDataSource {
 		database.delete(ButtonConfigOpenHelper.TABLE_NAME, ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " + ButtonConfigOpenHelper.POSITION + " = " + button.getPosition(), null);
 	}
 
+	public void removeHomeScreen(int screen, int numScreens) {
+		// remove all buttons on specified screen
+		database.delete(ButtonConfigOpenHelper.TABLE_NAME, ButtonConfigOpenHelper.DISPLAYAREA + " = " + screen, null);
+		// move the rest of the buttons down one position
+
+		for (int i=screen; i<numScreens; i++) {
+			// move 3-2, 4-3, etc...
+			ContentValues values = new ContentValues();
+			values.put(ButtonConfigOpenHelper.DISPLAYAREA, i);
+			database.update(ButtonConfigOpenHelper.TABLE_NAME, values, ButtonConfigOpenHelper.DISPLAYAREA + " = " + (i+1), null);
+		}
+	}
+
 	private Button cursorToButton(Cursor cursor) {
 		Button button = new Button();
 		button.setId(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.COLUMN_ID)));

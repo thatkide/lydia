@@ -2,9 +2,8 @@
 <RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:padding="10dip"
-		>
+		android:layout_height="wrap_content"
+		android:paddingLeft="0dp" android:paddingTop="10dp" android:paddingRight="0dp" android:paddingBottom="0dp">
 	<TextView android:id="@+id/home_screen_title"
 			  style="@style/MediumText"
 			  android:text="Setup Home Screen Layout" />
@@ -18,7 +17,7 @@
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
 			android:layout_centerInParent="true"
-			android:layout_below="@id/home_screen_title_hr">
+			android:layout_below="@id/home_screen_title_hr" android:id="@+id/button_container">
 		<LinearLayout android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal">
@@ -40,4 +39,59 @@
 				style="@style/DashboardRoundBottomRight"/>
 		</LinearLayout>
 	</LinearLayout>
+	<View
+			android:layout_width="fill_parent"
+			android:layout_height="1dip"
+			android:background="?android:attr/dividerHorizontal" android:layout_above="@+id/linearLayout"
+			android:layout_alignParentStart="true" android:id="@+id/view"/>
+	<LinearLayout
+			style="?android:attr/buttonBarStyle"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:paddingTop="0dip"
+			android:paddingLeft="2dip"
+			android:paddingRight="2dip"
+			android:measureWithLargestChild="true" android:layout_alignParentBottom="true"
+			android:id="@+id/linearLayout">
+
+		<Button
+				android:id="@+id/button_prev_screen"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:visibility="invisible"
+				android:text="Previous"/>
+		<Button
+				android:id="@+id/button_delete_screen"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="Delete"/>
+		<Button
+				android:id="@+id/button_add_screen"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="Add New Screen"/>
+		<Button
+				android:id="@+id/button_next_screen"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="Next "/>
+	</LinearLayout>
+
+	<RadioGroup android:id="@+id/radio_button_container"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_above="@id/view"
+				android:layout_centerHorizontal="true">
+	</RadioGroup>
+
 </RelativeLayout>
