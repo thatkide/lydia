@@ -20,7 +20,7 @@ public class HomeScreenContainerFragment extends Fragment {
 	private Class passengerControlClass = PassengerControlsFragment.class;
 
 	// take the class of the screen we want to diaplay in the middle
-	public HomeScreenContainerFragment(Class driverControlClass, Class homeScreenClass, Class passengerControlClass) {
+	public HomeScreenContainerFragment(Class driverControlClass, Class passengerControlClass) {
 		// only save the new class if we were passes something other than null
 		if (driverControlClass != null)
 			this.driverControlClass = driverControlClass;

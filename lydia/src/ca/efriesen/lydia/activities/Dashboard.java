@@ -36,7 +36,6 @@ public class Dashboard extends Activity {
 	private LastFM lastFm;
 
 	private Class driverControlsClass;
-	private Class homeScreenClass;
 	private Class passengerControlsClass;
 
 	//the first part of this string have to be the package name
@@ -190,12 +189,6 @@ public class Dashboard extends Activity {
 		} catch (Exception e) {}
 	}
 
-	// set the home screen we came from.
-	// when transitioning from the home screen to a subscreen (screen two to settings for example), set the class to home screen two
-	public void setHomeScreenClass(Class homeScreenClass) {
-		this.homeScreenClass = homeScreenClass;
-	}
-
 	public void setDriverControlsClass(Class driverControlsClass) {
 		this.driverControlsClass = driverControlsClass;
 	}
@@ -236,12 +229,8 @@ public class Dashboard extends Activity {
 			try {
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.homescreen_slide_in_down, R.anim.homescreen_slide_out_down)
-						.replace(R.id.home_screen_fragment, (Fragment) homeScreenClass.newInstance(), "homeScreenFragment")
+						.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
 						.commit();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
@@ -250,7 +239,7 @@ public class Dashboard extends Activity {
 		} else if (!homeScreenFragment.isVisible()) {
 			getFragmentManager().beginTransaction()
 					.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-					.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(driverControlsClass, homeScreenClass, passengerControlsClass), "homeScreenContainerFragment") // pass in the selected home screen
+					.replace(R.id.home_screen_container_fragment, new HomeScreenContainerFragment(driverControlsClass, passengerControlsClass), "homeScreenContainerFragment") // pass in the selected home screen
 					.commit();
 		}
 	}

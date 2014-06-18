@@ -2,8 +2,6 @@ package ca.efriesen.lydia.controllers.ButtonControllers;
 
 import android.app.Activity;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.Dashboard;
-import ca.efriesen.lydia.fragments.HomeScreenFragment;
 import ca.efriesen.lydia.fragments.MapContainerFragment;
 
 /**
@@ -26,8 +24,6 @@ public class NavigationButton extends MyButton{
 				.replace(R.id.home_screen_container_fragment, new MapContainerFragment(), "homeScreenContainerFragment")
 				.addToBackStack(null)
 				.commit();
-		((Dashboard)activity).setHomeScreenClass(HomeScreenFragment.class);
-
 	}
 
 	@Override

@@ -127,7 +127,6 @@ public class HomeState implements MusicFragmentState {
 						.replace(R.id.home_screen_fragment, new RadioFragment(), "radioFragment")
 						.addToBackStack(null)
 						.commit();
-				((Dashboard) activity).setHomeScreenClass(HomeScreenFragment.class);
 
 				break;
 			}

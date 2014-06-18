@@ -25,7 +25,7 @@ public class HomeScreenFragment extends Fragment {
 	private static final String TAG = "lydia HomeScreen";
 
 	private Activity activity;
-	private int selectedScreen = 0;
+	private int selectedScreen;
 	private int numScreens;
 	private ButtonController buttonController;
 	private RadioGroup radioGroup;
@@ -68,6 +68,11 @@ public class HomeScreenFragment extends Fragment {
 		// get the controller and db stuff
 		buttonController = new ButtonController(activity);
 
+		// we'll store basic info in shared prefs, and more complicated info in sqlite
+		final SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		numScreens = sharedPreferences.getInt("numHomeScreens", 1);
+		selectedScreen = sharedPreferences.getInt("selectedScreen", 0);
+
 		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(activity);
 		dataSource.open();
 
@@ -75,11 +80,6 @@ public class HomeScreenFragment extends Fragment {
 		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(selectedScreen);
 		// close the db, we don't need it any more
 		dataSource.close();
-
-
-		// we'll store basic info in shared prefs, and more complicated info in sqlite
-		SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-		numScreens = sharedPreferences.getInt("numHomeScreens", 1);
 
 		int numButtons = 6;
 
@@ -150,6 +150,7 @@ public class HomeScreenFragment extends Fragment {
 				} else {
 					selectedScreen = 0;
 				}
+				sharedPreferences.edit().putInt("selectedScreen", selectedScreen).apply();
 				drawFragment(true);
 			}
 		});
@@ -162,6 +163,7 @@ public class HomeScreenFragment extends Fragment {
 				} else {
 					selectedScreen = numScreens-1;
 				}
+				sharedPreferences.edit().putInt("selectedScreen", selectedScreen).apply();
 				drawFragment(false);
 			}
 		});
@@ -174,7 +176,7 @@ public class HomeScreenFragment extends Fragment {
 		fragment.setArguments(args);
 		getFragmentManager().beginTransaction()
 				.setCustomAnimations((direction ? R.anim.controls_slide_in_left : R.anim.controls_slide_out_left), (direction ? R.anim.controls_slide_in_right : R.anim.controls_slide_out_right))
-				.replace(R.id.home_screen_fragment, fragment , "homeScreenFragment")
+				.replace(R.id.home_screen_fragment, fragment, "homeScreenFragment")
 				.addToBackStack(null)
 				.commit();
 	}
