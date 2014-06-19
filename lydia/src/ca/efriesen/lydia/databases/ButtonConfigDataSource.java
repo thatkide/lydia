@@ -114,6 +114,31 @@ public class ButtonConfigDataSource {
 		}
 	}
 
+	public void switchButtons(Button button, int pos) {
+		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION,
+				ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " + ButtonConfigOpenHelper.POSITION + " IN (" + button.getPosition() +", " + pos + ")" ,
+				null, null, null, null);
+		if (cursor.getCount() == 2) {
+			cursor.moveToFirst();
+			// get the buttons
+			Button button1 = cursorToButton(cursor);
+			cursor.moveToNext();
+			Button button2 = cursorToButton(cursor);
+			// save the positions
+			int button1Pos = button1.getPosition();
+			int button2Pos = button2.getPosition();
+			// swap them
+			button1.setPosition(button2Pos);
+			button2.setPosition(button1Pos);
+			// save them
+			editButton(button1);
+			editButton(button2);
+		} else {
+			button.setPosition(pos);
+			editButton(button);
+		}
+	}
+
 	private Button cursorToButton(Cursor cursor) {
 		Button button = new Button();
 		button.setId(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.COLUMN_ID)));

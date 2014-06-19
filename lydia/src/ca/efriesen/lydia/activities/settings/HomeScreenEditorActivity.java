@@ -4,22 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
+
 import java.util.List;
 
 /**
  * Created by eric on 2014-06-14.
  */
-public class HomeScreenEditorActivity extends Activity implements View.OnClickListener {
+public class HomeScreenEditorActivity extends Activity implements View.OnClickListener, View.OnDragListener {
 
 	private static final String TAG = "homescreen editor";
 
@@ -34,6 +35,9 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 	private Button addNew;
 	private Button next;
 	private RadioGroup radioGroup;
+	private LinearLayout buttonDeleteZone;
+	private ImageView buttonDeleteImage;
+	private TextView buttonDeleteText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,11 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		addNew = (Button) findViewById(R.id.button_add_screen);
 		next = (Button) findViewById(R.id.button_next_screen);
 		radioGroup = (RadioGroup) findViewById(R.id.radio_button_container);
+		buttonDeleteZone = (LinearLayout) findViewById(R.id.button_delete_zone);
+		buttonDeleteImage = (ImageView) findViewById(R.id.button_delete_image);
+		buttonDeleteText = (TextView) findViewById(R.id.button_delete_text);
+
+		buttonDeleteZone.setOnDragListener(this);
 
 		// draw radio buttons
 		for (int i=0; i<numHomeScreens; i++) {
@@ -69,6 +78,7 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 
 		drawScreen();
 
+		// control buttons click here
 		addNew.setOnClickListener(this);
 		delete.setOnClickListener(this);
 		next.setOnClickListener(this);
@@ -184,4 +194,46 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		button.setChecked(true);
 	}
 
+	@Override
+	public boolean onDrag(View view, DragEvent dragEvent) {
+		View v = (View) dragEvent.getLocalState();
+		ca.efriesen.lydia.databases.Button button = (ca.efriesen.lydia.databases.Button) v.getTag();
+		switch (dragEvent.getAction()) {
+			case DragEvent.ACTION_DRAG_STARTED: {
+				buttonDeleteImage.setVisibility(View.VISIBLE);
+				buttonDeleteText.setVisibility(View.VISIBLE);
+				break;
+			}
+			case DragEvent.ACTION_DRAG_ENTERED: {
+				buttonDeleteText.setTextColor(Color.RED);
+				buttonDeleteImage.setColorFilter(Color.RED);
+
+				break;
+			}
+			case DragEvent.ACTION_DRAG_EXITED: {
+				buttonDeleteText.setTextColor(Color.WHITE);
+				buttonDeleteImage.setColorFilter(Color.WHITE);
+				break;
+			}
+			case DragEvent.ACTION_DROP: {
+				buttonController.removeButton(button);
+				// set the original button space back to visible
+				v.setVisibility(View.VISIBLE);
+				// redraw all buttons
+				drawScreen();
+				break;
+			}
+			case DragEvent.ACTION_DRAG_ENDED: {
+				// reset these back to white
+				buttonDeleteText.setTextColor(Color.WHITE);
+				buttonDeleteImage.setColorFilter(Color.WHITE);
+				buttonDeleteImage.setVisibility(View.GONE);
+				buttonDeleteText.setVisibility(View.GONE);
+				// show button after drop if not removed
+				v.setVisibility(View.VISIBLE);
+				break;
+			}
+		}
+		return true;
+	}
 }
