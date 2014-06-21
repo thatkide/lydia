@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.LauncherFragment;
 /**
  * Created by eric on 2014-06-14.
  */
-public class AndroidButton extends MyButton {
+public class AndroidButton extends BaseButton {
 
 	public static final String ACTION = "AndroidButton";
 

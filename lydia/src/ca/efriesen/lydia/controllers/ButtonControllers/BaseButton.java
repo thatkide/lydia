@@ -3,7 +3,7 @@ package ca.efriesen.lydia.controllers.ButtonControllers;
 /**
  * Created by eric on 2014-06-14.
  */
-public abstract class MyButton {
+public abstract class BaseButton {
 
 	public void onClick() {	};
 	public boolean onLongClick() {

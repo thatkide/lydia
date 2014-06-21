@@ -7,7 +7,7 @@ import ca.efriesen.lydia.activities.ContactList;
 /**
  * Created by eric on 2014-06-15.
  */
-public class ContactsButton extends MyButton {
+public class ContactsButton extends BaseButton {
 
 	public static final String ACTION = "ContactsButton";
 

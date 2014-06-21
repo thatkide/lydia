@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.CalendarView;
 /**
  * Created by eric on 2014-06-15.
  */
-public class CalendarButton extends MyButton {
+public class CalendarButton extends BaseButton {
 
 	public static final String ACTION = "CalendarButton";
 

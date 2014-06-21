@@ -24,7 +24,7 @@ import ca.efriesen.lydia_common.media.Song;
 /**
  * Created by eric on 2014-06-14.
  */
-public class MusicButton extends MyButton {
+public class MusicButton extends BaseButton {
 
 	public static final String ACTION = "MusicButton";
 

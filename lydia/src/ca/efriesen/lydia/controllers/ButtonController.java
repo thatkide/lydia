@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +28,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	private ButtonConfigDataSource dataSource;
 
 	// create a new hashmap that takes the action and maps it to a class
-	private Map<String, MyButton> buttons = new HashMap<String, MyButton>();
+	private Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
 	private boolean admin = false;
 
 	// request code for edit activity
@@ -53,13 +52,13 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		buttons.put(WeatherButton.ACTION, new WeatherButton(activity));
 	}
 
-	public ArrayList<MyButton> getButtons() {
-		ArrayList<MyButton> list = new ArrayList<MyButton>(buttons.values());
+	public ArrayList<BaseButton> getButtons() {
+		ArrayList<BaseButton> list = new ArrayList<BaseButton>(buttons.values());
 
 		// sort alphabetically
-		Collections.sort(list, new Comparator<MyButton>() {
+		Collections.sort(list, new Comparator<BaseButton>() {
 			@Override
-			public int compare(MyButton o, MyButton o2) {
+			public int compare(BaseButton o, BaseButton o2) {
 				return o.getDescription().compareToIgnoreCase(o2.getDescription());
 			}
 		});
@@ -78,7 +77,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 			// non admin mode, do what's defined in the button class
 			if (!admin) {
 				// get the button from the hashmap, and execute the onclick method
-				MyButton button = buttons.get(passedButton.getAction());
+				BaseButton button = buttons.get(passedButton.getAction());
 				button.onClick();
 			// admin mode, edit the button
 			} else {
@@ -96,7 +95,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 			// non admin mode, do what's defined in the button class
 			if (!admin) {
 				// get the button from the hashmap, and execute the onclick method
-				MyButton button = buttons.get(passedButton.getAction());
+				BaseButton button = buttons.get(passedButton.getAction());
 				button.onLongClick();
 			// admin mode, remove the button
 			} else {
@@ -120,8 +119,8 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	}
 
 	public void cleanup() {
-		for (Map.Entry<String , MyButton>entry : buttons.entrySet()) {
-			MyButton button = entry.getValue();
+		for (Map.Entry<String , BaseButton>entry : buttons.entrySet()) {
+			BaseButton button = entry.getValue();
 			button.cleanUp();
 		}
 	}

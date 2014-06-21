@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.WeatherFragment;
 /**
  * Created by eric on 2014-06-15.
  */
-public class WeatherButton extends MyButton {
+public class WeatherButton extends BaseButton {
 
 	public static final String ACTION = "WeatherButton";
 

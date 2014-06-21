@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.EngineStatusFragment;
 /**
  * Created by eric on 2014-06-15.
  */
-public class EngineStatusButton extends MyButton {
+public class EngineStatusButton extends BaseButton {
 
 	public static final String ACTION = "EngineStatusButton";
 

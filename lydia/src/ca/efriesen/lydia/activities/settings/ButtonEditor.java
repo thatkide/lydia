@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,7 +11,7 @@ import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.MyButton;
+import ca.efriesen.lydia.controllers.ButtonControllers.BaseButton;
 import ca.efriesen.lydia.databases.*;
 
 import java.util.ArrayList;
@@ -70,11 +69,11 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		// init the button controller
 		ButtonController buttonController = new ButtonController(this);
 		// get an array list of all buttons available
-		ArrayList<MyButton> buttons = buttonController.getButtons();
+		ArrayList<BaseButton> buttons = buttonController.getButtons();
 		// find the spinner
 		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
 		// create a new adapter using the button descriptions (using toString() in classes)
-		ArrayAdapter<MyButton> adapter = new ArrayAdapter<MyButton>(this, android.R.layout.simple_spinner_dropdown_item, buttons);
+		ArrayAdapter<BaseButton> adapter = new ArrayAdapter<BaseButton>(this, android.R.layout.simple_spinner_dropdown_item, buttons);
 		// set the adapter
 		activitySpinner.setAdapter(adapter);
 
@@ -107,7 +106,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		button.setTitle(editText.getText().toString());
 
 		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
-		button.setAction(((MyButton) activitySpinner.getSelectedItem()).getAction());
+		button.setAction(((BaseButton) activitySpinner.getSelectedItem()).getAction());
 
 		button.setUsesDrawable(true);
 		if (button.getDrawable() == null) {

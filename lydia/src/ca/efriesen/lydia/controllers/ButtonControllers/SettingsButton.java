@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.SettingsContainerFragment;
 /**
  * Created by eric on 2014-06-14.
  */
-public class SettingsButton extends MyButton {
+public class SettingsButton extends BaseButton {
 
 	public static final String ACTION = "SettingsButton";
 

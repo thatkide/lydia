@@ -5,7 +5,7 @@ import android.app.Activity;
 /**
  * Created by eric on 2014-06-15.
  */
-public class VideosButton extends MyButton {
+public class VideosButton extends BaseButton {
 
 	public static final String ACTION = "VideosButton";
 

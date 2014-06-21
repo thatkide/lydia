@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.PhoneFragment;
 /**
  * Created by eric on 2014-06-14.
  */
-public class PhoneButton extends MyButton {
+public class PhoneButton extends BaseButton {
 
 	public static final String ACTION = "PhoneButton";
 

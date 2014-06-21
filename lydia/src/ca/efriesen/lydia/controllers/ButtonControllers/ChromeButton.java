@@ -7,7 +7,7 @@ import ca.efriesen.lydia.activities.WebActivity;
 /**
  * Created by eric on 2014-06-14.
  */
-public class ChromeButton extends MyButton {
+public class ChromeButton extends BaseButton {
 
 	public static final String ACTION = "ChromeButton";
 

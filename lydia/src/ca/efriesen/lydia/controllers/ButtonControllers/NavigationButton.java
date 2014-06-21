@@ -7,7 +7,7 @@ import ca.efriesen.lydia.fragments.MapContainerFragment;
 /**
  * Created by eric on 2014-06-14.
  */
-public class NavigationButton extends MyButton{
+public class NavigationButton extends BaseButton {
 
 	public static final String ACTION = "NavigationButton";
 
