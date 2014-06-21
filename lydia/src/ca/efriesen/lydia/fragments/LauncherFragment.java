@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class LauncherFragment extends Fragment implements
 		AdapterView.OnItemClickListener,
-		LoaderManager.LoaderCallbacks<ArrayList<AppInfo>>{
+		LoaderManager.LoaderCallbacks<List<AppInfo>> {
 	private static final String TAG = "lydia launcher fragment";
 
 	private ListView listView;
@@ -44,25 +44,19 @@ public class LauncherFragment extends Fragment implements
 		listView = (ListView) getActivity().findViewById(R.id.application_list);
 		// send any item clicks back to this class, looking for method onItemClick
 		listView.setOnItemClickListener(this);
-		try {
-			listView.setSelection(PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("launcherPosition", 0));
-		} catch (Exception e) {}
-
-		Log.d(TAG, "activity created");
 		getLoaderManager().initLoader(4, null, this);
-
 	}
 
 	// returns an array of appinfos of the installed packages we can launch
-	private static ArrayList<AppInfo> getInstalledPackages(Context context) {
+	private static List<AppInfo> getInstalledPackages(Context context) {
 		// rare time when the package manager dies the app will crash.  this should fix it, at least stop the crash.
 		try {
 			PackageManager packageManager = context.getPackageManager();
 			// create our new arrays
-			ArrayList<AppInfo> appInfos = new ArrayList<AppInfo>();
+			List<AppInfo> appInfos = new ArrayList<AppInfo>();
 			// get the list of all installed apps
 			List<PackageInfo> installedApps = packageManager.getInstalledPackages(0);
-			// get a list of activites with the "Action Main" intent
+			// get a list of activities with the "Action Main" intent
 			List<ResolveInfo> activityList = packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN, null), 0);
 
 			// loop over the installed apps, and get the package info
@@ -74,7 +68,7 @@ public class LauncherFragment extends Fragment implements
 
 				// loop over all the activites with the "main intent"
 				for (ResolveInfo resolveInfo : activityList) {
-					// if the current packages matches one of the activies
+					// if the current packages matches one of the activities
 					if (info.packageName.equals(resolveInfo.activityInfo.applicationInfo.packageName)) {
 						// set the attributes needed
 						appInfo.setClassName(resolveInfo.activityInfo.name);
@@ -95,7 +89,6 @@ public class LauncherFragment extends Fragment implements
 						break;
 					}
 				}
-
 			}
 
 			// sort the list by appname ignoring case
@@ -109,6 +102,7 @@ public class LauncherFragment extends Fragment implements
 			// return the list
 			return appInfos;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -116,7 +110,7 @@ public class LauncherFragment extends Fragment implements
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 		// save the position
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("launcherPosition", position).commit();
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putInt("launcherPosition", position).apply();
 
 		// get the info of what was clicked
 		AppInfo appInfo = (AppInfo) adapterView.getAdapter().getItem(position);
@@ -125,29 +119,32 @@ public class LauncherFragment extends Fragment implements
 		try {
 			startActivity(appInfo.getLaunchIntent());
 		} catch (Exception e) {
+			e.printStackTrace();
 			// uh oh, it failed.  show a warning message
 			Toast.makeText(getActivity(), getString(R.string.launcher_error), Toast.LENGTH_SHORT).show();
 		}
 	}
 
 	@Override
-	public Loader<ArrayList<AppInfo>> onCreateLoader(int i, Bundle saved) {
-		return new AsyncTaskLoader<ArrayList<AppInfo>>(getActivity()) {
+	public Loader<List<AppInfo>> onCreateLoader(int i, Bundle saved) {
+		return new AsyncTaskLoader<List<AppInfo>>(getActivity()) {
 			ProgressBar bar = (ProgressBar) getActivity().findViewById(R.id.loading_spinner);
 			@Override
 			public void onStartLoading() {
+				// start loading
 				forceLoad();
+				// set the proper visibility
 				bar.setVisibility(View.VISIBLE);
 				listView.setVisibility(View.GONE);
 			}
 
 			@Override
-			public ArrayList<AppInfo> loadInBackground() {
+			public List<AppInfo> loadInBackground() {
 				return getInstalledPackages(getActivity());
 			}
 
 			@Override
-			public void deliverResult(ArrayList<AppInfo> appInfos) {
+			public void deliverResult(List<AppInfo> appInfos) {
 				super.deliverResult(appInfos);
 				bar.setVisibility(View.GONE);
 				listView.setVisibility(View.VISIBLE);
@@ -156,13 +153,23 @@ public class LauncherFragment extends Fragment implements
 	}
 
 	@Override
-	public void onLoadFinished(Loader<ArrayList<AppInfo>> arrayListLoader, ArrayList<AppInfo> appInfos) {
-		Log.d(TAG, "on load finished");
+	public void onLoadFinished(Loader<List<AppInfo>> arrayListLoader, List<AppInfo> appInfos) {
+		// load finished, set the adapter to the info we received
 		listView.setAdapter(new AppInfoViewAdapter(appInfos, getActivity()));
+		// set the selected item to the last clicked
+		try {
+			int pos = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("launcherPosition", 0);
+			if (pos < listView.getCount()) {
+				listView.setSelection(pos);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void onLoaderReset(Loader<ArrayList<AppInfo>> arrayListLoader) {
+	public void onLoaderReset(Loader<List<AppInfo>> arrayListLoader) {
+		// on reset, remove the adapter
 		listView.setAdapter(null);
 	}
 
@@ -176,8 +183,15 @@ public class LauncherFragment extends Fragment implements
 			this.activity = activity;
 		}
 
+		// I don't know the root of the problem yet, but I've received a few crash reports of this being null.  Hopefully this stacktrace will help, in the mean time return zero, at least it won't crash then.
+		// FIXME
 		public int getCount() {
-			return content.size();
+			try {
+				return content.size();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				return 0;
+			}
 		}
 
 		public AppInfo getItem(int position) {
