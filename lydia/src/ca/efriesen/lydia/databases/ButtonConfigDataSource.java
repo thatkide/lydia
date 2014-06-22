@@ -19,7 +19,7 @@ public class ButtonConfigDataSource {
 
 	private SQLiteDatabase database;
 	private ButtonConfigOpenHelper dbHelper;
-	private String[] PROJECTION = {ButtonConfigOpenHelper.COLUMN_ID, ButtonConfigOpenHelper.DISPLAYAREA, ButtonConfigOpenHelper.POSITION, ButtonConfigOpenHelper.TITLE, ButtonConfigOpenHelper.ACTION, ButtonConfigOpenHelper.DRAWABLE, ButtonConfigOpenHelper.USESDRAWABLE};
+	private String[] PROJECTION = {ButtonConfigOpenHelper.COLUMN_ID, ButtonConfigOpenHelper.BUTTONTYPE, ButtonConfigOpenHelper.DISPLAYAREA, ButtonConfigOpenHelper.POSITION, ButtonConfigOpenHelper.TITLE, ButtonConfigOpenHelper.ACTION, ButtonConfigOpenHelper.DRAWABLE, ButtonConfigOpenHelper.USESDRAWABLE};
 
 	private static final String TAG = "button config ";
 
@@ -33,27 +33,6 @@ public class ButtonConfigDataSource {
 
 	public void close() {
 		dbHelper.close();
-	}
-
-	public List<Button> getButtonsInArea(int area) {
-		List<Button> buttons = new ArrayList<Button>();
-		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.DISPLAYAREA + " = " + area, null, null, null, ButtonConfigOpenHelper.POSITION + " ASC");
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			Button button = cursorToButton(cursor);
-			buttons.add(button);
-			cursor.moveToNext();
-		}
-		cursor.close();
-		return buttons;
-	}
-
-	public Button getButton(int area, int position) {
-		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.DISPLAYAREA + " = " + area + " AND " + ButtonConfigOpenHelper.POSITION + " = " + position, null, null, null, null);
-		cursor.moveToFirst();
-		Button button = cursorToButton(cursor);
-		cursor.close();
-		return button;
 	}
 
 	public long addButton(Button button) {
@@ -87,6 +66,19 @@ public class ButtonConfigDataSource {
 			// store it in the db
 			database.update(ButtonConfigOpenHelper.TABLE_NAME, values, ButtonConfigOpenHelper.COLUMN_ID + " = " + button.getId(), null);
 		}
+	}
+
+	public List<Button> getButtonsInArea(int area) {
+		List<Button> buttons = new ArrayList<Button>();
+		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.DISPLAYAREA + " = " + area, null, null, null, ButtonConfigOpenHelper.POSITION + " ASC");
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Button button = cursorToButton(cursor);
+			buttons.add(button);
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return buttons;
 	}
 
 	public boolean hasSettingsButton() {
@@ -142,6 +134,7 @@ public class ButtonConfigDataSource {
 	private Button cursorToButton(Cursor cursor) {
 		Button button = new Button();
 		button.setId(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.COLUMN_ID)));
+		button.setButtonType(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.BUTTONTYPE)));
 		button.setDisplayArea(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.DISPLAYAREA)));
 		button.setPosition(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.POSITION)));
 		button.setTitle(cursor.getString(cursor.getColumnIndex(ButtonConfigOpenHelper.TITLE)));

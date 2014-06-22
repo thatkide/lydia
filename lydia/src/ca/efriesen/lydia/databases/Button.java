@@ -1,6 +1,5 @@
 package ca.efriesen.lydia.databases;
 
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,6 +9,7 @@ import android.os.Parcelable;
 public class Button implements Parcelable{
 
 	private int id;
+	private int buttonType;
 	private int displayArea;
 	private int position;
 	private String title;
@@ -36,6 +36,10 @@ public class Button implements Parcelable{
 	public int getId() {
 		return id;
 	}
+
+	public void setButtonType(int type) { this.buttonType = type; }
+
+	public int getButtonType() { return buttonType; }
 
 	public void setDisplayArea(int displayArea) {
 		this.displayArea = displayArea;
