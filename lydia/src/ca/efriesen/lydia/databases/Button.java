@@ -22,12 +22,14 @@ public class Button implements Parcelable{
 
 	public Button(Parcel parcel) {
 		this.id = parcel.readInt();
+		this.buttonType = parcel.readByte();
 		this.displayArea = parcel.readInt();
 		this.position = parcel.readInt();
 		this.title = parcel.readString();
 		this.action = parcel.readString();
 		this.drawable = parcel.readString();
 		this.usesDrawable = parcel.readInt() > 0;
+		this.extraData = parcel.readString();
 	}
 
 	public void setId(int id) {
@@ -106,12 +108,14 @@ public class Button implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
 		parcel.writeInt(id);
+		parcel.writeInt(buttonType);
 		parcel.writeInt(displayArea);
 		parcel.writeInt(position);
 		parcel.writeString(title);
 		parcel.writeString(action);
 		parcel.writeString(drawable);
 		parcel.writeInt(usesDrawable ? 1 : 0);
+		parcel.writeString(extraData);
 	}
 
 	public static final Creator<Button> CREATOR = new Creator<Button>() {

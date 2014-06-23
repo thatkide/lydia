@@ -134,6 +134,7 @@ public class ButtonConfigDataSource {
 
 	private ContentValues getContentValues(Button button) {
 		ContentValues values = new ContentValues();
+		values.put(ButtonConfigOpenHelper.BUTTONTYPE, button.getButtonType());
 		values.put(ButtonConfigOpenHelper.DISPLAYAREA, button.getDisplayArea());
 		values.put(ButtonConfigOpenHelper.POSITION, button.getPosition());
 		values.put(ButtonConfigOpenHelper.TITLE, button.getTitle());
