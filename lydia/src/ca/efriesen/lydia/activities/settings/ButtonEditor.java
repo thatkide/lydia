@@ -128,6 +128,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		button.setAction(baseButton.getAction());
 		button.setExtraData(baseButton.getExtraData(extraDataSpinner.getSelectedItemPosition()));
 		button.setUsesDrawable(true);
+		button.setButtonType(BaseButton.TYPE_HOMESCREEN);
 
 		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(getApplicationContext());
 		dataSource.open();
