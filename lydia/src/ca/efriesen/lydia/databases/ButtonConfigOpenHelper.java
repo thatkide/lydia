@@ -5,15 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.sql.SQLException;
-
 /**
  * Created by eric on 2014-06-14.
  */
 public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 
 	// If any schema changes are made, the hard coded settings button in the HomeScreenFragment will need updating
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 	private static final String DATABASE_NAME = "buttonConfig.db";
 
 	public static final String TABLE_NAME = "button_config";
@@ -26,6 +24,7 @@ public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 	public static final String ACTION = "action";
 	public static final String DRAWABLE = "drawable";
 	public static final String USESDRAWABLE = "uses_drawable";
+	public static final String EXTRADATA = "extra_data";
 
 	private static final String TABLE_CREATE =
 			"CREATE TABLE " + TABLE_NAME +
@@ -36,7 +35,8 @@ public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 					TITLE + " text, " +
 					ACTION + " text not null, " +
 					DRAWABLE + " text not null, " +
-					USESDRAWABLE + " integer not null);";
+					USESDRAWABLE + " integer not null, " +
+					EXTRADATA + " text);";
 
 
 	ButtonConfigOpenHelper(Context context) {
@@ -53,6 +53,11 @@ public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 		Log.w(MessageOpenHelper.class.getName(), "Upgrading Database from version " + oldversion + " to " + newversion + ".  This will destroy all data.");
 		try {
 			sqLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + BUTTONTYPE + " INTEGER DEFAULT 1 NOT NULL");
+		} catch (Exception e) {
+			// Column already exists
+		}
+		try {
+			sqLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + EXTRADATA + " text");
 		} catch (Exception e) {
 			// Column already exists
 		}

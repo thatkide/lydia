@@ -71,11 +71,28 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		// get an array list of all buttons available
 		ArrayList<BaseButton> buttons = buttonController.getButtons();
 		// find the spinner
-		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
+		final Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
+		final Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
 		// create a new adapter using the button descriptions (using toString() in classes)
 		ArrayAdapter<BaseButton> adapter = new ArrayAdapter<BaseButton>(this, android.R.layout.simple_spinner_dropdown_item, buttons);
 		// set the adapter
 		activitySpinner.setAdapter(adapter);
+		activitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+				BaseButton button = (BaseButton) activitySpinner.getSelectedItem();
+				if (button.hasCallback()) {
+					extraDataSpinner.setVisibility(View.VISIBLE);
+					extraDataSpinner.setAdapter(button.getAdapterData());
+				} else {
+					extraDataSpinner.setVisibility(View.GONE);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> adapterView) {
+			}
+		});
 
 		// we might not have an action...
 		try {
@@ -101,21 +118,23 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 	// This is for the OK button click.
 	@Override
 	public void onClick(View view) {
+		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
+		Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
 		EditText editText = (EditText) findViewById(R.id.button_title_text);
+		BaseButton baseButton = (BaseButton) activitySpinner.getSelectedItem();
+
 		// save button stuff
 		button.setTitle(editText.getText().toString());
-
-		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
-		button.setAction(((BaseButton) activitySpinner.getSelectedItem()).getAction());
-
+		button.setAction(baseButton.getAction());
+		button.setExtraData(baseButton.getExtraData(extraDataSpinner.getSelectedItemPosition()));
 		button.setUsesDrawable(true);
-		if (button.getDrawable() == null) {
-			button.setDrawable("vinyl");
-		}
 
 		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(getApplicationContext());
 		dataSource.open();
 		dataSource.editButton(button);
+		if (button.getDrawable() == null) {
+			button.setDrawable("vinyl");
+		}
 		dataSource.close();
 		Intent returnIntent = new Intent();
 		returnIntent.putExtra("button", button);

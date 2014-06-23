@@ -1,6 +1,8 @@
 package ca.efriesen.lydia.controllers.ButtonControllers;
 
 import android.app.Activity;
+import android.widget.ArrayAdapter;
+import ca.efriesen.lydia.databases.Button;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +16,17 @@ public abstract class BaseButton {
 	public static final int TYPE_SIDEBAR_LEFT = 2;
 	public static final int TYPE_SIDEBAR_RIGHT = 3;
 
-	public void onClick() {	};
+	public void onClick(Button passed) { };
 	public boolean onLongClick() {
 		return false;
 	};
 
 	public void cleanUp() { };
 	public abstract String getAction();
+	public boolean hasCallback() { return false; }
+	public ArrayAdapter<?> getAdapterData() { return null; }
 	public abstract String getDescription();
+	public String getExtraData(int position) { return ""; }
 	public abstract String toString();
 
 	// create a map of all the buttons that are available
@@ -30,6 +35,7 @@ public abstract class BaseButton {
 		// add all the possible actions and classes
 		buttons.put(AirRideButton.ACTION, new AirRideButton(activity));
 		buttons.put(AndroidButton.ACTION, new AndroidButton(activity));
+		buttons.put(AppLaunchButton.ACTION, new AppLaunchButton(activity));
 		buttons.put(CalendarButton.ACTION, new CalendarButton(activity));
 		buttons.put(ChromeButton.ACTION, new ChromeButton(activity));
 		buttons.put(ContactsButton.ACTION, new ContactsButton(activity));

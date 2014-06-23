@@ -16,6 +16,7 @@ public class Button implements Parcelable{
 	private String  action;
 	private String drawable;
 	private boolean usesDrawable;
+	private String extraData;
 
 	public Button() {}
 
@@ -89,6 +90,13 @@ public class Button implements Parcelable{
 		return usesDrawable;
 	}
 
+	public void setExtraData(String extraData) {
+		this.extraData = extraData;
+	}
+
+	public String getExtraData() {
+		return extraData;
+	}
 
 	@Override
 	public int describeContents() {

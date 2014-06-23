@@ -19,7 +19,7 @@ public class ButtonConfigDataSource {
 
 	private SQLiteDatabase database;
 	private ButtonConfigOpenHelper dbHelper;
-	private String[] PROJECTION = {ButtonConfigOpenHelper.COLUMN_ID, ButtonConfigOpenHelper.BUTTONTYPE, ButtonConfigOpenHelper.DISPLAYAREA, ButtonConfigOpenHelper.POSITION, ButtonConfigOpenHelper.TITLE, ButtonConfigOpenHelper.ACTION, ButtonConfigOpenHelper.DRAWABLE, ButtonConfigOpenHelper.USESDRAWABLE};
+	private String[] PROJECTION = {ButtonConfigOpenHelper.COLUMN_ID, ButtonConfigOpenHelper.BUTTONTYPE, ButtonConfigOpenHelper.DISPLAYAREA, ButtonConfigOpenHelper.POSITION, ButtonConfigOpenHelper.TITLE, ButtonConfigOpenHelper.ACTION, ButtonConfigOpenHelper.DRAWABLE, ButtonConfigOpenHelper.USESDRAWABLE, ButtonConfigOpenHelper.EXTRADATA};
 
 	private static final String TAG = "button config ";
 
@@ -36,14 +36,7 @@ public class ButtonConfigDataSource {
 	}
 
 	public long addButton(Button button) {
-		ContentValues values = new ContentValues();
-		values.put(ButtonConfigOpenHelper.DISPLAYAREA, button.getDisplayArea());
-		values.put(ButtonConfigOpenHelper.POSITION, button.getPosition());
-		values.put(ButtonConfigOpenHelper.TITLE, button.getTitle());
-		values.put(ButtonConfigOpenHelper.ACTION, button.getAction());
-		values.put(ButtonConfigOpenHelper.DRAWABLE, button.getDrawable());
-		values.put(ButtonConfigOpenHelper.USESDRAWABLE, (button.getUsesDrawable() ? 1 : 0));
-
+		ContentValues values = getContentValues(button);
 		long insertId = database.insert(ButtonConfigOpenHelper.TABLE_NAME, null, values);
 		Log.d(TAG, "new button added, id is " + insertId);
 		return insertId;
@@ -55,14 +48,7 @@ public class ButtonConfigDataSource {
 			addButton(button);
 		} else {
 			// update all the values
-			ContentValues values = new ContentValues();
-			values.put(ButtonConfigOpenHelper.DISPLAYAREA, button.getDisplayArea());
-			values.put(ButtonConfigOpenHelper.POSITION, button.getPosition());
-			values.put(ButtonConfigOpenHelper.TITLE, button.getTitle());
-			values.put(ButtonConfigOpenHelper.ACTION, button.getAction());
-			values.put(ButtonConfigOpenHelper.DRAWABLE, button.getDrawable());
-			values.put(ButtonConfigOpenHelper.USESDRAWABLE, (button.getUsesDrawable() ? 1 : 0));
-
+			ContentValues values = getContentValues(button);
 			// store it in the db
 			database.update(ButtonConfigOpenHelper.TABLE_NAME, values, ButtonConfigOpenHelper.COLUMN_ID + " = " + button.getId(), null);
 		}
@@ -141,8 +127,22 @@ public class ButtonConfigDataSource {
 		button.setAction(cursor.getString(cursor.getColumnIndex(ButtonConfigOpenHelper.ACTION)));
 		button.setDrawable(cursor.getString(cursor.getColumnIndex(ButtonConfigOpenHelper.DRAWABLE)));
 		button.setUsesDrawable(cursor.getInt(cursor.getColumnIndex(ButtonConfigOpenHelper.USESDRAWABLE)) > 0);
+		button.setExtraData(cursor.getString(cursor.getColumnIndex(ButtonConfigOpenHelper.EXTRADATA)));
 
 		return button;
+	}
+
+	private ContentValues getContentValues(Button button) {
+		ContentValues values = new ContentValues();
+		values.put(ButtonConfigOpenHelper.DISPLAYAREA, button.getDisplayArea());
+		values.put(ButtonConfigOpenHelper.POSITION, button.getPosition());
+		values.put(ButtonConfigOpenHelper.TITLE, button.getTitle());
+		values.put(ButtonConfigOpenHelper.ACTION, button.getAction());
+		values.put(ButtonConfigOpenHelper.DRAWABLE, button.getDrawable());
+		values.put(ButtonConfigOpenHelper.USESDRAWABLE, (button.getUsesDrawable() ? 1 : 0));
+		values.put(ButtonConfigOpenHelper.EXTRADATA, button.getExtraData());
+
+		return values;
 	}
 }
 

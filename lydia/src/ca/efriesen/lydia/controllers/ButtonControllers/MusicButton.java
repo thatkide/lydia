@@ -71,7 +71,7 @@ public class MusicButton extends BaseButton {
 	}
 
 	@Override
-	public void onClick() {
+	public void onClick(ca.efriesen.lydia.databases.Button button) {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
 				.replace(R.id.home_screen_fragment, new MusicFragment(), "musicFragment")

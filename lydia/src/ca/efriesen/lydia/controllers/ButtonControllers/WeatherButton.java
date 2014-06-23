@@ -2,6 +2,7 @@ package ca.efriesen.lydia.controllers.ButtonControllers;
 
 import android.app.Activity;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.WeatherFragment;
 
 /**
@@ -23,7 +24,7 @@ public class WeatherButton extends BaseButton {
 	}
 
 	@Override
-	public void onClick() {
+	public void onClick(Button button) {
 		activity.getFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
 			.replace(R.id.home_screen_fragment, new WeatherFragment(), "weatherFragment")

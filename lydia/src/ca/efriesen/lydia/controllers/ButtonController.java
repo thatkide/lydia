@@ -63,13 +63,13 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	@Override
 	public void onClick(View view) {
 		try {
-			// get the bundle of the button pressed
+			// get the button pressed
 			ca.efriesen.lydia.databases.Button passedButton = (ca.efriesen.lydia.databases.Button) view.getTag();
 			// non admin mode, do what's defined in the button class
 			if (!admin) {
 				// get the button from the hashmap, and execute the onclick method
 				BaseButton button = buttons.get(passedButton.getAction());
-				button.onClick();
+				button.onClick(passedButton);
 			// admin mode, edit the button
 			} else {
 				// start the edit button activity.  it will return a result, which will be passed back here to onActivityResult, which will update the UI
