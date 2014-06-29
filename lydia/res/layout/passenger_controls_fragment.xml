@@ -1,25 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:orientation="vertical"
-		android:gravity="center_vertical">
-	<!-- the window buttons are registered in the "homescreenfragment" -->
-	<Button android:id="@+id/passenger_window_up"
-	        android:text="@string/window_up"
-	        style="@style/ControlRoundTopLeft"
-			/>
-	<Button android:id="@+id/passenger_window_down"
-	        android:text="@string/window_down"
-	        style="@style/ControlButtons"
-			/>
-	<Button android:id="@+id/passenger_seat_heat"
-	        android:text="@string/seat_heat"
-	        style="@style/ControlButtons"
-			/>
-	<Button android:id="@+id/passenger_more"
-	        android:text="@string/more"
-	        style="@style/ControlRoundBottomLeft"
-			/>
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:gravity="center_vertical">
+	<!-- left side menu controls -->
+	<Button android:id="@+id/passenger_0"
+			style="@style/ControlRoundTopLeft" />
+	<Button android:id="@+id/passenger_1"
+			style="@style/ControlButtons" />
+	<Button android:id="@+id/passenger_2"
+			style="@style/ControlButtons" />
+	<ImageButton android:id="@+id/passenger_up"
+				 android:src="@drawable/navigation_collapse"
+				 style="@style/ControlRoundBottomLeft" />
+	<ImageButton android:id="@+id/passenger_down"
+				 android:src="@drawable/navigation_expand"
+				 style="@style/ControlRoundBottomLeft"
+				 android:visibility="gone"/>
+
+	<LinearLayout android:id="@+id/passenger_nav_group"
+				  android:layout_height="wrap_content"
+				  android:layout_width="wrap_content"
+				  android:visibility="gone">
+		<ImageButton android:id="@+id/passenger_down_2"
+					 style="@style/ControlRoundBottomLeft"
+					 android:layout_width="79.5dip"
+					 android:src="@drawable/navigation_expand"/>
+		<ImageButton android:id="@+id/passenger_up_2"
+					 style="@style/ControlButtonsSquare"
+					 android:src="@drawable/navigation_collapse"/>
+	</LinearLayout>
 </LinearLayout>

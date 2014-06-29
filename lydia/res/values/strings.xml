@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="add_new_screen">Add New Screen</string>
+	<string name="add_new_bar">Add New Bar</string>
 	<string name="add_to_playlist">Add to Playlist</string>
 	<string name="address">Address</string>
 	<string name="air_ride">Air Ride</string>
@@ -65,6 +67,7 @@
 	<string name="gauge_cluster">Gauge Cluster</string>
 	<string name="google">Google</string>
 	<string name="home">Home</string>
+	<string name="home_screen">Home Screen</string>
 	<string name="ignore">Ignore</string>
 	<string name="incoming_call">Incoming Call</string>
 	<string name="inside_temp">Inside</string>
@@ -134,6 +137,10 @@
 	<string name="select_device">select a device to connect</string>
 	<string name="settings">Settings</string>
 	<string name="setup_alarm">Setup alarm</string>
+	<string name="setup_home_screen">Setup Home Screen</string>
+	<string name="setup_home_screen_summary">Organize home screen icons to your liking</string>
+	<string name="setup_sidebars">Setup Sidebars</string>
+	<string name="setup_sidebars_summary">Organize sidebar buttons</string>
 	<string name="setup_gauge_cluster">Setup Gauge Cluster</string>
 	<string name="shuffle">Shuffle</string>
 	<string name="shuffle_all">Shuffling all songs</string>
@@ -141,7 +148,7 @@
 	<string name="sms_received">SMS Received</string>
 	<string name="song_title">Title</string>
 	<string name="speaker">Speaker</string>
-	<string name="speaker_summary">Beep speaker on inital powerup</string>
+	<string name="speaker_summary">Beep speaker on initial powerup</string>
 	<string name="speaker_title">Speaker</string>
 	<string name="speaker_volume">Speaker Volume</string>
 	<string name="speaker_volume_summary">Adjust the volume of the speaker</string>

@@ -50,7 +50,7 @@ public class AppLaunchButton extends BaseButton {
 	}
 
 	@Override
-	public boolean hasCallback() {
+	public boolean hasExtraData() {
 		return true;
 	}
 

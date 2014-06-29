@@ -16,6 +16,11 @@ public abstract class BaseButton {
 	public static final int TYPE_SIDEBAR_LEFT = 2;
 	public static final int TYPE_SIDEBAR_RIGHT = 3;
 
+	public static final int BUTTON_NEXT = 1;
+	public static final int BUTTON_PREV = 2;
+	public static final int BUTTON_SCREEN_ADD = 3;
+	public static final int BUTTON_SCREEN_DELETE = 4;
+
 	public void onClick(Button passed) { };
 	public boolean onLongClick() {
 		return false;
@@ -23,7 +28,7 @@ public abstract class BaseButton {
 
 	public void cleanUp() { };
 	public abstract String getAction();
-	public boolean hasCallback() { return false; }
+	public boolean hasExtraData() { return false; }
 	public ArrayAdapter<?> getAdapterData() { return null; }
 	public abstract String getDescription();
 	public String getExtraData(int position) { return ""; }

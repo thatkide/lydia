@@ -68,7 +68,7 @@
 		<item name="android:layout_width">161dip</item>
 		<item name="android:layout_height">80dip</item>
 		<item name="android:layout_marginLeft">1dip</item>
-		<item name="android:layout_marginRight">1dip</item>
+		<item name="android:layout_marginRight">0dip</item>
 		<item name="android:background">@drawable/button_bg</item>
 		<item name="android:textColor">@color/white</item>
 	</style>

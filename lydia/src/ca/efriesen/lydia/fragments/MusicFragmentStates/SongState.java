@@ -104,7 +104,7 @@ abstract public class SongState implements MusicFragmentState {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		}
 	};

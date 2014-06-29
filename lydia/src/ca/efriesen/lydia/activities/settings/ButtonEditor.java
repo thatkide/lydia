@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.*;
@@ -26,6 +28,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 	public static final int ICON_SELECTOR = 1;
 	private ca.efriesen.lydia.databases.Button button;
 	private Button buttonView;
+	private int buttonType;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +41,25 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		button = getIntent().getParcelableExtra("button");
+		buttonType = getIntent().getIntExtra("buttonType", BaseButton.TYPE_HOMESCREEN);
 
 		TextView title = (TextView) findViewById(R.id.button_title_text);
 		buttonView = (Button) findViewById(R.id.button_background);
 
+		if (buttonType != BaseButton.TYPE_HOMESCREEN) {
+			// disable the click for all but homescreen buttons
+			buttonView.setEnabled(false);
+			// get the layout params
+			ViewGroup.LayoutParams layoutParams = buttonView.getLayoutParams();
+			// resize to sidebar button size
+			layoutParams.height /= 2;
+			// set the new params
+			buttonView.setLayoutParams(layoutParams);
+		}
+
 		// we might not have a title or drawable...
 		try {
 			title.setText(button.getTitle());
-
 			int imgId = getResources().getIdentifier(button.getDrawable(), "drawable", getPackageName());
 			// get the drawable
 			Drawable img = getResources().getDrawable(imgId);
@@ -67,21 +81,22 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		});
 
 		// init the button controller
-		ButtonController buttonController = new ButtonController(this);
+		ButtonController buttonController = new ButtonController(this, "", buttonType);
 		// get an array list of all buttons available
-		ArrayList<BaseButton> buttons = buttonController.getButtons();
+		ArrayList<BaseButton> buttonActions = buttonController.getButtonActions();
 		// find the spinner
-		final Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
+		final Spinner actionSpinner = (Spinner) findViewById(R.id.button_action_spinner);
 		final Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
 		// create a new adapter using the button descriptions (using toString() in classes)
-		ArrayAdapter<BaseButton> adapter = new ArrayAdapter<BaseButton>(this, android.R.layout.simple_spinner_dropdown_item, buttons);
+		ArrayAdapter<BaseButton> adapter = new ArrayAdapter<BaseButton>(this, android.R.layout.simple_spinner_dropdown_item, buttonActions);
 		// set the adapter
-		activitySpinner.setAdapter(adapter);
-		activitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		actionSpinner.setAdapter(adapter);
+		// if the selected item has extra data, display the second spinner
+		actionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				BaseButton button = (BaseButton) activitySpinner.getSelectedItem();
-				if (button.hasCallback()) {
+				BaseButton button = (BaseButton) actionSpinner.getSelectedItem();
+				if (button.hasExtraData()) {
 					extraDataSpinner.setVisibility(View.VISIBLE);
 					extraDataSpinner.setAdapter(button.getAdapterData());
 				} else {
@@ -90,8 +105,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> adapterView) {
-			}
+			public void onNothingSelected(AdapterView<?> adapterView) {	}
 		});
 
 		// we might not have an action...
@@ -99,7 +113,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 			// set current action
 			for (int i = 0; i < adapter.getCount(); i++) {
 				if (adapter.getItem(i).getAction().equalsIgnoreCase(button.getAction())) {
-					activitySpinner.setSelection(i);
+					actionSpinner.setSelection(i);
 					break;
 				}
 			}
@@ -118,32 +132,37 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 	// This is for the OK button click.
 	@Override
 	public void onClick(View view) {
-		Spinner activitySpinner = (Spinner) findViewById(R.id.button_edit_spinner);
+		Spinner actionSpinner = (Spinner) findViewById(R.id.button_action_spinner);
 		Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
 		EditText editText = (EditText) findViewById(R.id.button_title_text);
-		BaseButton baseButton = (BaseButton) activitySpinner.getSelectedItem();
+		BaseButton baseButton = (BaseButton) actionSpinner.getSelectedItem();
 
 		// save button stuff
 		button.setTitle(editText.getText().toString());
 		button.setAction(baseButton.getAction());
 		button.setExtraData(baseButton.getExtraData(extraDataSpinner.getSelectedItemPosition()));
-		button.setUsesDrawable(true);
-		button.setButtonType(BaseButton.TYPE_HOMESCREEN);
+		if (buttonType == BaseButton.TYPE_HOMESCREEN) {
+			button.setUsesDrawable(true);
+		} else {
+			button.setUsesDrawable(false);
+		}
+		if (button.getDrawable() == null) {
+			button.setDrawable("blank");
+		}
+		button.setButtonType(buttonType);
 
 		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(getApplicationContext());
 		dataSource.open();
 		dataSource.editButton(button);
-		if (button.getDrawable() == null) {
-			button.setDrawable("vinyl");
-		}
 		dataSource.close();
 		Intent returnIntent = new Intent();
-		returnIntent.putExtra("button", button);
 		setResult(RESULT_OK, returnIntent);
 		finish();
 	}
 
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == ICON_SELECTOR && resultCode == RESULT_OK) {
 			button.setDrawable(data.getStringExtra(ButtonConfigOpenHelper.DRAWABLE));
 			int imgId = getResources().getIdentifier(button.getDrawable(), "drawable", getPackageName());

@@ -57,46 +57,46 @@ public class Windows extends Device {
 	private BroadcastReceiver windowsReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getIntExtra("button", 0) == R.id.driver_window_up && !intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWUP).array());
-				Log.d(TAG, "Driver up");
-			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_up && intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWSTOP).array());
-				Log.d(TAG, "Driver up stop");
-				// send driver window up stop to arduino
-			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_down && !intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWDOWN).array());
-				Log.d(TAG, "Driver down");
-				// send driver window down to arduino
-			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_down && intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWSTOP).array());
-				Log.d(TAG, "Driver down stop");
-				// send driver window down stop
-			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_up && !intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWUP).array());
-				Log.d(TAG, "Passenger up");
-				// send passenger window up
-			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_up && intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWSTOP).array());
-				Log.d(TAG, "Passenger up stop");
-				// send passenger window up stop
-			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_down && !intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWDOWN).array());
-				Log.d(TAG, "Passenger down");
-				// send passenger window down
-			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_down && intent.getBooleanExtra("stop", false)) {
-				// write the bytes to the arduino
-				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWSTOP).array());
-				Log.d(TAG, "Passenger down stop");
-				// send passenger window down stop
-			}
+//			if (intent.getIntExtra("button", 0) == R.id.driver_window_up && !intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWUP).array());
+//				Log.d(TAG, "Driver up");
+//			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_up && intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWSTOP).array());
+//				Log.d(TAG, "Driver up stop");
+//				// send driver window up stop to arduino
+//			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_down && !intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWDOWN).array());
+//				Log.d(TAG, "Driver down");
+//				// send driver window down to arduino
+//			} else if (intent.getIntExtra("button", 0) == R.id.driver_window_down && intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.DWINDOWSTOP).array());
+//				Log.d(TAG, "Driver down stop");
+//				// send driver window down stop
+//			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_up && !intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWUP).array());
+//				Log.d(TAG, "Passenger up");
+//				// send passenger window up
+//			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_up && intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWSTOP).array());
+//				Log.d(TAG, "Passenger up stop");
+//				// send passenger window up stop
+//			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_down && !intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWDOWN).array());
+//				Log.d(TAG, "Passenger down");
+//				// send passenger window down
+//			} else if (intent.getIntExtra("button", 0) == R.id.passenger_window_down && intent.getBooleanExtra("stop", false)) {
+//				// write the bytes to the arduino
+//				write(ByteBuffer.allocate(4).putInt(Constants.PWINDOWSTOP).array());
+//				Log.d(TAG, "Passenger down stop");
+//				// send passenger window down stop
+//			}
 		}
 	};
 

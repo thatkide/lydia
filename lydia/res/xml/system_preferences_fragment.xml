@@ -8,9 +8,12 @@
 			<intent android:action=".activities.settings.UpdateActivity" />
 			</Preference>
 	</PreferenceCategory>
-	<PreferenceCategory android:title="Home Screen">
-		<Preference android:title="Setup Home Screen">
-			<intent android:action=".activities.settings.HomeScreenActivity" />
+	<PreferenceCategory android:title="@string/home_screen">
+		<Preference android:title="@string/setup_home_screen" android:summary="@string/setup_home_screen_summary">
+			<intent android:action=".activities.settings.HomeScreenEditorActivity" />
+		</Preference>
+		<Preference android:title="@string/setup_sidebars" android:summary="@string/setup_sidebars_summary">
+			<intent android:action=".activities.settings.SidebarEditorActivity" />
 		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/wifi">

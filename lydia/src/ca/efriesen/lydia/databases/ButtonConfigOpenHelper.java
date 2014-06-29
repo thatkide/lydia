@@ -11,7 +11,7 @@ import android.util.Log;
 public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 
 	// If any schema changes are made, the hard coded settings button in the HomeScreenFragment will need updating
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 8;
 	private static final String DATABASE_NAME = "buttonConfig.db";
 
 	public static final String TABLE_NAME = "button_config";
@@ -51,17 +51,7 @@ public class ButtonConfigOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldversion, int newversion) {
 		Log.w(MessageOpenHelper.class.getName(), "Upgrading Database from version " + oldversion + " to " + newversion + ".  This will destroy all data.");
-		try {
-			sqLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + BUTTONTYPE + " INTEGER DEFAULT 1 NOT NULL");
-		} catch (Exception e) {
-			// Column already exists
-		}
-		try {
-			sqLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + EXTRADATA + " text");
-		} catch (Exception e) {
-			// Column already exists
-		}
-//		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-//		onCreate(sqLiteDatabase);
+		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+		onCreate(sqLiteDatabase);
 	}
 }

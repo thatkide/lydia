@@ -38,7 +38,6 @@ public class ButtonConfigDataSource {
 	public long addButton(Button button) {
 		ContentValues values = getContentValues(button);
 		long insertId = database.insert(ButtonConfigOpenHelper.TABLE_NAME, null, values);
-		Log.d(TAG, "new button added, id is " + insertId);
 		return insertId;
 	}
 
@@ -54,9 +53,9 @@ public class ButtonConfigDataSource {
 		}
 	}
 
-	public List<Button> getButtonsInArea(int area) {
+	public List<Button> getButtonsInArea(int type, int area) {
 		List<Button> buttons = new ArrayList<Button>();
-		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.DISPLAYAREA + " = " + area, null, null, null, ButtonConfigOpenHelper.POSITION + " ASC");
+		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.BUTTONTYPE + " = " + type + " AND " + ButtonConfigOpenHelper.DISPLAYAREA + " = " + area, null, null, null, ButtonConfigOpenHelper.POSITION + " ASC");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Button button = cursorToButton(cursor);
@@ -76,12 +75,15 @@ public class ButtonConfigDataSource {
 	}
 
 	public void removeButton(Button button) {
-		database.delete(ButtonConfigOpenHelper.TABLE_NAME, ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " + ButtonConfigOpenHelper.POSITION + " = " + button.getPosition(), null);
+		database.delete(ButtonConfigOpenHelper.TABLE_NAME,
+				ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " +
+				ButtonConfigOpenHelper.BUTTONTYPE + " = " + button.getButtonType() + " AND " +
+				ButtonConfigOpenHelper.POSITION + " = " + button.getPosition(), null);
 	}
 
-	public void removeHomeScreen(int screen, int numScreens) {
+	public void removeScreen(int type, int screen, int numScreens) {
 		// remove all buttons on specified screen
-		database.delete(ButtonConfigOpenHelper.TABLE_NAME, ButtonConfigOpenHelper.DISPLAYAREA + " = " + screen, null);
+		database.delete(ButtonConfigOpenHelper.TABLE_NAME, ButtonConfigOpenHelper.DISPLAYAREA + " = " + screen + " AND " + ButtonConfigOpenHelper.BUTTONTYPE + " = " + type, null);
 		// move the rest of the buttons down one position
 
 		for (int i=screen; i<numScreens; i++) {
@@ -94,7 +96,9 @@ public class ButtonConfigDataSource {
 
 	public void switchButtons(Button button, int pos) {
 		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION,
-				ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " + ButtonConfigOpenHelper.POSITION + " IN (" + button.getPosition() +", " + pos + ")" ,
+				ButtonConfigOpenHelper.DISPLAYAREA + " = " + button.getDisplayArea() + " AND " +
+				ButtonConfigOpenHelper.BUTTONTYPE + " = " + button.getButtonType() + " AND " +
+				ButtonConfigOpenHelper.POSITION + " IN (" + button.getPosition() +", " + pos + ")" ,
 				null, null, null, null);
 		if (cursor.getCount() == 2) {
 			cursor.moveToFirst();

@@ -59,8 +59,8 @@
 			android:id="@+id/button_edit_action_title"
 			style="@style/MediumText"
 			android:text="Button Action" android:layout_below="@+id/button_title_hr"
-			android:layout_alignStart="@+id/button_edit_spinner"/>
-	<Spinner android:id="@+id/button_edit_spinner"
+			android:layout_alignStart="@+id/button_action_spinner"/>
+	<Spinner android:id="@+id/button_action_spinner"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_toRightOf="@+id/button_background"
@@ -68,7 +68,7 @@
 	<Spinner android:id="@+id/button_extra_data_spinner"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_below="@+id/button_edit_spinner"
-			android:layout_alignStart="@+id/button_edit_spinner"
+			android:layout_below="@+id/button_action_spinner"
+			android:layout_alignStart="@+id/button_action_spinner"
 			android:visibility="gone"/>
 </RelativeLayout>

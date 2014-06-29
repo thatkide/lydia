@@ -43,30 +43,30 @@ public class MusicButton extends BaseButton {
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
 		// create the popup window for the music button
-		musicPopup = new PopupMenu(activity.getApplicationContext(), activity.findViewById(R.id.home1));
-		musicPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				switch (item.getItemId()) {
-					case RANDOM: {
-						Toast.makeText(activity.getApplicationContext(), activity.getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-//						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
-						break;
-					}
-					case SEARCH: {
-						activity.startActivity(new Intent(activity, MusicSearch.class));
-						break;
-					}
-					case PLAYLISTS: {
-					}
-				}
-				return false;
-			}
-		});
+//		musicPopup = new PopupMenu(activity.getApplicationContext(), activity.findViewById(R.id.home_1));
+//		musicPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//			@Override
+//			public boolean onMenuItemClick(MenuItem item) {
+//				switch (item.getItemId()) {
+//					case RANDOM: {
+//						Toast.makeText(activity.getApplicationContext(), activity.getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
+////						activity.sendBroadcast(new Intent(Intents.SHUFFLEALL));
+//						break;
+//					}
+//					case SEARCH: {
+//						activity.startActivity(new Intent(activity, MusicSearch.class));
+//						break;
+//					}
+//					case PLAYLISTS: {
+//					}
+//				}
+//				return false;
+//			}
+//		});
 		// add(GroupID, ItemID, Order, Title
-		musicPopup.getMenu().add(Menu.NONE, PLAYLISTS, Menu.NONE, R.string.playlists);
-		musicPopup.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, R.string.random);
-		musicPopup.getMenu().add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
+//		musicPopup.getMenu().add(Menu.NONE, PLAYLISTS, Menu.NONE, R.string.playlists);
+//		musicPopup.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, R.string.random);
+//		musicPopup.getMenu().add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
 
 	}
 
@@ -111,37 +111,37 @@ public class MusicButton extends BaseButton {
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
-			Album album = song.getAlbum();
-			try {
-				// find the music button on the home screen
-				Button music = (Button) activity.findViewById(R.id.home1);
-				try {
-					// save the album id
-					PreferenceManager.getDefaultSharedPreferences(activity).edit().putInt("currentAlbum", album.getId()).commit();
-					// set the background of the button to the album art
-
-					Bitmap bitmap = album.getAlbumArt(activity.getApplicationContext());
-
-					if (bitmap != null) {
-						BitmapDrawable bitmapDrawable = new BitmapDrawable(activity.getResources(), bitmap);
-						// create a drawable from the bitmap, and set the background of the music button to the file
-						music.setBackground(bitmapDrawable);
-						// remove the record image
-						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-						// remove the text on the button
-						music.setText("");
-					} else {
-						music.setBackgroundResource(R.drawable.button_bg);
-						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
-						music.setText(R.string.music);
-					}
-				} catch (Exception e) {
-					music.setBackgroundResource(R.drawable.button_bg);
-					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
-					music.setText(R.string.music);
-				}
-			} catch (Exception e) {}
+//			Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
+//			Album album = song.getAlbum();
+//			try {
+//				// find the music button on the home screen
+//				Button music = (Button) activity.findViewById(R.id.home1);
+//				try {
+//					// save the album id
+//					PreferenceManager.getDefaultSharedPreferences(activity).edit().putInt("currentAlbum", album.getId()).commit();
+//					// set the background of the button to the album art
+//
+//					Bitmap bitmap = album.getAlbumArt(activity.getApplicationContext());
+//
+//					if (bitmap != null) {
+//						BitmapDrawable bitmapDrawable = new BitmapDrawable(activity.getResources(), bitmap);
+//						// create a drawable from the bitmap, and set the background of the music button to the file
+//						music.setBackground(bitmapDrawable);
+//						// remove the record image
+//						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+//						// remove the text on the button
+//						music.setText("");
+//					} else {
+//						music.setBackgroundResource(R.drawable.button_bg);
+//						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
+//						music.setText(R.string.music);
+//					}
+//				} catch (Exception e) {
+//					music.setBackgroundResource(R.drawable.button_bg);
+//					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
+//					music.setText(R.string.music);
+//				}
+//			} catch (Exception e) {}
 		}
 	};
 

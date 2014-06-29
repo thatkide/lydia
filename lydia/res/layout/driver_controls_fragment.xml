@@ -6,16 +6,30 @@
 	android:orientation="vertical"
 	android:gravity="center_vertical">
 	<!-- left side menu controls -->
-	<Button android:id="@+id/driver_window_up"
-	        android:text="@string/window_up"
-	        style="@style/ControlRoundTopRight" />
-	<Button android:id="@+id/driver_window_down"
-	        android:text="@string/window_down"
-	        style="@style/ControlButtons" />
-	<Button android:id="@+id/driver_seat_heat"
-	        android:text="@string/seat_heat"
-	        style="@style/ControlButtons" />
-	<Button android:id="@+id/driver_more"
-	        android:text="@string/more"
-	        style="@style/ControlRoundBottomRight" />
+	<Button android:id="@+id/driver_0"
+        style="@style/ControlRoundTopRight" />
+	<Button android:id="@+id/driver_1"
+        style="@style/ControlButtons" />
+	<Button android:id="@+id/driver_2"
+        style="@style/ControlButtons" />
+	<ImageButton android:id="@+id/driver_up"
+		android:src="@drawable/navigation_collapse"
+        style="@style/ControlRoundBottomRight" />
+    <ImageButton android:id="@+id/driver_down"
+        android:src="@drawable/navigation_expand"
+        style="@style/ControlRoundBottomRight"
+		android:visibility="gone"/>
+
+	<LinearLayout android:id="@+id/driver_nav_group"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:visibility="gone">
+		<ImageButton android:id="@+id/driver_down_2"
+			style="@style/ControlButtonsSquare"
+			android:src="@drawable/navigation_expand"/>
+		<ImageButton android:id="@+id/driver_up_2"
+			style="@style/ControlRoundBottomRight"
+            android:layout_width="79.5dip"
+			android:src="@drawable/navigation_collapse"/>
+	</LinearLayout>
 </LinearLayout>
