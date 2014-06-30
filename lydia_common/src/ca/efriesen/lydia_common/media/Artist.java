@@ -73,7 +73,7 @@ public class Artist extends Media implements Serializable {
 				MediaStore.Audio.Media.ARTIST
 		};
 		String ORDER = MediaStore.Audio.Media.ALBUM + " COLLATE NOCASE ASC";
-		String SELECTION = null;
+		String SELECTION = MediaStore.Audio.Media.IS_MUSIC + " > 0";
 		if (id != -1) {
 			SELECTION = MediaStore.Audio.Media.ARTIST_ID + " = " + id;
 		}
@@ -83,6 +83,7 @@ public class Artist extends Media implements Serializable {
 		ArrayList<Album> albums = MediaUtils.cursorToArray(Album.class, cursor, context);
 		cursor.close();
 
+		// all album option in the top of the list
 		Album all = new Album(context);
 		all.setId(-1);
 		all.setArtistId(-1);
@@ -90,7 +91,10 @@ public class Artist extends Media implements Serializable {
 
 		ArrayList<Album> fullList = new ArrayList<Album>();
 		fullList.add(all);
-		fullList.addAll(albums);
+		// if we got any albums, add them to the array list
+		if (albums != null) {
+			fullList.addAll(albums);
+		}
 		return fullList;
 	}
 
@@ -114,7 +118,15 @@ public class Artist extends Media implements Serializable {
 		ArrayList<Artist> artists = MediaUtils.cursorToArray(Artist.class, cursor, context);
 		cursor.close();
 
-		try {
+		// all artists option in the list
+		Artist all = new Artist(context);
+		all.setName(context.getString(R.string.all_artists));
+		all.setId(-1);
+
+		ArrayList<Artist> fullList = new ArrayList<Artist>();
+		fullList.add(all);
+		// check if our artist arraylist is null or not.  if it isn't, sort it and add it to the list to be returned
+		if (artists != null) {
 			// since the db won't ignore "the" when sorting, we set the artist name to move "the" to the end, and then resort
 			Collections.sort(artists, new Comparator<Artist>() {
 				@Override
@@ -122,18 +134,8 @@ public class Artist extends Media implements Serializable {
 					return artist.getSortName().compareToIgnoreCase(artist2.getSortName());
 				}
 			});
-		} catch (NullPointerException e) {
-			Log.e(TAG, e.toString());
+			fullList.addAll(artists);
 		}
-
-		// Log.d(TAG, "set artist");
-		Artist all = new Artist(context);
-		all.setName(context.getString(R.string.all_artists));
-		all.setId(-1);
-
-		ArrayList<Artist> fullList = new ArrayList<Artist>();
-		fullList.add(all);
-		fullList.addAll(artists);
 
 		return fullList;
 	}

@@ -51,7 +51,7 @@ public class MusicSearch extends ListActivity implements LoaderManager.LoaderCal
 		// init an empty adapter, it will be populated in the callbacks
 		mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, null, fromColumns, toViews, 0);
 		setListAdapter(mAdapter);
-		// init loader (unique id, args for the loader constructor, callback implementation)
+		// init loader (unique id, args for the loader constructor, onDialogClosed implementation)
 		getLoaderManager().initLoader(3, null, this);
 
 		final EditText search = (EditText) findViewById(R.id.search);

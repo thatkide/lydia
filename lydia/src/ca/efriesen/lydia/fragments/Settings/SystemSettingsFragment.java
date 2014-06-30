@@ -4,11 +4,17 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia_common.includes.Intents;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * User: eric
@@ -62,6 +68,15 @@ public class SystemSettingsFragment extends PreferenceFragment {
 		// get our radio managers
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		WifiManager manager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+
+		Long lastUpdateCheck = sharedPreferences.getLong("lastUpdateCheck", 0);
+		Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+		calendar.setTimeInMillis(lastUpdateCheck);
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+
+
+		Preference updateCheck = findPreference("checkForUpdate");
+		updateCheck.setSummary("Last checked: " + format.format(calendar.getTime()));
 
 		// set our internal preference for the bluetooth state
 		sharedPreferences.edit()

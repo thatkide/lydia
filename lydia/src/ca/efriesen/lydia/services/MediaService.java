@@ -302,32 +302,37 @@ public class MediaService extends Service implements
 
 	private void shufflePlay() {
 		setShuffle(true);
-//		play();
+		stop();
+		ArrayList<Song> songs = Album.getAllSongs(this, getShuffle());
+		setPlaylist(songs, 0);
+		play();
 	}
 
 	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
-		//Log.d(TAG, "setplaylist " + getClass().getName());
-		playlistOrdered = playlist;
-		// copy the playlist into a new object.
-		ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
-		// remove the item clicked
-		shuffled.remove(playlistStartPosition);
-		// shuffle what's left
-		Collections.shuffle(shuffled);
-		// make another new arraylist
-		this.playlistShuffled = new ArrayList<Song>();
-		// copy the song clicked into the first item
-		this.playlistShuffled.add(playlist.get(playlistStartPosition));
-		// add what's left
-		this.playlistShuffled.addAll(shuffled);
+		if (playlist.size() > 0) {
+			//Log.d(TAG, "setplaylist " + getClass().getName());
+			playlistOrdered = playlist;
+			// copy the playlist into a new object.
+			ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
+			// remove the item clicked
+			shuffled.remove(playlistStartPosition);
+			// shuffle what's left
+			Collections.shuffle(shuffled);
+			// make another new arraylist
+			this.playlistShuffled = new ArrayList<Song>();
+			// copy the song clicked into the first item
+			this.playlistShuffled.add(playlist.get(playlistStartPosition));
+			// add what's left
+			this.playlistShuffled.addAll(shuffled);
 
-		if (shuffle) {
-			// start from the beginning
-			this.playlistPosition = 0;
-			this.playlist = playlistShuffled;
-		} else {
-			this.playlistPosition = playlistStartPosition;
-			this.playlist = playlistOrdered;
+			if (shuffle) {
+				// start from the beginning
+				this.playlistPosition = 0;
+				this.playlist = playlistShuffled;
+			} else {
+				this.playlistPosition = playlistStartPosition;
+				this.playlist = playlistOrdered;
+			}
 		}
 	}
 
@@ -394,6 +399,7 @@ public class MediaService extends Service implements
 	private void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
 		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
+		localBroadcastManager.sendBroadcast(new Intent(SHUFFLE_STATE).putExtra(SHUFFLE_STATE, shuffle));
 	}
 
 	public void toggleShuffle() {

@@ -8,7 +8,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-
 import java.io.Serializable;
 
 
@@ -27,6 +26,8 @@ public class Song extends Media implements Serializable {
 	private String durationString;
 	private String name;
 	private String track;
+	private static Uri mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
 
 	public Song(Context context) {
 		super(context);
@@ -121,6 +122,41 @@ public class Song extends Media implements Serializable {
 
 	public void setTrack(String track) {
 		this.track = track;
+	}
+
+
+	public static Song getSong(Context context, int id) {
+		String[] PROJECTION = new String[] {
+				MediaStore.Audio.Media._ID,
+				MediaStore.Audio.Media.ALBUM,
+				MediaStore.Audio.Media.ALBUM_ID,
+				MediaStore.Audio.Media.ARTIST,
+				MediaStore.Audio.Media.ARTIST_ID,
+				MediaStore.Audio.Media.TITLE,
+				MediaStore.Audio.Media.TRACK,
+				MediaStore.Audio.Media.YEAR
+		};
+		// always order by artist, then album, the track
+		String ORDER = null;
+		//set the selection
+		String SELECTION = MediaStore.Audio.Media._ID + " = " + id;
+
+		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
+		// reset the cursor the the first item
+		cursor.moveToFirst();
+		if (cursor.getCount() > 0) {
+			// create a new song object
+			Song song = new Song(context);
+			// pass the song the cursor data
+			song.setCursorData(cursor);
+			// close
+			cursor.close();
+			// and return the song
+			return song;
+		} else {
+			cursor.close();
+			return null;
+		}
 	}
 
 	@Override

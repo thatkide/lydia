@@ -10,13 +10,13 @@
 				android:key="autoFindSlaveDevices"
 				android:title="@string/auto_find_slaves"
 				android:defaultValue="true" />
-		<ca.efriesen.lydia.includes.CustomSwitchPreference
-					android:key="autoUpgradeFirmware"
-					android:title="@string/auto_upgrade_firmware"
-					android:defaultValue="true" />
-		<Preference android:title="Upgrade Firmware"
-					android:key="upgradeFirmware"
-					android:summary="Upgrade the firmware on the Master Controller"/>
+		<!--<ca.efriesen.lydia.includes.CustomSwitchPreference-->
+					<!--android:key="autoUpgradeFirmware"-->
+					<!--android:title="@string/auto_upgrade_firmware"-->
+					<!--android:defaultValue="true" />-->
+		<!--<Preference android:title="Upgrade Firmware"-->
+					<!--android:key="upgradeFirmware"-->
+					<!--android:summary="Upgrade the firmware on the Master Controller"/>-->
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/alarm">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference
@@ -27,38 +27,42 @@
 					android:title="@string/setup_alarm"
 					android:dependency="useAlarmModule"/>
 	</PreferenceCategory>
-	<PreferenceCategory android:key="lightSensor" android:title="@string/external_light_sensor">
-		<ca.efriesen.lydia.includes.CustomSwitchPreference
-					android:key="useLightSensor"
-					android:title="Use Light Sensor"
-					android:defaultValue="true"
-					android:dependency="useArduino"/>
-		<EditTextPreference
-					android:key="minLight"
-					android:title="@string/min_light"
-					android:numeric="integer"
-					android:summary="@string/current_value"
-					android:dependency="useLightSensor"/>
-		<EditTextPreference
-					android:key="maxLight"
-					android:title="@string/max_light"
-					android:numeric="integer"
-					android:summary="@string/current_value"
-					android:dependency="useLightSensor"/>
+	<PreferenceCategory android:title="@string/gauge_cluster">
+		<Preference android:key="setupGaugeCluster"
+					android:title="@string/setup_gauge_cluster" />
 	</PreferenceCategory>
-	<PreferenceCategory android:key="temperatureSensor" android:title="@string/external_temperature_sensor">
-		<ca.efriesen.lydia.includes.CustomSwitchPreference
-					android:key="useTempSensor"
-					android:title="Use Temperature Sensor"
-					android:defaultValue="true"
-					android:dependency="useArduino"/>
-		<ca.efriesen.lydia.includes.CustomSwitchPreference
-					android:key="insideTemp"
-					android:title="@string/inside_temp"
-					android:dependency="useTempSensor"/>
-		<ca.efriesen.lydia.includes.CustomSwitchPreference
-					android:key="outsideTemp"
-					android:title="@string/outside_temp"
-					android:dependency="useTempSensor"/>
-	</PreferenceCategory>
+	<!--<PreferenceCategory android:key="lightSensor" android:title="@string/external_light_sensor">-->
+		<!--<ca.efriesen.lydia.includes.CustomSwitchPreference-->
+					<!--android:key="useLightSensor"-->
+					<!--android:title="Use Light Sensor"-->
+					<!--android:defaultValue="true"-->
+					<!--android:dependency="useArduino"/>-->
+		<!--<EditTextPreference-->
+					<!--android:key="minLight"-->
+					<!--android:title="@string/min_light"-->
+					<!--android:numeric="integer"-->
+					<!--android:summary="@string/current_value"-->
+					<!--android:dependency="useLightSensor"/>-->
+		<!--<EditTextPreference-->
+					<!--android:key="maxLight"-->
+					<!--android:title="@string/max_light"-->
+					<!--android:numeric="integer"-->
+					<!--android:summary="@string/current_value"-->
+					<!--android:dependency="useLightSensor"/>-->
+	<!--</PreferenceCategory>-->
+	<!--<PreferenceCategory android:key="temperatureSensor" android:title="@string/external_temperature_sensor">-->
+		<!--<ca.efriesen.lydia.includes.CustomSwitchPreference-->
+					<!--android:key="useTempSensor"-->
+					<!--android:title="Use Temperature Sensor"-->
+					<!--android:defaultValue="true"-->
+					<!--android:dependency="useArduino"/>-->
+		<!--<ca.efriesen.lydia.includes.CustomSwitchPreference-->
+					<!--android:key="insideTemp"-->
+					<!--android:title="@string/inside_temp"-->
+					<!--android:dependency="useTempSensor"/>-->
+		<!--<ca.efriesen.lydia.includes.CustomSwitchPreference-->
+					<!--android:key="outsideTemp"-->
+					<!--android:title="@string/outside_temp"-->
+					<!--android:dependency="useTempSensor"/>-->
+	<!--</PreferenceCategory>-->
 </PreferenceScreen>

@@ -40,6 +40,20 @@ public class Helpers {
 		return name;
 	}
 
+	public static byte highByte(int number) {
+		return (byte)(number >> 8);
+	}
+
+	public static byte lowByte(int number) {
+		return (byte)number;
+	}
+
+	public static int word(int high, int low) {
+		int value = high << 8;
+		value += low;
+		return value;
+	}
+
 	public static void swapArrayElements(ArrayList list, int first, int second) {
 		Object temp = list.set(first, list.get(second));
 		list.set(second, temp);

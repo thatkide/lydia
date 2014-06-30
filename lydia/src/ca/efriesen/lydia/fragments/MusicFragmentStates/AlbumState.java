@@ -1,24 +1,23 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
-import ca.efriesen.lydia_common.media.Album;
-import ca.efriesen.lydia_common.media.Artist;
-import ca.efriesen.lydia_common.media.Media;
-import ca.efriesen.lydia_common.media.Song;
+import ca.efriesen.lydia_common.media.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +34,8 @@ public class AlbumState implements MusicFragmentState {
 	private Artist artist;
 	private Album currentAlbum;
 	private AlbumAdapter adapter;
+	// i keep the known menu items in the negative, because the playlist id's are all positive, but unknown
+	private final int NewPlaylistId = -1;
 
 	public AlbumState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
@@ -48,6 +49,49 @@ public class AlbumState implements MusicFragmentState {
 		return true;
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		ArrayList<Playlist> playlists = Playlist.getAllPlaylists(activity);
+		// it was, open the playlist context menu
+		menu.setHeaderTitle(activity.getString(R.string.add_to_playlist));
+
+		if (playlists.size() == 0) {
+			menu.add(Menu.NONE, NewPlaylistId, 0, activity.getString(R.string.new_playlist));
+		}
+		for (Playlist playlist : playlists) {
+			menu.add(Menu.NONE, playlist.getId(), 0, playlist.getName());
+		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// get the menu info
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		// find the listview
+		ListView listView = (ListView) activity.findViewById(android.R.id.list);
+
+		switch (item.getItemId()) {
+			case NewPlaylistId: {
+//				// Open the new playlist dialog
+				AlertDialog.Builder builder = NewPlaylistAlert.build(activity);
+				builder.show();
+				break;
+			}
+			default: {
+				Album album = (Album) listView.getItemAtPosition(info.position);
+				ArrayList<Playlist> playlists = Playlist.getAllPlaylists(activity);
+
+				for (Playlist playlist : playlists) {
+					if (playlist.getId() == item.getItemId()) {
+						playlist.addSongs(album.getAllSongs(artist));
+						break;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
@@ -56,7 +100,7 @@ public class AlbumState implements MusicFragmentState {
 
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// transition states and set the view
-		musicFragment.setState(musicFragment.getSongState());
+		musicFragment.setState(musicFragment.getAlbumSongState());
 		musicFragment.setView(artist, (Album)albums.get(position));
 	}
 

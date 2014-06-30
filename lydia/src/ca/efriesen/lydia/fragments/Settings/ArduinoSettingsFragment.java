@@ -7,6 +7,7 @@ import android.preference.*;
 import android.util.Log;
 import android.view.View;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.devices.Master;
 import ca.efriesen.lydia_common.includes.Intents;
 
 /**
@@ -31,6 +32,13 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 						.replace(R.id.settings_fragment, new AlarmSettingsFragment())
 						.addToBackStack(null)
 						.commit();
+			} else if (key.equalsIgnoreCase("setupGaugeCluster")) {
+				// load the gauge cluster settings fragment
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+						.replace(R.id.settings_fragment, new GaugesSettingsFragment())
+						.addToBackStack(null)
+						.commit();
 			}
 			return false;
 		}
@@ -39,9 +47,9 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-			if(s.equalsIgnoreCase("useLightSensor")) {
-				boolean useLightSensor = sharedPreferences.getBoolean("useLightSensor", false);
-			}
+//			if(s.equalsIgnoreCase("useLightSensor")) {
+//				boolean useLightSensor = sharedPreferences.getBoolean("useLightSensor", false);
+//			}
 		}
 	};
 
@@ -65,18 +73,19 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 
 		PreferenceManager manager = getPreferenceManager();
 
-		manager.findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
+//		manager.findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
 		manager.findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
+		manager.findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
 
-		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Intents.LIGHTVALUE));
+		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Master.LIGHTVALUE));
 	}
 
 	private BroadcastReceiver lightValueReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			try {
-				findPreference("minLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Intents.LIGHTVALUE));
-				findPreference("maxLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Intents.LIGHTVALUE));
+//				findPreference("minLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Master.LIGHTVALUE));
+//				findPreference("maxLight").setSummary(getString(R.string.current_value) + ": " + intent.getStringExtra(Master.LIGHTVALUE));
 			} catch (NullPointerException e) { e.printStackTrace();}
 		}
 	};

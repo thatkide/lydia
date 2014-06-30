@@ -7,35 +7,27 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
-import ca.efriesen.lydia_common.media.Album;
-import ca.efriesen.lydia_common.media.Artist;
-import ca.efriesen.lydia_common.media.Media;
-import ca.efriesen.lydia_common.media.Song;
-
+import ca.efriesen.lydia_common.media.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by eric on 1/5/2014.
  */
-public class SongState implements MusicFragmentState {
+abstract public class SongState implements MusicFragmentState {
 
 	private static final String TAG = "lydia songstate";
 
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayList songs;
-	private Artist artist;
 	private SongAdapter adapter;
 	private Song currentSong;
 	private ListView view;
@@ -46,37 +38,44 @@ public class SongState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+
+	@Override
 	public boolean onBackPressed() {
-		musicFragment.setState(musicFragment.getAlbumState());
-		musicFragment.setView(artist);
 		return true;
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) { }
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		return false;
+	}
+
+	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
 		} catch (Exception e) {}
 	}
 
+	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		musicFragment.mediaService.setPlaylist(songs, position);
 		musicFragment.mediaService.play();
 	}
 
+	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		if (!fromSearch) {
-			artist = (Artist) medias[0];
-			Album album = (Album) medias[1];
-			// we need the artist for the transition back using the back button
-			songs = album.getAllSongs(artist);
-		} else {
-			songs = new ArrayList<Media>(Arrays.asList(medias));
-		}
+		songs = new ArrayList<Media>(Arrays.asList(medias));
 		view = (ListView) activity.findViewById(android.R.id.list);
 		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
 		view.setAdapter(adapter);
+		// get the list and register a menu listener for it
+		musicFragment.registerForContextMenu(view);
 	}
 
+	@Override
 	public void search(String text) {
 		try {
 			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, text);
@@ -86,11 +85,17 @@ public class SongState implements MusicFragmentState {
 		}
 	}
 
+	protected void updateView(ArrayList<Song> songs) {
+		this.songs.clear();
+		this.songs.addAll(songs);
+		adapter.notifyDataSetChanged();
+	}
+
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			try {
-				if (musicFragment.getState() == musicFragment.getSongState()) {
+				if (musicFragment.getState() == musicFragment.getAlbumSongState()) {
 					if (intent.hasExtra(MediaService.SONG)) {
 						currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
 						int pos = songs.indexOf(currentSong);
@@ -99,7 +104,7 @@ public class SongState implements MusicFragmentState {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		}
 	};

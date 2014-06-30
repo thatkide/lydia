@@ -23,22 +23,18 @@ import ca.efriesen.lydia.services.MediaService;
  */
 public class MusicFragment extends ListFragment {
 
-//	private ArrayList<Media> medias;
-
-	// the possible states of the view
-	public static enum SELECTED {home, artist, album, songs, search};
-
 	// bind to the media service
 	public MediaService mediaService;
 
 	private static final String TAG = "lydia media music fragment";
 
-
 	private MusicFragmentState homeState;
 	private MusicFragmentState artistState;
 	private MusicFragmentState albumState;
-	private MusicFragmentState songState;
+	private MusicFragmentState albumSongState;
+	private MusicFragmentState playlistSongState;
 	private MusicFragmentState musicFragmentState;
+	private MusicFragmentState playlistState;
 
 	public LocalBroadcastManager localBroadcastManager;
 
@@ -63,13 +59,16 @@ public class MusicFragment extends ListFragment {
 		return homeState;
 	}
 
-	public MusicFragmentState getSongState() {
-		return songState;
-	}
+	public MusicFragmentState getAlbumSongState() { return albumSongState; }
+
+	public MusicFragmentState getPlaylistSongState() { return playlistSongState; }
+
+	public MusicFragmentState getPlaylistState() { return playlistState; }
 
 	public MusicFragmentState getState() {
 		return musicFragmentState;
 	}
+
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
@@ -80,7 +79,9 @@ public class MusicFragment extends ListFragment {
 		homeState = new HomeState(this);
 		artistState = new ArtistState(this);
 		albumState = new AlbumState(this);
-		songState = new SongState(this);
+		albumSongState = new AlbumSongState(this);
+		playlistSongState = new PlaylistSongState(this);
+		playlistState = new PlaylistState(this);
 		musicFragmentState = homeState;
 		// set to the home view
 		musicFragmentState.setView(false);
@@ -127,7 +128,9 @@ public class MusicFragment extends ListFragment {
 		homeState.onDestroy();
 		artistState.onDestroy();
 		albumState.onDestroy();
-		songState.onDestroy();
+		albumSongState.onDestroy();
+		playlistSongState.onDestroy();
+		playlistState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);
 		} catch (Exception e) {
@@ -142,20 +145,13 @@ public class MusicFragment extends ListFragment {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		Log.d(TAG, "menu stuff");
-		if (v.getId() == android.R.id.list) {
-//			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//			menu.setHeaderTitle(getString(R.string.playlist));
-//			menu.add(Menu.NONE, 0, 0, getString(R.string.new_playlist));
-		}
+		super.onCreateContextMenu(menu, v, menuInfo);
+		musicFragmentState.onCreateContextMenu(menu, v, menuInfo);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// compare the title clicked, vs ones we're interested in
-//		if (getString(R.string.new_playlist).equalsIgnoreCase((String)item.getTitle())) {
-//			startActivity(new Intent(getActivity(), NewPlaylist.class));
-//		}
+		musicFragmentState.onContextItemSelected(item);
 		return true;
 	}
 

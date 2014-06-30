@@ -2,49 +2,46 @@ package ca.efriesen.lydia.devices;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.os.Bundle;
+import ca.efriesen.lydia.services.ArduinoService;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 
 /**
  * Created by eric on 2013-05-28.
  */
 abstract public class Device {
-	private int id;
-	// value comes from the serial buffer, it is a string object
-	private String value;
-	private String intentFilter;
-	private Context context;
+	// Globally used commands
+	public static final int GETVALUE = 200;
 
 	private static final String TAG = "lydia device";
+	public static final int id = 16; // Our "Android" id for the i2c bus
 
-	public Device(Context context, int id, String intentFilter) {
+	private Context context;
+
+	public Device(Context context) {
 		this.context = context;
-		this.id = id;
-		this.intentFilter = intentFilter;
 	}
 
 	abstract public void cleanUp();
+	abstract public void setListener(ArduinoService.ArduinoListener listener);
+	abstract public void parseData(int sender, int length, int[] data, int checksum);
 
-	public int getId() {
-		return this.id;
+	protected void getData(int value) {
+		Class <? extends Device> device = this.getClass();
+		try {
+			Field f = device.getField("WRITE");
+			byte values[] = {(byte)value};
+			// send out a request for the current value passed.  this ensures our preference and arduino are in sync
+			Bundle data = new Bundle();
+			data.putByte("command", (byte)Device.GETVALUE);
+			data.putByteArray("values", values);
+			context.sendBroadcast(new Intent((String)f.get(null)).putExtras(data));
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public int getIntValue() {
-		return Integer.valueOf(value);
-	}
-
-	public String getStringValue() {
-		return value;
-	}
-
-	public void initialize() {}
-
-	// send a broadcast with the new value we have received
-	public void setValue(ArrayList<String> commands) {
-		// all arrays should have at least two values, 0 is their command, and 1 is the value
-		this.value = commands.get(1);
-//		Log.d(TAG, "setting value of " + id + " to " + value);
-		context.sendBroadcast(new Intent(intentFilter).putExtra(intentFilter, value));
-	}
 }
