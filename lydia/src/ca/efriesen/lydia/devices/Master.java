@@ -98,5 +98,4 @@ public class Master extends Device {
 		// send a broadcast with the data
 		activity.sendBroadcast(new Intent(Master.WRITE).putExtras(bundle));
 	}
-
 }
