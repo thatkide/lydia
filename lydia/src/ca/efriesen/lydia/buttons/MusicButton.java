@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 import android.widget.PopupMenu;
 
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
 
@@ -16,8 +18,6 @@ import ca.efriesen.lydia.services.MediaService;
  * Created by eric on 2014-06-14.
  */
 public class MusicButton extends BaseButton {
-
-	public static final String ACTION = "MusicButton";
 
 	private LocalBroadcastManager localBroadcastManager;
 	private Activity activity;
@@ -63,7 +63,7 @@ public class MusicButton extends BaseButton {
 	}
 
 	@Override
-	public void onClick(ca.efriesen.lydia.databases.Button button) {
+	public void onClick(View view, Button button) {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
 				.replace(R.id.home_screen_fragment, new MusicFragment(), "musicFragment")
@@ -83,21 +83,6 @@ public class MusicButton extends BaseButton {
 		try {
 			localBroadcastManager.unregisterReceiver(updateMusicReceiver);
 		} catch (IllegalArgumentException e) { }
-	}
-
-	@Override
-	public String getAction() {
-		return ACTION;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Open Music";
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
 	}
 
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {

@@ -1,6 +1,8 @@
 package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
+import android.view.View;
+
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.SettingsContainerFragment;
@@ -10,8 +12,6 @@ import ca.efriesen.lydia.fragments.SettingsContainerFragment;
  */
 public class SettingsButton extends BaseButton {
 
-	public static final String ACTION = "SettingsButton";
-
 	private Activity activity;
 
 	public SettingsButton(Activity activity) {
@@ -20,7 +20,7 @@ public class SettingsButton extends BaseButton {
 	}
 
 	@Override
-	public void onClick(Button button) {
+	public void onClick(View view, Button button) {
 		// replace the 'dashboard_container' fragment with a new 'settings fragment'
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
@@ -29,18 +29,4 @@ public class SettingsButton extends BaseButton {
 				.commit();
 	}
 
-	@Override
-	public String getAction() {
-		return ACTION;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Open Program Settings";
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
-	}
 }

@@ -67,7 +67,7 @@ public class ButtonConfigDataSource {
 	}
 
 	public boolean hasSettingsButton() {
-		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.ACTION + " = " + DatabaseUtils.sqlEscapeString(SettingsButton.ACTION), null, null, null, null);
+		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.ACTION + " = " + DatabaseUtils.sqlEscapeString(SettingsButton.class.getSimpleName()), null, null, null, null);
 		cursor.moveToFirst();
 		boolean hasButton = cursor.getCount() > 0;
 		cursor.close();

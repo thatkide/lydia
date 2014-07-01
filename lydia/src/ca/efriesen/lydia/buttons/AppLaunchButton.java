@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.includes.AppInfo;
@@ -28,7 +29,6 @@ public class AppLaunchButton extends BaseButton {
 	private ArrayAdapter<AppInfo> adapter;
 
 	private Activity activity;
-	public static final String ACTION = "AppLaunchButton";
 
 	public AppLaunchButton(Activity activity) {
 		super(activity);
@@ -36,11 +36,7 @@ public class AppLaunchButton extends BaseButton {
 	}
 
 	@Override
-	public void onClick(Button button) {
-		Log.d(TAG, "button clicked");
-		Log.d(TAG, button.getAction());
-		Log.d(TAG, button.getExtraData());
-
+	public void onClick(View view, Button button) {
 		try {
 			Intent launch = Intent.parseUri(button.getExtraData(), Intent.URI_INTENT_SCHEME);
 			activity.startActivity(launch);
@@ -55,10 +51,6 @@ public class AppLaunchButton extends BaseButton {
 	}
 
 	@Override
-	public String getAction() {
-		return ACTION;
-	}
-
 	public ArrayAdapter<AppInfo> getAdapterData() {
 		List<AppInfo> apps = getInstalledPackages(activity);
 		adapter = new ArrayAdapter<AppInfo>(activity, android.R.layout.simple_spinner_dropdown_item, apps);
@@ -66,19 +58,9 @@ public class AppLaunchButton extends BaseButton {
 	}
 
 	@Override
-	public String getDescription() {
-		return "Open App Specified";
-	}
-
-	@Override
-	public String getExtraData(int positioin) {
-		AppInfo appInfo = adapter.getItem(positioin);
+	public String getExtraData(int position) {
+		AppInfo appInfo = adapter.getItem(position);
 		return appInfo.getLaunchIntent().toUri(Intent.URI_INTENT_SCHEME);
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
 	}
 
 	// returns an array of appinfos of the installed packages we can launch

@@ -1,13 +1,14 @@
 package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
+import android.view.View;
+
+import ca.efriesen.lydia.databases.Button;
 
 /**
  * Created by eric on 2014-06-15.
  */
 public class VideosButton extends BaseButton {
-
-	public static final String ACTION = "VideosButton";
 
 	private Activity activity;
 
@@ -17,17 +18,7 @@ public class VideosButton extends BaseButton {
 	}
 
 	@Override
-	public String getAction() {
-		return ACTION;
-	}
+	public void onClick(View view, Button button) {
 
-	@Override
-	public String getDescription() {
-		return "Opens Videos.  Currently does nothing";
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
 	}
 }

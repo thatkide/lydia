@@ -220,7 +220,8 @@
 		<item>weather_icon</item>
 	</string-array>
 
-	<string name="BaseButton">empty</string>
+	<!--Button Names-->
+
 	<string name="AirRideButton">Air Ride</string>
 	<string name="AndroidButton">Apps</string>
 	<string name="AppLaunchButton">Launch App Specified</string>
@@ -231,7 +232,26 @@
 	<string name="MusicButton">Music Button</string>
 	<string name="NavigationButton">Navigation</string>
 	<string name="PhoneButton">Phone Controls</string>
+	<string name="SeatHeatButton">Seat Heater</string>
 	<string name="SettingsButton">Program Settings</string>
-	<string name="VideosButton">Videos - Currently not working</string>
+	<string name="VideosButton">Videos</string>
 	<string name="WeatherButton">Weather</string>
+
+	<!--Button Descriptions-->
+
+	<string name="AirRideButtonDesc">Open Air Ride</string>
+	<string name="AndroidButtonDesc">Open App Launcher</string>
+	<string name="AppLaunchButtonDesc">Launch App Specified</string>
+	<string name="CalendarButtonDesc">Open Calendar</string>
+	<string name="ChromeButtonDesc">Open Web Activity</string>
+	<string name="ContactsButtonDesc">Open Contacts</string>
+	<string name="EngineStatusButtonDesc">Open Engine Status</string>
+	<string name="MusicButtonDesc">Open Music Button</string>
+	<string name="NavigationButtonDesc">Open Navigation</string>
+	<string name="PhoneButtonDesc">Open Phone Controls</string>
+	<string name="SeatHeatButtonDesc">Enable Seat Heater</string>
+	<string name="SettingsButtonDesc">Open Program Settings</string>
+	<string name="VideosButtonDesc">Open Videos - Currently not working</string>
+	<string name="WeatherButtonDesc">Open Weather</string>
+
 </resources>

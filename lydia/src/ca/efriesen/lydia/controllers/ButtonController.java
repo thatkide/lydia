@@ -349,7 +349,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 					ca.efriesen.lydia.databases.Button passedButton = (ca.efriesen.lydia.databases.Button) view.getTag();
 					// get the button from the hashmap, and execute the onclick method
 					BaseButton button = buttons.get(passedButton.getAction());
-					button.onClick(passedButton);
+					button.onClick(view, passedButton);
 				} else if (view.getTag() instanceof Integer) {
 					switch (buttonAction) {
 						case BaseButton.BUTTON_NEXT: {

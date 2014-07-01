@@ -1,14 +1,15 @@
 package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
+import android.view.View;
 
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.databases.Button;
 
 /**
  * Created by eric on 2014-06-14.
  */
 public class AirRideButton extends BaseButton {
-	public static final String ACTION = "AirRideButton";
 	private Activity activity;
 
 	public AirRideButton(Activity activity) {
@@ -17,17 +18,7 @@ public class AirRideButton extends BaseButton {
 	}
 
 	@Override
-	public String getAction() {
-		return ACTION;
-	}
+	public void onClick(View view, Button button) {
 
-	@Override
-	public String getDescription() {
-		return "Open Air Ride Screen";
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
 	}
 }

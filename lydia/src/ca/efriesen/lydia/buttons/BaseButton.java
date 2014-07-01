@@ -2,6 +2,7 @@ package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import ca.efriesen.lydia.databases.Button;
 
@@ -28,18 +29,30 @@ public abstract class BaseButton {
 		this.activity = activity;
 	}
 
-	public void onClick(Button passed) { };
+	public abstract void onClick(View view, Button passed);
 	public boolean onLongClick() {
 		return false;
 	};
 
 	public void cleanUp() { };
-	public abstract String getAction();
+	public final String getAction() {
+		return this.getClass().getSimpleName();
+	};
+
 	public boolean hasExtraData() { return false; }
 	public ArrayAdapter<?> getAdapterData() { return null; }
-	public abstract String getDescription();
-
-	public String getDefaultName() {
+	// get the description from the strings.xml file
+	public final String getDescription() {
+		try {
+			int resId = activity.getResources().getIdentifier(getClass().getSimpleName() + "Desc", "string", activity.getPackageName());
+			return activity.getString(resId);
+		} catch (Exception e) {
+			// No description
+			return "";
+		}
+	};
+	// get the default name from the settings.xml file
+	public final String getDefaultName() {
 		try {
 			// In the strings.xml file the resources are specified as the class name.  get the resource and return the string
 			int resid = activity.getResources().getIdentifier(getClass().getSimpleName(), "string", activity.getPackageName());
@@ -50,27 +63,31 @@ public abstract class BaseButton {
 		}
 	}
 
-
 	public String getExtraData(int position) { return ""; }
-	public abstract String toString();
+
+	// return the description using the tostring method.  the adapter for the spinner uses tostring
+	public final String toString() {
+		return getDescription();
+	}
 
 	// create a map of all the buttons that are available
 	public static Map<String, BaseButton> getButtons(Activity activity) {
 		Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
 		// add all the possible actions and classes
-		buttons.put(AirRideButton.ACTION, new AirRideButton(activity));
-		buttons.put(AndroidButton.ACTION, new AndroidButton(activity));
-		buttons.put(AppLaunchButton.ACTION, new AppLaunchButton(activity));
-		buttons.put(CalendarButton.ACTION, new CalendarButton(activity));
-		buttons.put(ChromeButton.ACTION, new ChromeButton(activity));
-		buttons.put(ContactsButton.ACTION, new ContactsButton(activity));
-		buttons.put(EngineStatusButton.ACTION, new EngineStatusButton(activity));
-		buttons.put(MusicButton.ACTION, new MusicButton(activity));
-		buttons.put(NavigationButton.ACTION, new NavigationButton(activity));
-		buttons.put(PhoneButton.ACTION, new PhoneButton(activity));
-		buttons.put(SettingsButton.ACTION, new SettingsButton(activity));
-		buttons.put(VideosButton.ACTION, new VideosButton(activity));
-		buttons.put(WeatherButton.ACTION, new WeatherButton(activity));
+		buttons.put(AirRideButton.class.getSimpleName(), new AirRideButton(activity));
+		buttons.put(AndroidButton.class.getSimpleName(), new AndroidButton(activity));
+		buttons.put(AppLaunchButton.class.getSimpleName(), new AppLaunchButton(activity));
+		buttons.put(CalendarButton.class.getSimpleName(), new CalendarButton(activity));
+		buttons.put(ChromeButton.class.getSimpleName(), new ChromeButton(activity));
+		buttons.put(ContactsButton.class.getSimpleName(), new ContactsButton(activity));
+		buttons.put(EngineStatusButton.class.getSimpleName(), new EngineStatusButton(activity));
+		buttons.put(MusicButton.class.getSimpleName(), new MusicButton(activity));
+		buttons.put(NavigationButton.class.getSimpleName(), new NavigationButton(activity));
+		buttons.put(PhoneButton.class.getSimpleName(), new PhoneButton(activity));
+		buttons.put(SeatHeatButton.class.getSimpleName(), new SeatHeatButton(activity));
+		buttons.put(SettingsButton.class.getSimpleName(), new SettingsButton(activity));
+		buttons.put(VideosButton.class.getSimpleName(), new VideosButton(activity));
+		buttons.put(WeatherButton.class.getSimpleName(), new WeatherButton(activity));
 
 		return buttons;
 	}

@@ -94,16 +94,19 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		actionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				BaseButton button = (BaseButton) actionSpinner.getSelectedItem();
-				if (button.hasExtraData()) {
+				BaseButton baseButton = (BaseButton) actionSpinner.getSelectedItem();
+				if (baseButton.hasExtraData()) {
 					extraDataSpinner.setVisibility(View.VISIBLE);
-					extraDataSpinner.setAdapter(button.getAdapterData());
+					extraDataSpinner.setAdapter(baseButton.getAdapterData());
 				} else {
 					extraDataSpinner.setVisibility(View.GONE);
 				}
-				// set the title to the default string
-				TextView title = (TextView) findViewById(R.id.button_title_text);
-				title.setText(button.getDefaultName());
+				// only set the text if the button doesn't have any
+				if (button.getTitle() == null || button.getTitle().isEmpty()) {
+					// set the title to the default string
+					TextView title = (TextView) findViewById(R.id.button_title_text);
+					title.setText(baseButton.getDefaultName());
+				}
 			}
 
 			@Override

@@ -149,7 +149,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 			settingsButton.setDisplayArea(0);
 			settingsButton.setPosition(position);
 			settingsButton.setTitle(getString(R.string.settings));
-			settingsButton.setAction(SettingsButton.ACTION);
+			settingsButton.setAction(SettingsButton.class.getSimpleName());
 			settingsButton.setDrawable("settings");
 			settingsButton.setUsesDrawable(true);
 

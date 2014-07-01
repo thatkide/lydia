@@ -35,6 +35,8 @@ public class Master extends Device {
 	public static final int LIGHTLEVEL = 176;
 	public static final int OUTSIDETEMP = 161;
 
+	public static final int SEATHEAT = 121;
+
 	private Context context;
 	private ArduinoService.ArduinoListener listener;
 

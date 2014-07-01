@@ -2,6 +2,8 @@ package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.View;
+
 import ca.efriesen.lydia.activities.ContactList;
 import ca.efriesen.lydia.databases.Button;
 
@@ -9,8 +11,6 @@ import ca.efriesen.lydia.databases.Button;
  * Created by eric on 2014-06-15.
  */
 public class ContactsButton extends BaseButton {
-
-	public static final String ACTION = "ContactsButton";
 
 	private Activity activity;
 
@@ -20,22 +20,7 @@ public class ContactsButton extends BaseButton {
 	}
 
 	@Override
-	public String getAction() {
-		return ACTION;
-	}
-
-	@Override
-	public void onClick(Button button) {
+	public void onClick(View view, Button button) {
 		activity.startActivity(new Intent(activity, ContactList.class));
-	}
-
-	@Override
-	public String getDescription() {
-		return "Open Contacts Manager";
-	}
-
-	@Override
-	public String toString() {
-		return getDescription();
 	}
 }
