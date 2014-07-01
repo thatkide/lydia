@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,7 @@ public class ChromeButton extends BaseButton {
 	private Activity activity;
 
 	public ChromeButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 

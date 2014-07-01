@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
-import ca.efriesen.lydia.controllers.ButtonControllers.SettingsButton;
+
+import ca.efriesen.lydia.buttons.SettingsButton;
 
 import java.util.ArrayList;
 import java.util.List;

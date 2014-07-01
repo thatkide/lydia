@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 
@@ -12,6 +12,7 @@ public class VideosButton extends BaseButton {
 	private Activity activity;
 
 	public VideosButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 

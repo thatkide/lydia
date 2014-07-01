@@ -1,20 +1,21 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.databases.Button;
-import ca.efriesen.lydia.fragments.LauncherFragment;
+import ca.efriesen.lydia.fragments.PhoneFragment;
 
 /**
  * Created by eric on 2014-06-14.
  */
-public class AndroidButton extends BaseButton {
+public class PhoneButton extends BaseButton {
 
-	public static final String ACTION = "AndroidButton";
+	public static final String ACTION = "PhoneButton";
 
 	private Activity activity;
 
-	public AndroidButton(Activity activity) {
+	public PhoneButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 
@@ -22,7 +23,7 @@ public class AndroidButton extends BaseButton {
 	public void onClick(Button button) {
 		activity.getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-				.replace(R.id.home_screen_fragment, new LauncherFragment(), "launcherFragment")
+				.replace(R.id.home_screen_fragment, new PhoneFragment(), "phoneFragment")
 				.addToBackStack(null)
 				.commit();
 	}
@@ -34,7 +35,7 @@ public class AndroidButton extends BaseButton {
 
 	@Override
 	public String getDescription() {
-		return "Open Application launcher";
+		return "Open Phone Controls";
 	}
 
 	@Override

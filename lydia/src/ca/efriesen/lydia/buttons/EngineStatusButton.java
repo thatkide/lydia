@@ -1,20 +1,21 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.databases.Button;
-import ca.efriesen.lydia.fragments.WeatherFragment;
+import ca.efriesen.lydia.fragments.EngineStatusFragment;
 
 /**
  * Created by eric on 2014-06-15.
  */
-public class WeatherButton extends BaseButton {
+public class EngineStatusButton extends BaseButton {
 
-	public static final String ACTION = "WeatherButton";
+	public static final String ACTION = "EngineStatusButton";
 
 	private Activity activity;
 
-	public WeatherButton(Activity activity) {
+	public EngineStatusButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 
@@ -27,14 +28,14 @@ public class WeatherButton extends BaseButton {
 	public void onClick(Button button) {
 		activity.getFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-			.replace(R.id.home_screen_fragment, new WeatherFragment(), "weatherFragment")
+			.replace(R.id.home_screen_fragment, new EngineStatusFragment(), "engineStatus")
 			.addToBackStack(null)
 			.commit();
 	}
 
 	@Override
 	public String getDescription() {
-		return "Open Weather";
+		return "Open Engine Status";
 	}
 
 	@Override

@@ -1,20 +1,21 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.databases.Button;
-import ca.efriesen.lydia.fragments.EngineStatusFragment;
+import ca.efriesen.lydia.fragments.CalendarView;
 
 /**
  * Created by eric on 2014-06-15.
  */
-public class EngineStatusButton extends BaseButton {
+public class CalendarButton extends BaseButton {
 
-	public static final String ACTION = "EngineStatusButton";
+	public static final String ACTION = "CalendarButton";
 
 	private Activity activity;
 
-	public EngineStatusButton(Activity activity) {
+	public CalendarButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 
@@ -27,14 +28,14 @@ public class EngineStatusButton extends BaseButton {
 	public void onClick(Button button) {
 		activity.getFragmentManager().beginTransaction()
 			.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-			.replace(R.id.home_screen_fragment, new EngineStatusFragment(), "engineStatus")
+			.replace(R.id.home_screen_fragment, new CalendarView(), "calendarFragment")
 			.addToBackStack(null)
 			.commit();
 	}
 
 	@Override
 	public String getDescription() {
-		return "Open Engine Status";
+		return "Open Calendar";
 	}
 
 	@Override

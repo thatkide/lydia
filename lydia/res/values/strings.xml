@@ -219,4 +219,19 @@
 		<item>vinyl</item>
 		<item>weather_icon</item>
 	</string-array>
+
+	<string name="BaseButton">empty</string>
+	<string name="AirRideButton">Air Ride</string>
+	<string name="AndroidButton">Apps</string>
+	<string name="AppLaunchButton">Launch App Specified</string>
+	<string name="CalendarButton">Calendar</string>
+	<string name="ChromeButton">Web Activity</string>
+	<string name="ContactsButton">Contacts</string>
+	<string name="EngineStatusButton">Engine Status</string>
+	<string name="MusicButton">Music Button</string>
+	<string name="NavigationButton">Navigation</string>
+	<string name="PhoneButton">Phone Controls</string>
+	<string name="SettingsButton">Program Settings</string>
+	<string name="VideosButton">Videos - Currently not working</string>
+	<string name="WeatherButton">Weather</string>
 </resources>

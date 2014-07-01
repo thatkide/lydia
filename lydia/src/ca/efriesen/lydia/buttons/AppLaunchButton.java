@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import ca.efriesen.lydia.databases.Button;
@@ -32,6 +31,7 @@ public class AppLaunchButton extends BaseButton {
 	public static final String ACTION = "AppLaunchButton";
 
 	public AppLaunchButton(Activity activity) {
+		super(activity);
 		this.activity = activity;
 	}
 

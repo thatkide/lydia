@@ -1,25 +1,16 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.PopupMenu;
-import android.widget.Toast;
+
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.MusicSearch;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
-import ca.efriesen.lydia_common.media.Album;
-import ca.efriesen.lydia_common.media.Song;
 
 /**
  * Created by eric on 2014-06-14.
@@ -38,6 +29,7 @@ public class MusicButton extends BaseButton {
 	private final static int SEARCH = 4;
 
 	public MusicButton(final Activity activity) {
+		super(activity);
 		this.activity = activity;
 		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));

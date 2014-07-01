@@ -1,6 +1,7 @@
-package ca.efriesen.lydia.controllers.ButtonControllers;
+package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import ca.efriesen.lydia.databases.Button;
 
@@ -21,6 +22,12 @@ public abstract class BaseButton {
 	public static final int BUTTON_SCREEN_ADD = 3;
 	public static final int BUTTON_SCREEN_DELETE = 4;
 
+	private Activity activity;
+
+	public BaseButton(Activity activity) {
+		this.activity = activity;
+	}
+
 	public void onClick(Button passed) { };
 	public boolean onLongClick() {
 		return false;
@@ -31,6 +38,19 @@ public abstract class BaseButton {
 	public boolean hasExtraData() { return false; }
 	public ArrayAdapter<?> getAdapterData() { return null; }
 	public abstract String getDescription();
+
+	public String getDefaultName() {
+		try {
+			// In the strings.xml file the resources are specified as the class name.  get the resource and return the string
+			int resid = activity.getResources().getIdentifier(getClass().getSimpleName(), "string", activity.getPackageName());
+			return activity.getString(resid);
+		} catch (Exception e) {
+			// No default name specified
+			return "";
+		}
+	}
+
+
 	public String getExtraData(int position) { return ""; }
 	public abstract String toString();
 

@@ -20,7 +20,7 @@ import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.ButtonEditor;
 import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
-import ca.efriesen.lydia.controllers.ButtonControllers.*;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 
 import java.util.*;

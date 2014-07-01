@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -13,7 +12,7 @@ import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.BaseButton;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.*;
 
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 			buttonView.setLayoutParams(layoutParams);
 		}
 
-		// we might not have a title or drawable...
+		// we might not have a drawable...
 		try {
 			title.setText(button.getTitle());
 			int imgId = getResources().getIdentifier(button.getDrawable(), "drawable", getPackageName());
@@ -102,6 +101,9 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 				} else {
 					extraDataSpinner.setVisibility(View.GONE);
 				}
+				// set the title to the default string
+				TextView title = (TextView) findViewById(R.id.button_title_text);
+				title.setText(button.getDefaultName());
 			}
 
 			@Override

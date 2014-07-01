@@ -5,15 +5,15 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.HomeScreenEditorActivity;
+import ca.efriesen.lydia.buttons.BaseButton;
+import ca.efriesen.lydia.buttons.SettingsButton;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.*;
 
 import java.util.List;
 
