@@ -156,7 +156,6 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 					int pos = ((ca.efriesen.lydia.databases.Button)view.getTag()).getPosition();
 					// set the original background back
 					view.setBackground(getButtonBgFromPos(pos));
-Log.d(TAG, "got pos " + pos + " button pos " + button.getPosition());
 					// open the datasouce, we'll switch buttons, and get the updated list in one go
 					dataSource.open();
 					// but this button in this position, switching the two
