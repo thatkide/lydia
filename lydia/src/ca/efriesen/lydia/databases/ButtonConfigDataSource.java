@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
-import ca.efriesen.lydia.controllers.ButtonControllers.SettingsButton;
+
+import ca.efriesen.lydia.buttons.SettingsButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public class ButtonConfigDataSource {
 	}
 
 	public boolean hasSettingsButton() {
-		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.ACTION + " = " + DatabaseUtils.sqlEscapeString(SettingsButton.ACTION), null, null, null, null);
+		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION, ButtonConfigOpenHelper.ACTION + " = " + DatabaseUtils.sqlEscapeString(SettingsButton.class.getSimpleName()), null, null, null, null);
 		cursor.moveToFirst();
 		boolean hasButton = cursor.getCount() > 0;
 		cursor.close();

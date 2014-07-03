@@ -2,19 +2,14 @@ package ca.efriesen.lydia.activities.settings;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.LightingColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.BaseButton;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.*;
 
 import java.util.List;

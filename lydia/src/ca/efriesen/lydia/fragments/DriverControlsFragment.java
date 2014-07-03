@@ -10,7 +10,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.SidebarEditorActivity;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.BaseButton;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 
 public class DriverControlsFragment extends Fragment implements View.OnClickListener, DrawScreenCallback {

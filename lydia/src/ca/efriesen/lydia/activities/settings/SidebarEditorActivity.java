@@ -8,7 +8,7 @@ import android.view.Window;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
-import ca.efriesen.lydia.controllers.ButtonControllers.BaseButton;
+import ca.efriesen.lydia.buttons.BaseButton;
 
 import java.util.List;
 

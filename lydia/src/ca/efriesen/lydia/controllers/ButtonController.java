@@ -20,7 +20,7 @@ import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.ButtonEditor;
 import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
-import ca.efriesen.lydia.controllers.ButtonControllers.*;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 
 import java.util.*;
@@ -156,7 +156,6 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 					int pos = ((ca.efriesen.lydia.databases.Button)view.getTag()).getPosition();
 					// set the original background back
 					view.setBackground(getButtonBgFromPos(pos));
-Log.d(TAG, "got pos " + pos + " button pos " + button.getPosition());
 					// open the datasouce, we'll switch buttons, and get the updated list in one go
 					dataSource.open();
 					// but this button in this position, switching the two
@@ -350,7 +349,7 @@ Log.d(TAG, "got pos " + pos + " button pos " + button.getPosition());
 					ca.efriesen.lydia.databases.Button passedButton = (ca.efriesen.lydia.databases.Button) view.getTag();
 					// get the button from the hashmap, and execute the onclick method
 					BaseButton button = buttons.get(passedButton.getAction());
-					button.onClick(passedButton);
+					button.onClick(view, passedButton);
 				} else if (view.getTag() instanceof Integer) {
 					switch (buttonAction) {
 						case BaseButton.BUTTON_NEXT: {
