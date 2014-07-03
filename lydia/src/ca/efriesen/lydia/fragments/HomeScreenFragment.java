@@ -156,4 +156,9 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 			buttons.add(settingsButton);
 		}
 	}
+
+	@Override
+	public boolean fullDraw() {
+		return false;
+	}
 }

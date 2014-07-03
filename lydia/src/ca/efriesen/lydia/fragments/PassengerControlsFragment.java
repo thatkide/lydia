@@ -143,4 +143,9 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 			passengerUp.setVisibility(View.GONE);
 		}
 	}
+
+	@Override
+	public boolean fullDraw() {
+		return false;
+	}
 }

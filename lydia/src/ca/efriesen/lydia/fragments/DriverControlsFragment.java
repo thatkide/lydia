@@ -143,4 +143,9 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 			driverUp.setVisibility(View.GONE);
 		}
 	}
+
+	@Override
+	public boolean fullDraw() {
+		return false;
+	}
 }

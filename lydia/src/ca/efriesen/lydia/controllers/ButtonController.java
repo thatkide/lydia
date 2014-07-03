@@ -80,6 +80,9 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		// get all possible buttons from the base button class
 		buttons = BaseButton.getButtons(activity);
 
+		// FIXME
+		// Delete zone is enabled twice.  Once for driver side and again for passenger.
+		// Passenger overwrites the driver and when the driver side is delete, it won't refresh because it has the passenger instance
 		if (adminMode) {
 			buttonDeleteZone = (LinearLayout) activity.findViewById(R.id.button_delete_zone);
 			buttonDeleteImage = (ImageView) activity.findViewById(R.id.button_delete_image);
@@ -189,9 +192,26 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 					break;
 				}
 				case DragEvent.ACTION_DROP: {
-					removeButton(button);
-					// set the original button space back to visible
-					v.setVisibility(View.VISIBLE);
+					dataSource.open();
+					dataSource.removeButton(button);
+					dataSource.close();
+					// check if the activity has the callback
+					if (activity instanceof DrawScreenCallback) {
+						// if so, check if it wants to redraw.
+						if (!((DrawScreenCallback)activity).fullDraw()) {
+							// no? ok, we'll do it
+							drawScreen();
+						}
+					}
+
+					// we might also have been passed a fragment.  if so check it too
+					if (fragment instanceof DrawScreenCallback) {
+						// if so, check if it wants to redraw.
+						if (!((DrawScreenCallback)fragment).fullDraw()) {
+							// no? ok, we'll do it
+							drawScreen();
+						}
+					}
 					break;
 				}
 				case DragEvent.ACTION_DRAG_ENDED: {
@@ -207,14 +227,6 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 			}
 		}
 		return true;
-	}
-
-	// remove the button from the db, and do the callback
-	public void removeButton(ca.efriesen.lydia.databases.Button button) {
-		dataSource.open();
-		dataSource.removeButton(button);
-		dataSource.close();
-		drawScreen();
 	}
 
 	private Drawable getButtonBgFromPos(int pos) {
@@ -297,7 +309,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 
 		// loop over all buttons and populate accordingly
 		for (int i=0; i<buttons.size(); i++) {
-			// get the bundle of info
+			// get the button
 			ca.efriesen.lydia.databases.Button myButton = buttons.get(i);
 			// get the resource id for the button
 			int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());

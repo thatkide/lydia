@@ -117,19 +117,19 @@ public class SidebarEditorActivity extends Activity implements DrawScreenCallbac
 
 	@Override
 	public void drawScreen(List<ca.efriesen.lydia.databases.Button> buttons) {
-		int numDriverScrens = driverButtonController.getNumScreens();
+		int numDriverScreens = driverButtonController.getNumScreens();
 		int selectedDriverScreen = driverButtonController.getSelectedScreen();
 
-		if (numDriverScrens == 1) {
+		if (numDriverScreens == 1) {
 			driverUp.setEnabled(false);
 		} else {
 			driverUp.setEnabled(true);
 		}
-		if (numDriverScrens > 1 && selectedDriverScreen == (numDriverScrens -1)) {
+		if (numDriverScreens > 1 && selectedDriverScreen == (numDriverScreens -1)) {
 			driverDown.setVisibility(View.VISIBLE);
 			driverUp.setVisibility(View.GONE);
 			driverAdminNavGroup.setVisibility(View.GONE);
-		} else if (numDriverScrens > 2 && (selectedDriverScreen != 0) && (selectedDriverScreen != numDriverScrens-1) ) {
+		} else if (numDriverScreens > 2 && (selectedDriverScreen != 0) && (selectedDriverScreen != numDriverScreens-1) ) {
 			driverAdminNavGroup.setVisibility(View.VISIBLE);
 			driverDown.setVisibility(View.GONE);
 			driverUp.setVisibility(View.GONE);
@@ -153,5 +153,12 @@ public class SidebarEditorActivity extends Activity implements DrawScreenCallbac
 			passengerUp.setVisibility(View.GONE);
 		}
 
+	}
+
+	@Override
+	public boolean fullDraw() {
+		driverButtonController.drawScreen();
+		passengerButtonController.drawScreen();
+		return true;
 	}
 }

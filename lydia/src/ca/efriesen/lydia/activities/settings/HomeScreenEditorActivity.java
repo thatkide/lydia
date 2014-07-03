@@ -151,4 +151,9 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		button.setChecked(true);
 	}
 
+	@Override
+	public boolean fullDraw() {
+		return false;
+	}
+
 }

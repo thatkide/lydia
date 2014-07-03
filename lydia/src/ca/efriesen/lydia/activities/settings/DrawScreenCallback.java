@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface DrawScreenCallback {
 	public void drawScreen(List<Button> buttons);
+	public boolean fullDraw();
 }
