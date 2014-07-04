@@ -41,7 +41,6 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		setRetainInstance(true);
 	}
 
 	@Override

@@ -41,7 +41,6 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		setRetainInstance(true);
 	}
 
 	@Override
