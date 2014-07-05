@@ -38,7 +38,6 @@ public class HeaderFragment extends Fragment implements View.OnTouchListener {
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
-		setRetainInstance(true);
 		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 	}
 

@@ -35,7 +35,6 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		setRetainInstance(true);
 	}
 
 	@Override

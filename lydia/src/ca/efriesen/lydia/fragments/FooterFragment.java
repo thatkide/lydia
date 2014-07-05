@@ -59,7 +59,6 @@ public class FooterFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		setRetainInstance(true);
 	}
 
 	@Override
