@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
 
@@ -22,7 +23,6 @@ public class SidebarEditorActivity extends Activity implements DrawScreenCallbac
 	private ButtonController driverButtonController;
 	private ButtonController passengerButtonController;
 
-	public static final int numButtons = 3;
 	public static final String DRIVERBASENAME = "driver_";
 	public static final String PASSENGERBASENAME = "passenger_";
 
@@ -41,8 +41,8 @@ public class SidebarEditorActivity extends Activity implements DrawScreenCallbac
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.sidebar_editor);
 
-		driverButtonController = new ButtonController(this, DRIVERBASENAME, BaseButton.TYPE_SIDEBAR_LEFT, numButtons, true);
-		passengerButtonController = new ButtonController(this, PASSENGERBASENAME, BaseButton.TYPE_SIDEBAR_RIGHT, numButtons, true);
+		driverButtonController = new ButtonController(this, DRIVERBASENAME, BaseButton.TYPE_SIDEBAR_LEFT, BaseButton.BUTTONS_PER_SIDEBAR, true, BaseButton.GROUP_USER);
+		passengerButtonController = new ButtonController(this, PASSENGERBASENAME, BaseButton.TYPE_SIDEBAR_RIGHT, BaseButton.BUTTONS_PER_SIDEBAR, true, BaseButton.GROUP_USER);
 
 		Button driverAdd = (Button) findViewById(R.id.driver_add);
 		Button driverDelete = (Button) findViewById(R.id.driver_delete);
@@ -91,7 +91,7 @@ public class SidebarEditorActivity extends Activity implements DrawScreenCallbac
 		passengerDown2.setTag(BaseButton.BUTTON_PREV);
 		passengerDown2.setOnClickListener(passengerButtonController);
 
-		for (int i=0; i<numButtons; i++) {
+		for (int i=0; i<BaseButton.BUTTONS_PER_SIDEBAR; i++) {
 			// get the resource id for the button
 			int driverResId = getResources().getIdentifier(DRIVERBASENAME + i, "id", getPackageName());
 			int passengerResId = getResources().getIdentifier(PASSENGERBASENAME + i, "id", getPackageName());

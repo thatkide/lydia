@@ -8,10 +8,9 @@ import android.view.Window;
 import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
-import ca.efriesen.lydia.databases.*;
-
 import java.util.List;
 
 /**
@@ -22,9 +21,7 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 	private static final String TAG = "homescreen editor";
 
 	private ButtonController buttonController;
-	private ButtonConfigDataSource dataSource;
 
-	public static final int numButtons = 6;
 	public static final String BASENAME = "home_";
 
 	private Button prev;
@@ -40,10 +37,7 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.home_screen_layout_editor);
 
-		// we'll store basic info in shared prefs, and more complicated info in sqlite
-		dataSource = new ButtonConfigDataSource(this);
-
-		buttonController = new ButtonController(this, BASENAME, BaseButton.TYPE_HOMESCREEN, numButtons, true);
+		buttonController = new ButtonController(this, BASENAME, BaseButton.TYPE_HOMESCREEN, BaseButton.BUTTONS_PER_HOMESCREEN, true, BaseButton.GROUP_USER);
 
 		// get all the view objects needed
 		prev = (Button) findViewById(R.id.button_prev_screen);
@@ -78,7 +72,7 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		prev.setOnClickListener(buttonController);
 
 		// tell every icon button to call the button controller, it will decide your fate
-		for (int i=0; i<numButtons; i++) {
+		for (int i=0; i<BaseButton.BUTTONS_PER_HOMESCREEN; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier(BASENAME + i, "id", getPackageName());
 			// get the button
@@ -148,7 +142,7 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		delete.setVisibility(delVis);
 
 		RadioButton button = (RadioButton) radioGroup.getChildAt(buttonController.getSelectedScreen());
-		button.setChecked(true);
+//		button.setChecked(true);
 	}
 
 	@Override

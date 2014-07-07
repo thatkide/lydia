@@ -226,14 +226,14 @@
 	<string name="AndroidButton">Apps</string>
 	<string name="AppLaunchButton">Launch App Specified</string>
 	<string name="CalendarButton">Calendar</string>
-	<string name="ChromeButton">Web Activity</string>
+	<string name="ChromeButton">Web</string>
 	<string name="ContactsButton">Contacts</string>
 	<string name="EngineStatusButton">Engine Status</string>
-	<string name="MusicButton">Music Button</string>
+	<string name="MusicButton">Music</string>
 	<string name="NavigationButton">Navigation</string>
-	<string name="PhoneButton">Phone Controls</string>
+	<string name="PhoneButton">Phone</string>
 	<string name="SeatHeatButton">Seat Heater</string>
-	<string name="SettingsButton">Program Settings</string>
+	<string name="SettingsButton">Settings</string>
 	<string name="VideosButton">Videos</string>
 	<string name="WeatherButton">Weather</string>
 
@@ -246,7 +246,7 @@
 	<string name="ChromeButtonDesc">Open Web Activity</string>
 	<string name="ContactsButtonDesc">Open Contacts</string>
 	<string name="EngineStatusButtonDesc">Open Engine Status</string>
-	<string name="MusicButtonDesc">Open Music Button</string>
+	<string name="MusicButtonDesc">Open Music</string>
 	<string name="NavigationButtonDesc">Open Navigation</string>
 	<string name="PhoneButtonDesc">Open Phone Controls</string>
 	<string name="SeatHeatButtonDesc">Enable Seat Heater</string>

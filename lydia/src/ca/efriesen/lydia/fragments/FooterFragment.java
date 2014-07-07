@@ -7,11 +7,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,11 +58,6 @@ public class FooterFragment extends Fragment {
 			volDownHandler.postAtTime(this, SystemClock.uptimeMillis() + volRefreshTime);
 		}
 	};
-
-	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -171,6 +169,10 @@ public class FooterFragment extends Fragment {
 		// bluetooth stuff
 		activity.registerReceiver(bluetoothManager, new IntentFilter(Intents.BLUETOOTHMANAGER));
 
+		// listen for battery broadcasts
+		activity.registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
+
 	}
 
 	@Override
@@ -196,6 +198,11 @@ public class FooterFragment extends Fragment {
 		} catch (IllegalArgumentException e) {}
 		try {
 			activity.unregisterReceiver(bluetoothManager);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			activity.unregisterReceiver(mBatteryReceiver);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -271,6 +278,31 @@ public class FooterFragment extends Fragment {
 					btImage.setImageResource(R.drawable.device_access_bluetooth);
 					break;
 				}
+			}
+		}
+	};
+
+	private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// get the level, and scale from the intent
+			int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+			int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+			// use "float" to do the math, since it will be decimals.  convert back to integer by *100, this adds a ".0" to the end
+			float batteryPct = level / (float) scale * 100;
+//		find the text view
+			TextView battery = (TextView) getActivity().findViewById(R.id.battery_pct);
+//		get the value of in string form, and update the view
+			battery.setText(String.valueOf((int)batteryPct) + "%");
+
+//		add some color if the battery is low
+			if ((int)batteryPct < 10) {
+				battery.setTextColor(Color.RED);
+			} else if ((int)batteryPct < 25) {
+				battery.setTextColor(Color.YELLOW);
+			} else {
+				battery.setTextColor(Color.WHITE);
 			}
 		}
 	};

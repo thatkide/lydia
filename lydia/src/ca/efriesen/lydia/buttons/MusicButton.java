@@ -65,8 +65,8 @@ public class MusicButton extends BaseButton {
 	@Override
 	public void onClick(View view, Button button) {
 		activity.getFragmentManager().beginTransaction()
-				.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-				.replace(R.id.home_screen_fragment, new MusicFragment(), "musicFragment")
+				.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.home_screen_fragment, new MusicFragment())
 				.addToBackStack(null)
 				.commit();
 	}

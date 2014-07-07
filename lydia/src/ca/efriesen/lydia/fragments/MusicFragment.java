@@ -12,6 +12,7 @@ import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.fragments.MusicFragmentStates.*;
 import ca.efriesen.lydia_common.media.*;
 import ca.efriesen.lydia.services.MediaService;
@@ -21,7 +22,7 @@ import ca.efriesen.lydia.services.MediaService;
  * Date: 2013-03-26
  * Time: 8:07 PM
  */
-public class MusicFragment extends ListFragment {
+public class MusicFragment extends ListFragment implements FragmentOnBackPressedCallback{
 
 	// bind to the media service
 	public MediaService mediaService;
@@ -169,8 +170,16 @@ public class MusicFragment extends ListFragment {
 	// override the back button.  this allows us to switch what's displayed on screen by the back button press
 	// return true as it's been handled, don't allow the default to do anything.
 	// return false as we didn't do anything, you do it
-	public boolean onBackPressed() {
-		return musicFragmentState.onBackPressed();
+	public void onBackPressed() {
+		if (getState() == homeState) {
+			getFragmentManager().beginTransaction()
+					.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+					.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
+					.addToBackStack(null)
+					.commit();
+		} else {
+			musicFragmentState.onBackPressed();
+		}
 	}
 
 	private ServiceConnection mediaServiceConnection = new ServiceConnection() {

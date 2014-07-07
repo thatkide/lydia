@@ -5,10 +5,8 @@ import android.content.*;
 import android.os.Bundle;
 import android.preference.*;
 import android.util.Log;
-import android.view.View;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.devices.Master;
-import ca.efriesen.lydia_common.includes.Intents;
 
 /**
  * Created by eric on 2013-08-01.
@@ -29,14 +27,14 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 				// load the alarm settings fragment
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-						.replace(R.id.settings_fragment, new AlarmSettingsFragment())
+						.replace(R.id.home_screen_fragment, new AlarmSettingsFragment())
 						.addToBackStack(null)
 						.commit();
 			} else if (key.equalsIgnoreCase("setupGaugeCluster")) {
 				// load the gauge cluster settings fragment
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-						.replace(R.id.settings_fragment, new GaugesSettingsFragment())
+						.replace(R.id.home_screen_fragment, new GaugesSettingsFragment())
 						.addToBackStack(null)
 						.commit();
 			}

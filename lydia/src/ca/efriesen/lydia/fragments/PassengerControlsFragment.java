@@ -7,20 +7,20 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
 import java.util.List;
-
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.SidebarEditorActivity;
+import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
@@ -29,9 +29,10 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 
 	private static final String TAG = "passenger controls";
 
+	private Activity activity;
 	private int selectedScreen;
 	private ButtonController buttonController;
-	SharedPreferences sharedPreferences;
+	private int group = BaseButton.GROUP_USER;
 
 	private ImageButton passengerUp;
 	private ImageButton passengerDown;
@@ -39,12 +40,8 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	private final String selectedPassengerBar = "selectedPassengerBar";
 
 	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
 		return inflater.inflate(R.layout.passenger_controls_fragment, container, false);
 	}
 
@@ -52,14 +49,14 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		Activity activity = getActivity();
+		activity = getActivity();
+		if (getArguments() != null) {
+			selectedScreen = getArguments().getInt(selectedPassengerBar);
+			group = getArguments().getInt("group");
+		}
 
 		// get the controller and db stuff
-		buttonController = new ButtonController(this, SidebarEditorActivity.PASSENGERBASENAME, BaseButton.TYPE_SIDEBAR_RIGHT);
-
-		// we'll store basic info in shared prefs, and more complicated info in sqlite
-		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-		selectedScreen = sharedPreferences.getInt(selectedPassengerBar, 0);
+		buttonController = new ButtonController(this, SidebarEditorActivity.PASSENGERBASENAME, BaseButton.TYPE_SIDEBAR_RIGHT, group);
 
 		passengerUp = (ImageButton) activity.findViewById(R.id.passenger_up);
 		passengerDown = (ImageButton) activity.findViewById(R.id.passenger_down);
@@ -68,7 +65,7 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 		passengerAdminNavGroup = (LinearLayout) activity.findViewById(R.id.passenger_nav_group);
 
 		// tell every button to call the button controller, it will decide your fate
-		for (int i=0; i< SidebarEditorActivity.numButtons; i++) {
+		for (int i=0; i<BaseButton.BUTTONS_PER_SIDEBAR; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier(SidebarEditorActivity.PASSENGERBASENAME + i, "id", activity.getPackageName());
 			// get the button
@@ -93,6 +90,11 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 
 	private void drawFragment(boolean direction) {
 		PassengerControlsFragment fragment = new PassengerControlsFragment();
+		Bundle args = new Bundle();
+		args.putInt(selectedPassengerBar, buttonController.getSelectedScreen());
+		args.putInt("group", group);
+		fragment.setArguments(args);
+
 		getFragmentManager().beginTransaction()
 				.setCustomAnimations((!direction ? R.anim.controls_slide_in_down : R.anim.controls_slide_out_up), (!direction ? R.anim.controls_slide_out_down : R.anim.controls_slide_in_up))
 				.replace(R.id.passenger_controls, fragment)
@@ -103,7 +105,6 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	@Override
 	public void onClick(View view) {
 		if (view.getTag() instanceof Integer) {
-			sharedPreferences.edit().putInt(selectedPassengerBar, buttonController.getSelectedScreen()).apply();
 			switch ((Integer) view.getTag()) {
 				case BaseButton.BUTTON_NEXT: {
 					drawFragment(true);
@@ -146,5 +147,47 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	@Override
 	public boolean fullDraw() {
 		return false;
+	}
+
+	public void showFragment(final Fragment fragment) {
+		Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_left);
+
+		View passengerControls = activity.findViewById(R.id.passenger_controls);
+		passengerControls.startAnimation(animation);
+		animation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {	}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if (fragment instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) fragment).animationComplete(FragmentAnimationCallback.SHOW);
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
+	}
+
+	public void hideFragment(final BaseButton button) {
+		Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
+
+		View passengerControls = activity.findViewById(R.id.passenger_controls);
+		passengerControls.startAnimation(animation);
+		animation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {	}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if (button instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) button).animationComplete(FragmentAnimationCallback.HIDE);
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
 	}
 }

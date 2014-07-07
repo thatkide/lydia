@@ -11,6 +11,7 @@ public class Button implements Parcelable{
 	private int id;
 	private int buttonType;
 	private int displayArea;
+	private int group;
 	private int position;
 	private String title;
 	private String  action;
@@ -24,6 +25,7 @@ public class Button implements Parcelable{
 		this.id = parcel.readInt();
 		this.buttonType = parcel.readByte();
 		this.displayArea = parcel.readInt();
+		this.group = parcel.readInt();
 		this.position = parcel.readInt();
 		this.title = parcel.readString();
 		this.action = parcel.readString();
@@ -51,6 +53,10 @@ public class Button implements Parcelable{
 	public int getDisplayArea() {
 		return displayArea;
 	}
+
+	public void setGroup(int group) { this.group = group; }
+
+	public int getGroup() { return group; }
 
 	public void setPosition(int position) {
 		this.position = position;
@@ -110,6 +116,7 @@ public class Button implements Parcelable{
 		parcel.writeInt(id);
 		parcel.writeInt(buttonType);
 		parcel.writeInt(displayArea);
+		parcel.writeInt(group);
 		parcel.writeInt(position);
 		parcel.writeString(title);
 		parcel.writeString(action);

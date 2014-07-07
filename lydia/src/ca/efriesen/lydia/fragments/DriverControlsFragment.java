@@ -7,9 +7,8 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ import android.widget.LinearLayout;
 import java.util.List;
 
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.SidebarEditorActivity;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
@@ -29,9 +28,9 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 
 	private static final String TAG = "driver controls";
 
-	private int selectedScreen;
+	private int selectedScreen = 0;
 	private ButtonController buttonController;
-	SharedPreferences sharedPreferences;
+	private int group = BaseButton.GROUP_USER;
 
 	private ImageButton driverUp;
 	private ImageButton driverDown;
@@ -39,12 +38,8 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	private final String selectedDriverBar = "selectedDriverBar";
 
 	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
 		return inflater.inflate(R.layout.driver_controls_fragment, container, false);
 	}
 
@@ -53,13 +48,13 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 		super.onActivityCreated(savedInstanceState);
 
 		Activity activity = getActivity();
+		if (getArguments() != null) {
+			selectedScreen = getArguments().getInt(selectedDriverBar);
+			group = getArguments().getInt("group");
+		}
 
 		// get the controller and db stuff
-		buttonController = new ButtonController(this, SidebarEditorActivity.DRIVERBASENAME, BaseButton.TYPE_SIDEBAR_LEFT);
-
-		// we'll store basic info in shared prefs, and more complicated info in sqlite
-		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-		selectedScreen = sharedPreferences.getInt(selectedDriverBar, 0);
+		buttonController = new ButtonController(this, SidebarEditorActivity.DRIVERBASENAME, BaseButton.TYPE_SIDEBAR_LEFT, group);
 
 		driverUp = (ImageButton) activity.findViewById(R.id.driver_up);
 		driverDown = (ImageButton) activity.findViewById(R.id.driver_down);
@@ -68,7 +63,7 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 		driverAdminNavGroup = (LinearLayout) activity.findViewById(R.id.driver_nav_group);
 
 		// tell every button to call the button controller, it will decide your fate
-		for (int i=0; i< SidebarEditorActivity.numButtons; i++) {
+		for (int i=0; i<BaseButton.BUTTONS_PER_SIDEBAR; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier(SidebarEditorActivity.DRIVERBASENAME + i, "id", activity.getPackageName());
 			// get the button
@@ -88,11 +83,14 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 		driverDown.setOnClickListener(buttonController);
 		driverDown2.setTag(BaseButton.BUTTON_PREV);
 		driverDown2.setOnClickListener(buttonController);
-
 	}
 
 	private void drawFragment(boolean direction) {
 		DriverControlsFragment fragment = new DriverControlsFragment();
+		Bundle args = new Bundle();
+		args.putInt(selectedDriverBar, buttonController.getSelectedScreen());
+		args.putInt("group", group);
+		fragment.setArguments(args);
 		getFragmentManager().beginTransaction()
 				.setCustomAnimations((!direction ? R.anim.controls_slide_in_down : R.anim.controls_slide_out_up), (!direction ? R.anim.controls_slide_out_down : R.anim.controls_slide_in_up))
 				.replace(R.id.driver_controls, fragment)
@@ -103,7 +101,6 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	@Override
 	public void onClick(View view) {
 		if (view.getTag() instanceof Integer) {
-			sharedPreferences.edit().putInt(selectedDriverBar, buttonController.getSelectedScreen()).apply();
 			switch ((Integer) view.getTag()) {
 				case BaseButton.BUTTON_NEXT: {
 					drawFragment(true);

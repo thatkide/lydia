@@ -22,8 +22,8 @@ public class EngineStatusButton extends BaseButton {
 	@Override
 	public void onClick(View view, Button button) {
 		activity.getFragmentManager().beginTransaction()
-			.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-			.replace(R.id.home_screen_fragment, new EngineStatusFragment(), "engineStatus")
+			.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+			.replace(R.id.home_screen_fragment, new EngineStatusFragment())
 			.addToBackStack(null)
 			.commit();
 	}

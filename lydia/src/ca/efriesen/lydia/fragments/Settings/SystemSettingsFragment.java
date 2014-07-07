@@ -1,17 +1,23 @@
 package ca.efriesen.lydia.fragments.Settings;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import ca.efriesen.lydia.R;
-import ca.efriesen.lydia_common.includes.Intents;
+import android.view.View;
 
-import java.text.DateFormat;
+import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
+import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
+import ca.efriesen.lydia.fragments.DriverControlsFragment;
+import ca.efriesen.lydia.fragments.HomeScreenFragment;
+import ca.efriesen.lydia.fragments.PassengerControlsFragment;
+import ca.efriesen.lydia_common.includes.Intents;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -21,7 +27,7 @@ import java.util.Locale;
  * Date: 2012-10-24
  * Time: 1:09 PM
  */
-public class SystemSettingsFragment extends PreferenceFragment {
+public class SystemSettingsFragment extends PreferenceFragment implements FragmentAnimationCallback, FragmentOnBackPressedCallback {
 
 	public static final String TAG = "lydia system Settings Preference";
 	public SharedPreferences sharedPreferences;
@@ -84,5 +90,29 @@ public class SystemSettingsFragment extends PreferenceFragment {
 		// set the wifi state
 				.putBoolean("systemWiFi", manager.isWifiEnabled())
 				.apply();
+	}
+
+	@Override
+	public void onBackPressed() {
+		Activity activity = getActivity();
+		activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
+		PassengerControlsFragment fragment = (PassengerControlsFragment) activity.getFragmentManager().findFragmentById(R.id.passenger_controls);
+		fragment.showFragment(this);
+	}
+
+	@Override
+	public void animationComplete(int direction) {
+		FragmentManager manager = getFragmentManager();
+		manager.beginTransaction()
+				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.home_screen_fragment, new HomeScreenFragment())
+				.addToBackStack(null)
+				.commit();
+
+		manager.beginTransaction()
+				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.driver_controls, new DriverControlsFragment())
+				.addToBackStack(null)
+				.commit();
 	}
 }

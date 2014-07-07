@@ -3,9 +3,7 @@ package ca.efriesen.lydia.controllers;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
@@ -16,10 +14,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.ButtonEditor;
-import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 
@@ -30,17 +27,16 @@ import java.util.*;
  */
 public class ButtonController implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener {
 
-	private final static String TAG = "Lydia button controller";
+	private final static String TAG = ButtonController.class.getSimpleName();
 	private Activity activity;
 	private Fragment fragment;
-	private SharedPreferences sharedPreferences;
 	private ButtonConfigDataSource dataSource;
 
 	// create a new hashmap that takes the action and maps it to a class
 	private Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
 	private boolean admin = false;
+	private int group;
 	final private String baseName;
-	final private String prefName;
 	final private int buttonType;
 	private int adminNumButtons;
 	private int numScreens;
@@ -54,35 +50,34 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	public static final int EDIT_BUTTON = 1;
 
 	public ButtonController(Activity activity, final String baseName, final int buttonType) {
-		this(activity, baseName, buttonType, 0, false);
+		this(activity, baseName, buttonType, 0, false, BaseButton.GROUP_USER);
 	}
 
-	public ButtonController(Fragment fragment, final String baseName, final int buttonType) {
-		this(fragment.getActivity(), baseName, buttonType, 0, false);
+	public ButtonController(Fragment fragment, final String baseName, final int buttonType, int group) {
+		this(fragment.getActivity(), baseName, buttonType, 0, false, group);
 		this.fragment = fragment;
 	}
 
-	public ButtonController(Activity activity, final String baseName, final int buttonType, final int adminNumButtons, boolean adminMode) {
+	public ButtonController(Activity activity, final String baseName, final int buttonType, final int adminNumButtons, boolean adminMode, int group) {
 		this.activity = activity;
 		this.baseName = baseName;
 		this.admin = adminMode;
 		this.buttonType = buttonType;
 		this.adminNumButtons = adminNumButtons;
-
-		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-
-		// build pref name from basename
-		prefName = "num" + baseName + "screens";
-		numScreens = sharedPreferences.getInt(prefName, 1);
+		this.group = group;
 
 		dataSource = new ButtonConfigDataSource(activity);
 
-		// get all possible buttons from the base button class
-		buttons = BaseButton.getButtons(activity);
+		dataSource.open();
+		numScreens = dataSource.numScreensPerGroup(buttonType, group);
+		dataSource.close();
 
-		// FIXME
+		// get all possible buttons from the base button class
+		buttons = BaseButton.getAllButtons(activity);
+
 		// Delete zone is enabled twice.  Once for driver side and again for passenger.
 		// Passenger overwrites the driver and when the driver side is delete, it won't refresh because it has the passenger instance
+		// I've fixed this by implementing a callback to let the calling activity decide what to refresh
 		if (adminMode) {
 			buttonDeleteZone = (LinearLayout) activity.findViewById(R.id.button_delete_zone);
 			buttonDeleteImage = (ImageView) activity.findViewById(R.id.button_delete_image);
@@ -116,6 +111,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	}
 
 	public ArrayList<BaseButton> getButtonActions() {
+		Map<String, BaseButton> buttons = BaseButton.getUserButtons(activity);
 		ArrayList<BaseButton> list = new ArrayList<BaseButton>(buttons.values());
 
 		// sort alphabetically
@@ -279,7 +275,8 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		clearButtons();
 		dataSource.open();
 		// get the buttons in our area
-		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(buttonType, selectedScreen);
+		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(buttonType, selectedScreen, group);
+
 		// close the db, we don't need it any more
 		dataSource.close();
 
@@ -404,11 +401,14 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 						break;
 					}
 					case BaseButton.BUTTON_SCREEN_ADD: {
-						sharedPreferences.edit().putInt(prefName, ++numScreens).apply();
+						Log.d(TAG, "num screens is " + numScreens);
+						numScreens++;
+						Log.d(TAG, "num screens is now " + numScreens);
 						drawScreen();
 						break;
 					}
 					case BaseButton.BUTTON_SCREEN_DELETE: {
+						numScreens--;
 						if (numScreens > 1) {
 							// remove the screen from the db and update the others
 							dataSource = new ButtonConfigDataSource(activity);
@@ -416,7 +416,6 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 							dataSource.removeScreen(buttonType, selectedScreen, numScreens);
 							// close the db, we don't need it any more
 							dataSource.close();
-							sharedPreferences.edit().putInt(prefName, --numScreens).apply();
 						}
 						// if we've deleted the last screen, set selected to one less
 						if (selectedScreen >= numScreens) {
@@ -470,5 +469,4 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		// we've handled the click.
 		return true;
 	}
-
 }

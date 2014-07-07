@@ -1,7 +1,6 @@
-package ca.efriesen.lydia.activities.settings;
+package ca.efriesen.lydia.callbacks;
 
 import ca.efriesen.lydia.databases.Button;
-
 import java.util.List;
 
 /**

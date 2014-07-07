@@ -124,7 +124,7 @@ public class HomeState implements MusicFragmentState {
 			case RadioId: {
 				activity.getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.homescreen_slide_out_up, R.anim.homescreen_slide_in_up)
-						.replace(R.id.home_screen_fragment, new RadioFragment(), "radioFragment")
+						.replace(R.id.home_screen_fragment, new RadioFragment(), "homeScreenFragment")
 						.addToBackStack(null)
 						.commit();
 

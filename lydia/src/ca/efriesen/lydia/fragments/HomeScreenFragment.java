@@ -5,11 +5,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.Button;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.activities.settings.DrawScreenCallback;
+import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.HomeScreenEditorActivity;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.buttons.SettingsButton;
@@ -30,12 +31,6 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 	private int numScreens;
 	private ButtonController buttonController;
 	private SharedPreferences sharedPreferences;
-	int numButtons = HomeScreenEditorActivity.numButtons;
-
-	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,7 +43,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 		Activity activity = getActivity();
 
 		// get the controller and db stuff
-		buttonController = new ButtonController(this, HomeScreenEditorActivity.BASENAME, BaseButton.TYPE_HOMESCREEN);
+		buttonController = new ButtonController(this, HomeScreenEditorActivity.BASENAME, BaseButton.TYPE_HOMESCREEN, BaseButton.GROUP_USER);
 
 		// we'll store basic info in shared prefs, and more complicated info in sqlite
 		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
@@ -56,7 +51,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 		selectedScreen = sharedPreferences.getInt("selectedScreen", 0);
 
 		// tell every button to call the button controller, it will decide your fate
-		for (int i=0; i<numButtons; i++) {
+		for (int i=0; i<BaseButton.BUTTONS_PER_HOMESCREEN; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier(HomeScreenEditorActivity.BASENAME + i, "id", activity.getPackageName());
 			// get the button
@@ -130,9 +125,9 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 			// start at 0
 			int position = 0;
 			// if we have a full screen but no settings
-			if (buttons.size() == numButtons) {
+			if (buttons.size() == BaseButton.BUTTONS_PER_HOMESCREEN) {
 				// remove the last button and set it to the settings button
-				buttons.remove(position = numButtons-1);
+				buttons.remove(position = BaseButton.BUTTONS_PER_HOMESCREEN-1);
 				// we don't have a full screen, but we also don't have a settings button
 			} else {
 				// loop over all the settings and find the next empty position

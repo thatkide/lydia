@@ -1,7 +1,6 @@
 package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import ca.efriesen.lydia.databases.Button;
@@ -14,6 +13,10 @@ import java.util.Map;
  */
 public abstract class BaseButton {
 
+	public static final int GROUP_ADMIN = -1;
+	public static final int GROUP_USER = 0;
+	public static final int GROUP_NAVIGATION = 1;
+
 	public static final int TYPE_HOMESCREEN = 1;
 	public static final int TYPE_SIDEBAR_LEFT = 2;
 	public static final int TYPE_SIDEBAR_RIGHT = 3;
@@ -22,6 +25,9 @@ public abstract class BaseButton {
 	public static final int BUTTON_PREV = 2;
 	public static final int BUTTON_SCREEN_ADD = 3;
 	public static final int BUTTON_SCREEN_DELETE = 4;
+
+	public static final int BUTTONS_PER_SIDEBAR = 3;
+	public static final int BUTTONS_PER_HOMESCREEN = 6;
 
 	private Activity activity;
 
@@ -70,8 +76,17 @@ public abstract class BaseButton {
 		return getDescription();
 	}
 
+	public static Map<String, BaseButton> getAdminButtons(Activity activity) {
+		Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
+		buttons.put(ArduinoSettingsButton.class.getSimpleName(), new ArduinoSettingsButton(activity));
+		buttons.put(MediaSettingsButton.class.getSimpleName(), new MediaSettingsButton(activity));
+		buttons.put(WeatherSettingsButton.class.getSimpleName(), new WeatherSettingsButton(activity));
+
+		return buttons;
+	}
+
 	// create a map of all the buttons that are available
-	public static Map<String, BaseButton> getButtons(Activity activity) {
+	public static Map<String, BaseButton> getUserButtons(Activity activity) {
 		Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
 		// add all the possible actions and classes
 		buttons.put(AirRideButton.class.getSimpleName(), new AirRideButton(activity));
@@ -89,6 +104,13 @@ public abstract class BaseButton {
 		buttons.put(VideosButton.class.getSimpleName(), new VideosButton(activity));
 		buttons.put(WeatherButton.class.getSimpleName(), new WeatherButton(activity));
 
+		return buttons;
+	}
+
+	public static Map<String, BaseButton> getAllButtons(Activity activity) {
+		Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
+		buttons.putAll(getUserButtons(activity));
+		buttons.putAll(getAdminButtons(activity));
 		return buttons;
 	}
 }
