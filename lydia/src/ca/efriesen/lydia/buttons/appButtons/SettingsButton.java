@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.appButtons;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.View;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.DriverControlsFragment;
@@ -24,17 +25,9 @@ public class SettingsButton extends BaseButton implements FragmentAnimationCallb
 		this.activity = activity;
 	}
 
-	// This being our entry point into the settings pane, we need a little bit more checking to properly animate fragments correctly
+	// This being our entry point into the settings pane, we need a little bit more checking to animate fragments correctly
 	@Override
 	public void onClick(View view, Button button) {
-
-		// FIXME
-		// check if instance of settings fragment and passneger controls visible
-		// yes, hide it, load settings
-		// check if passenger contols not visible
-		// check if instance of settings fragment
-		// no, load it
-
 		FragmentManager manager = activity.getFragmentManager();
 		Fragment currentFragment = manager.findFragmentById(R.id.home_screen_fragment);
 		// settings isn't in place.  animate the passenger controls out, and show the settings
@@ -65,7 +58,6 @@ public class SettingsButton extends BaseButton implements FragmentAnimationCallb
 
 			DriverControlsFragment driverControlsFragment = new DriverControlsFragment();
 			Bundle args = new Bundle();
-			args.putInt("selectedDriverBar", 0);
 			args.putInt("group", BaseButton.GROUP_ADMIN);
 			driverControlsFragment.setArguments(args);
 

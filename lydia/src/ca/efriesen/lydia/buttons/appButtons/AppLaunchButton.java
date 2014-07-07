@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.appButtons;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -10,6 +10,8 @@ import android.content.pm.ResolveInfo;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.includes.AppInfo;
 

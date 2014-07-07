@@ -3,11 +3,11 @@ package ca.efriesen.lydia.configs;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.efriesen.lydia.buttons.ArduinoSettingsButton;
+import ca.efriesen.lydia.buttons.settingsButtons.ArduinoSettingsButton;
 import ca.efriesen.lydia.buttons.BaseButton;
-import ca.efriesen.lydia.buttons.MediaSettingsButton;
-import ca.efriesen.lydia.buttons.SettingsButton;
-import ca.efriesen.lydia.buttons.WeatherSettingsButton;
+import ca.efriesen.lydia.buttons.settingsButtons.MediaSettingsButton;
+import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
+import ca.efriesen.lydia.buttons.settingsButtons.WeatherSettingsButton;
 import ca.efriesen.lydia.callbacks.ButtonCheckerCallback;
 import ca.efriesen.lydia.databases.Button;
 

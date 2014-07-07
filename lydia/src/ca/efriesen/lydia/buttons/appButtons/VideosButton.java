@@ -1,18 +1,19 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.appButtons;
 
 import android.app.Activity;
 import android.view.View;
 
-import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 
 /**
- * Created by eric on 2014-06-14.
+ * Created by eric on 2014-06-15.
  */
-public class AirRideButton extends BaseButton {
+public class VideosButton extends BaseButton {
+
 	private Activity activity;
 
-	public AirRideButton(Activity activity) {
+	public VideosButton(Activity activity) {
 		super(activity);
 		this.activity = activity;
 	}

@@ -49,7 +49,7 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 
 		Activity activity = getActivity();
 		if (getArguments() != null) {
-			selectedScreen = getArguments().getInt(selectedDriverBar);
+			selectedScreen = getArguments().getInt(selectedDriverBar, 0);
 			group = getArguments().getInt("group");
 		}
 

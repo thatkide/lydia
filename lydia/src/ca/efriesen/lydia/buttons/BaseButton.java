@@ -3,6 +3,28 @@ package ca.efriesen.lydia.buttons;
 import android.app.Activity;
 import android.view.View;
 import android.widget.ArrayAdapter;
+
+import ca.efriesen.lydia.buttons.appButtons.AirRideButton;
+import ca.efriesen.lydia.buttons.appButtons.AndroidButton;
+import ca.efriesen.lydia.buttons.appButtons.AppLaunchButton;
+import ca.efriesen.lydia.buttons.appButtons.CalendarButton;
+import ca.efriesen.lydia.buttons.appButtons.ChromeButton;
+import ca.efriesen.lydia.buttons.appButtons.ContactsButton;
+import ca.efriesen.lydia.buttons.appButtons.EngineStatusButton;
+import ca.efriesen.lydia.buttons.appButtons.MusicButton;
+import ca.efriesen.lydia.buttons.appButtons.NavigationButton;
+import ca.efriesen.lydia.buttons.appButtons.PhoneButton;
+import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
+import ca.efriesen.lydia.buttons.appButtons.VideosButton;
+import ca.efriesen.lydia.buttons.appButtons.WeatherButton;
+import ca.efriesen.lydia.buttons.navButtons.ClearMapButton;
+import ca.efriesen.lydia.buttons.navButtons.MapDirectionsMode;
+import ca.efriesen.lydia.buttons.navButtons.NavSearchButton;
+import ca.efriesen.lydia.buttons.navButtons.ToggleTrafficButton;
+import ca.efriesen.lydia.buttons.settingsButtons.ArduinoSettingsButton;
+import ca.efriesen.lydia.buttons.settingsButtons.MediaSettingsButton;
+import ca.efriesen.lydia.buttons.settingsButtons.WeatherSettingsButton;
+import ca.efriesen.lydia.buttons.widgetButtons.SeatHeatButton;
 import ca.efriesen.lydia.databases.Button;
 
 import java.util.HashMap;
@@ -78,9 +100,16 @@ public abstract class BaseButton {
 
 	public static Map<String, BaseButton> getAdminButtons(Activity activity) {
 		Map<String, BaseButton> buttons = new HashMap<String, BaseButton>();
+		// settings buttons
 		buttons.put(ArduinoSettingsButton.class.getSimpleName(), new ArduinoSettingsButton(activity));
 		buttons.put(MediaSettingsButton.class.getSimpleName(), new MediaSettingsButton(activity));
 		buttons.put(WeatherSettingsButton.class.getSimpleName(), new WeatherSettingsButton(activity));
+
+		// navigation buttons
+		buttons.put(ClearMapButton.class.getSimpleName(), new ClearMapButton(activity));
+		buttons.put(MapDirectionsMode.class.getSimpleName(), new MapDirectionsMode(activity));
+		buttons.put(NavSearchButton.class.getSimpleName(), new NavSearchButton(activity));
+		buttons.put(ToggleTrafficButton.class.getSimpleName(), new ToggleTrafficButton(activity));
 
 		return buttons;
 	}

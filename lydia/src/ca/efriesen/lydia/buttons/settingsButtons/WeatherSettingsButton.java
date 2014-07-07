@@ -1,9 +1,10 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.settingsButtons;
 
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.view.View;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.Settings.WeatherSettingsFragment;
 

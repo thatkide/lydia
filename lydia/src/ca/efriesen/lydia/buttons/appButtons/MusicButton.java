@@ -1,4 +1,4 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.appButtons;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;

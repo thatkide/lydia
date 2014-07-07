@@ -9,8 +9,7 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import ca.efriesen.lydia.configs.AdminButtonsConfig;
-import ca.efriesen.lydia.buttons.BaseButton;
-import ca.efriesen.lydia.buttons.SettingsButton;
+import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
 import ca.efriesen.lydia.callbacks.ButtonCheckerCallback;
 import ca.efriesen.lydia.configs.NavigationButtonsConfig;
 

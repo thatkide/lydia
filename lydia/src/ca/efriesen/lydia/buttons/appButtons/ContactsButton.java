@@ -1,10 +1,11 @@
-package ca.efriesen.lydia.buttons;
+package ca.efriesen.lydia.buttons.appButtons;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
 import ca.efriesen.lydia.activities.ContactList;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 
 /**
