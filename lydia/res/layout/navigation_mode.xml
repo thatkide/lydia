@@ -8,7 +8,7 @@
 		android:padding="10dip"
 		>
 	<ListView android:id="@+id/navigation_modes"
-			  android:layout_height="wrap_content"
-			  android:layout_width="wrap_content" />
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"	/>
 	<TextView style="@style/MediumText" android:layout_above="@id/navigation_modes"/>
 </RelativeLayout>

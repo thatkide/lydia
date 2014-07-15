@@ -9,7 +9,7 @@ import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.DriverControlsFragment;
-import ca.efriesen.lydia.fragments.MyMapFragment;
+import ca.efriesen.lydia.fragments.MapFragment;
 import ca.efriesen.lydia.fragments.PassengerControlsFragment;
 
 /**
@@ -37,7 +37,7 @@ public class NavigationButton extends BaseButton implements FragmentAnimationCal
 			// start loading the settings fragment
 			manager.beginTransaction()
 					.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-					.replace(R.id.home_screen_fragment, new MyMapFragment())
+					.replace(R.id.home_screen_fragment, new MapFragment())
 					.addToBackStack(null)
 					.commit();
 

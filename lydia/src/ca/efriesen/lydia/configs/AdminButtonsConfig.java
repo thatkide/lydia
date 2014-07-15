@@ -1,8 +1,11 @@
 package ca.efriesen.lydia.configs;
 
+import android.app.Activity;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.buttons.settingsButtons.ArduinoSettingsButton;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.buttons.settingsButtons.MediaSettingsButton;
@@ -20,7 +23,7 @@ public class AdminButtonsConfig implements ButtonCheckerCallback{
 	private int group = BaseButton.GROUP_ADMIN;
 
 	@Override
-	public List<Button> getButtons() {
+	public List<Button> getButtons(Activity activity) {
 		int adminArea = 0;
 		List<Button> buttons = new ArrayList<Button>();
 
@@ -31,7 +34,7 @@ public class AdminButtonsConfig implements ButtonCheckerCallback{
 		systemSettings.setDisplayArea(adminArea);
 		systemSettings.setGroup(group);
 		systemSettings.setPosition(0);
-		systemSettings.setTitle("Settings");
+		systemSettings.setTitle(activity.getString(R.string.settings));
 		systemSettings.setUsesDrawable(false);
 		systemSettings.setDrawable("blank");
 
@@ -41,7 +44,7 @@ public class AdminButtonsConfig implements ButtonCheckerCallback{
 		mediaSettings.setDisplayArea(adminArea);
 		mediaSettings.setGroup(group);
 		mediaSettings.setPosition(1);
-		mediaSettings.setTitle("Media");
+		mediaSettings.setTitle(activity.getString(R.string.media));
 		mediaSettings.setUsesDrawable(false);
 		mediaSettings.setDrawable("blank");
 
@@ -51,7 +54,7 @@ public class AdminButtonsConfig implements ButtonCheckerCallback{
 		weatherSettings.setDisplayArea(adminArea);
 		weatherSettings.setGroup(group);
 		weatherSettings.setPosition(2);
-		weatherSettings.setTitle("Weather");
+		weatherSettings.setTitle(activity.getString(R.string.weather));
 		weatherSettings.setUsesDrawable(false);
 		weatherSettings.setDrawable("blank");
 
@@ -61,7 +64,7 @@ public class AdminButtonsConfig implements ButtonCheckerCallback{
 		arduinoSettings.setDisplayArea(adminArea+1);
 		arduinoSettings.setGroup(group);
 		arduinoSettings.setPosition(0);
-		arduinoSettings.setTitle("Arduino");
+		arduinoSettings.setTitle(activity.getString(R.string.arduino));
 		arduinoSettings.setUsesDrawable(false);
 		arduinoSettings.setDrawable("blank");
 

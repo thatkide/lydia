@@ -92,7 +92,7 @@ public class Dashboard extends Activity {
 		// ensure our admin buttons are up to date
 		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
 		dataSource.open();
-		dataSource.checkRequiredButtons();
+		dataSource.checkRequiredButtons(this);
 		dataSource.close();
 	}
 
@@ -183,6 +183,11 @@ public class Dashboard extends Activity {
 	public void onBackPressed() {
 		// get the generic home screen fragment from the tag
 		Fragment homeScreeFragment = getFragmentManager().findFragmentById(R.id.home_screen_fragment);
+
+		// if we're home, do nothing
+		if (homeScreeFragment instanceof HomeScreenFragment) {
+			return;
+		}
 
 		// if the fragment isn't null, and implements the onbackpressed callback, do it.
 		if (homeScreeFragment != null) {

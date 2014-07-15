@@ -125,7 +125,9 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
+		try {
+			super.onDestroy();
+		} catch (NullPointerException e) {}
 		homeState.onDestroy();
 		artistState.onDestroy();
 		albumState.onDestroy();

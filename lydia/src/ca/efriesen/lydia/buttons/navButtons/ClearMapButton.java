@@ -6,7 +6,7 @@ import android.view.View;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
-import ca.efriesen.lydia.fragments.MyMapFragment;
+import ca.efriesen.lydia.fragments.MapFragment;
 
 /**
  * Created by eric on 2014-07-06.
@@ -22,7 +22,7 @@ public class ClearMapButton extends BaseButton {
 
 	@Override
 	public void onClick(View view, Button passed) {
-		MyMapFragment mapFragment = (MyMapFragment) activity.getFragmentManager().findFragmentById(R.id.home_screen_fragment);
+		MapFragment mapFragment = (MapFragment) activity.getFragmentManager().findFragmentById(R.id.home_screen_fragment);
 		mapFragment.clearMap();
 
 	}

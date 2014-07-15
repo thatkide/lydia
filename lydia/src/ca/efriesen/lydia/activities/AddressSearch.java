@@ -29,13 +29,13 @@ public class AddressSearch extends Activity implements
 		GooglePlayServicesClient.OnConnectionFailedListener,
 		AdapterView.OnItemClickListener {
 
+	private static final String TAG = AddressSearch.class.getSimpleName();
+
 	private LocationClient locationClient;
 	private Location currentLocation;
 	private AddressViewAdapter adapter;
 	private EditText address;
 	private ListView listView;
-
-	private static final String TAG = "lydia map address search";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,6 +84,8 @@ public class AddressSearch extends Activity implements
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+		// disconnect from the location client
+		locationClient.disconnect();
 		Address address = (Address) adapterView.getAdapter().getItem(position);
 
 		try {

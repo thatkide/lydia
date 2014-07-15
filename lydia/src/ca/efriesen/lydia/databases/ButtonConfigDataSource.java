@@ -1,5 +1,6 @@
 package ca.efriesen.lydia.databases;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -41,7 +42,7 @@ public class ButtonConfigDataSource {
 		dbHelper.close();
 	}
 
-	public void checkRequiredButtons() {
+	public void checkRequiredButtons(Activity activity) {
 		boolean doUpdate = false;
 
 		List<ButtonCheckerCallback> configs = new ArrayList<ButtonCheckerCallback>();
@@ -50,7 +51,7 @@ public class ButtonConfigDataSource {
 
 		for (ButtonCheckerCallback config : configs) {
 			Log.d(TAG, "doing check for " + config.getGroup());
-			List<Button> buttons = config.getButtons();
+			List<Button> buttons = config.getButtons(activity);
 			List<Button> buttonsInDb = getButtonsInGroup(config.getType(), config.getGroup());
 
 			// sort both lists by action
