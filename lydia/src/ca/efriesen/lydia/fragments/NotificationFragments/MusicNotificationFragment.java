@@ -22,8 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.media.Song;
@@ -31,11 +31,17 @@ import ca.efriesen.lydia_common.media.Song;
 /**
  * Created by eric on 2014-07-04.
  */
-public class MusicNotificationFragment extends Fragment {
+public class MusicNotificationFragment extends Fragment implements NotificationInterface {
 
 	private static final String TAG = MusicNotificationFragment.class.getSimpleName();
 
 	private Activity activity;
+	private Song song;
+	private TextView artist;
+	private TextView songTitle;
+	private SeekBar songProgress;
+	private TextView currentPosition;
+	private TextView lengthView;
 
 	// color filters for the random and repeat buttons
 	final PorterDuffColorFilter blueFilter = new PorterDuffColorFilter(Constants.FilterColor, PorterDuff.Mode.SRC_ATOP);
@@ -60,11 +66,14 @@ public class MusicNotificationFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
+
 		final ImageButton shuffle = (ImageButton) activity.findViewById(R.id.shuffle);
 		final ImageButton repeat = (ImageButton) activity.findViewById(R.id.repeat);
-		TextView artist = (TextView) activity.findViewById(R.id.artist);
-		TextView songTitle = (TextView) activity.findViewById(R.id.song_title);
-		SeekBar songProgress = (SeekBar) activity.findViewById(R.id.song_progress_bar);
+		artist = (TextView) activity.findViewById(R.id.artist);
+		songTitle = (TextView) activity.findViewById(R.id.song_title);
+		songProgress = (SeekBar) activity.findViewById(R.id.song_progress_bar);
+		currentPosition = (TextView) activity.findViewById(R.id.song_progress_text);
+		lengthView = (TextView) activity.findViewById(R.id.song_length);
 
 		songProgress.setEnabled(false);
 		songProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -123,24 +132,18 @@ public class MusicNotificationFragment extends Fragment {
 		// register a receiver to update the media info
 		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 
-		// register a receiver to listen for the usb stick being unmounted.  when unmounted kill the update thread
-		// FIXME
-//		activity.registerReceiver(cardUnmountedReceiver, new IntentFilter("android.intent.action.ACTION_MEDIA_UNMOUNTED"));
-
 		// register the local broadcasts from the service
 		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
 		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaService.REPEAT_STATE));
 		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaService.SHUFFLE_STATE));
 		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		try {
 			localBroadcastManager.unregisterReceiver(mMusicInfo);
-		} catch (Exception e) {}
-		try {
-			activity.unregisterReceiver(cardUnmountedReceiver);
 		} catch (Exception e) {}
 		try {
 			localBroadcastManager.unregisterReceiver(mediaProgressReceiver);
@@ -174,55 +177,37 @@ public class MusicNotificationFragment extends Fragment {
 //		return true;
 //	}
 
-	private BroadcastReceiver cardUnmountedReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// make sure the music is stopped
-			localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra("command", MediaService.STOP));
-			Log.d(TAG, "Card unmounted");
-		}
-	};
-
 	private BroadcastReceiver mMusicInfo = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
-
-			// get the required text views
-			TextView artistView = (TextView) activity.findViewById(R.id.artist);
-			TextView titleView = (TextView) activity.findViewById(R.id.song_title);
-
-			// duration info
-			ProgressBar progressBar = (SeekBar) activity.findViewById(R.id.song_progress_bar);
-			TextView lengthView = (TextView) activity.findViewById(R.id.song_length);
+			song = (Song) intent.getSerializableExtra(MediaService.SONG);
 
 			// update the internal vars about the artist and album. so when we click the text it takes us to the correct listing
 //			artistId = String.valueOf(song.getArtistId());
 //			albumId = String.valueOf(song.getAlbumId());
 
 			// update the text views
-			artistView.setText(song.getAlbum().getArtist().getName() + " - " + song.getAlbum().getName());
-			titleView.setText(song.getName());
+			artist.setText(song.getAlbum().getArtist().getName() + " - " + song.getAlbum().getName());
+			songTitle.setText(song.getName());
 
 			// set the progress bar to have the same steps as the song is long in milliseconds
-			progressBar.setEnabled(true);
-			progressBar.setMax(song.getDuration());
+			songProgress.setEnabled(true);
+			songProgress.setMax(song.getDuration());
 			lengthView.setText(song.getDurationString());
 
 			// these need to be selected to start the marquee
-			artistView.setSelected(true);
-			titleView.setSelected(true);
+			artist.setSelected(true);
+			songTitle.setSelected(true);
 		}
 	};
 
 	private BroadcastReceiver mediaProgressReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			TextView currentPosition = (TextView) activity.findViewById(R.id.song_progress_text);
-			ProgressBar progressBar = (SeekBar) activity.findViewById(R.id.song_progress_bar);
-
-			currentPosition.setText(intent.getStringExtra("currentPositionString"));
-			progressBar.setProgress(intent.getIntExtra("currentPositionInt", 0));
+			try {
+				currentPosition.setText(intent.getStringExtra("currentPositionString"));
+				songProgress.setProgress(intent.getIntExtra("currentPositionInt", 0));
+			} catch (NullPointerException e) {}
 		}
 	};
 
@@ -264,4 +249,14 @@ public class MusicNotificationFragment extends Fragment {
 		}
 	};
 
+	@Override
+	public void saveFragment(Bundle bundle) {
+	}
+
+	@Override
+	public void restoreFragment(Bundle bundle) {
+		song = (Song) bundle.getSerializable("song");
+		// send a broadcast asking for the current song. we'll get it and update
+		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+	}
 }

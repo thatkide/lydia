@@ -12,7 +12,11 @@ import android.util.Log;
 import android.view.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
+import ca.efriesen.lydia.controllers.NotificationController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
+import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
+import ca.efriesen.lydia.fragments.NotificationFragments.TemperatureNotificationFragment;
+import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
 import ca.efriesen.lydia.plugins.LastFM;
@@ -22,14 +26,12 @@ import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-
 import java.util.Observable;
 import java.util.Observer;
 
 public class Dashboard extends Activity {
-	private static final String TAG = "accessory";//lydia Dashboard Activity";
+	private static final String TAG = Dashboard.class.getSimpleName();
 	private BluetoothAdapter mBluetoothAdapter = null;
-
 
 	// plugins
 	private LastFM lastFm;
@@ -41,6 +43,8 @@ public class Dashboard extends Activity {
 	private boolean mPermissionRequestPending;
 	private UsbAccessory mUsbAccessory;
 
+	private NotificationController notificationController;
+
 	/**
 	 * Called when the activities is first created.
 	 */
@@ -48,6 +52,7 @@ public class Dashboard extends Activity {
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 
+		notificationController = new NotificationController(this);
 		final UpdateChecker checker = new UpdateChecker(this, true);
 		checker.addObserver(new Observer() {
 			@Override
@@ -64,9 +69,10 @@ public class Dashboard extends Activity {
 		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
 //			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
+
 		setContentView(R.layout.dashboard);
 
-		// start the hardware managerservice
+		// start the hardware manager service
 		startService(new Intent(this, HardwareManagerService.class));
 
 		// start the media service
@@ -79,6 +85,16 @@ public class Dashboard extends Activity {
 			.replace(R.id.passenger_controls, new PassengerControlsFragment())
 			.replace(R.id.footer_fragment, new FooterFragment())
 			.commit();
+
+		// start with the default music notification
+		notificationController.addNotification(MusicNotificationFragment.class, NotificationInterface.PRIORITY_HIGH);
+
+		// FIXME
+		// if we use the arduino, and have temperature sensors, load the note fragment
+		notificationController.addNotification(TemperatureNotificationFragment.class, NotificationInterface.PRIORITY_NORMAL);
+
+		// start with the music
+		notificationController.setNotification(MusicNotificationFragment.class);
 
 		// initialize all plugins
 		lastFm = new LastFM(this);
@@ -200,6 +216,23 @@ public class Dashboard extends Activity {
 		super.onBackPressed();
 	}
 
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				getWindow().getDecorView().setSystemUiVisibility(
+						View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+								| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+								| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+								| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+								| View.SYSTEM_UI_FLAG_FULLSCREEN
+								| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+				);
+			}
+		}
+	}
+
 /* ------------------ END OVERRIDES ------------------ */
 
 /* ------------------ Start View Updaters ------------------ */
@@ -317,5 +350,9 @@ public class Dashboard extends Activity {
 			}
 		}
 	};
+
+	public NotificationController getNotificationController() {
+		return notificationController;
+	}
 
 }

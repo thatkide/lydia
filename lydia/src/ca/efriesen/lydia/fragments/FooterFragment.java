@@ -2,25 +2,25 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.devices.Master;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.includes.Intents;
@@ -31,14 +31,15 @@ import ca.efriesen.lydia_common.includes.Intents;
  * Date: 2012-08-29
  * Time: 10:17 PM
  */
-public class FooterFragment extends Fragment {
-	private static final String TAG = "Footer Fragment";
+public class FooterFragment extends Fragment implements FragmentAnimationCallback, View.OnClickListener {
+	private static final String TAG = FooterFragment.class.getSimpleName();
+
+	private Activity activity;
+
 	// setup the audio manager and seek bar vars
 	private AudioManager mAudioManager;
 	private SeekBar volumeControl;
 	private int maxVolume, currentVolume;
-	// var to store the volume for when the mute button is pressed
-	private static int oldVolume;
 
 	private int volRefreshTime = 100;
 	private Handler volUpHandler = new Handler();
@@ -69,29 +70,21 @@ public class FooterFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		Activity activity = getActivity();
+		activity = getActivity();
 
 		// get all of our controls
-		ImageButton mute = (ImageButton) activity.findViewById(R.id.mute);
 		ImageButton volDown = (ImageButton) activity.findViewById(R.id.volume_down);
 		ImageButton volUp = (ImageButton) activity.findViewById(R.id.volume_up);
 
-		// mute button
-		mute.setOnClickListener(new View.OnClickListener() {
+		ImageButton home = (ImageButton) activity.findViewById(R.id.home);
+		ImageButton back = (ImageButton) activity.findViewById(R.id.back);
+
+		home.setOnClickListener(this);
+
+		back.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// get the current volume
-				int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-				// if it's not 0
-				if (currentVolume > 0) {
-					// mute the stream
-					mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-					// store the volume
-					oldVolume = currentVolume;
-					// it's currently 0, so use the stored value
-				} else {
-					mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume, 0);
-				}
+				activity.onBackPressed();
 			}
 		});
 
@@ -138,7 +131,7 @@ public class FooterFragment extends Fragment {
 			public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 				mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, 0);
 				// find our mute button image
-				ImageButton mute = (ImageButton) getView().findViewById(R.id.mute);
+				ImageButton mute = (ImageButton) activity.findViewById(R.id.mute);
 				// change the image depending on the current volume level
 				if (mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > 0) {
 					mute.setImageResource(R.drawable.device_access_volume_on);
@@ -212,16 +205,16 @@ public class FooterFragment extends Fragment {
 	private BroadcastReceiver insideTemperatureReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			TextView insideTemp = (TextView) getActivity().findViewById(R.id.inside_temperature);
-			insideTemp.setText("Inside: " + intent.getStringExtra(Master.INSIDETEMPERATURE) + "\u2103");
+//			TextView insideTemp = (TextView) getActivity().findViewById(R.id.inside_temperature);
+//			insideTemp.setText("Inside: " + intent.getStringExtra(Master.INSIDETEMPERATURE) + "\u2103");
 		}
 	};
 
 	private BroadcastReceiver outsideTemperatureReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			TextView outsideTemp = (TextView) getActivity().findViewById(R.id.outside_temperature);
-			outsideTemp.setText("Outside: " + intent.getStringExtra(Master.OUTSIDETEMPERATURE) + "\u2103");
+//			TextView outsideTemp = (TextView) getActivity().findViewById(R.id.outside_temperature);
+//			outsideTemp.setText("Outside: " + intent.getStringExtra(Master.OUTSIDETEMPERATURE) + "\u2103");
 		}
 	};
 
@@ -243,7 +236,7 @@ public class FooterFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			Activity activity = getActivity();
 			int brightness = Integer.parseInt(intent.getStringExtra(Master.LIGHTVALUE));
-			ImageView dayNight = (ImageView) activity.findViewById(R.id.day_night);
+//			ImageView dayNight = (ImageView) activity.findViewById(R.id.day_night);
 
 			// get the values store in the preferences
 			int lowerLevel = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(activity).getString("minLight", "0"));
@@ -251,10 +244,10 @@ public class FooterFragment extends Fragment {
 
 			// if the brightness is less than the lower level, turn to night
 			if (brightness < lowerLevel) {
-				dayNight.setImageResource(R.drawable.device_access_brightness_low);
+//				dayNight.setImageResource(R.drawable.device_access_brightness_low);
 				// if the brightness is above the upper level, switch to day
 			} else if (brightness > upperLevel) {
-				dayNight.setImageResource(R.drawable.device_access_brightness_high);
+//				dayNight.setImageResource(R.drawable.device_access_brightness_high);
 			}
 			// else, the brightness is between, but has not passed a threshold, so do nothing
 		}
@@ -263,7 +256,7 @@ public class FooterFragment extends Fragment {
 	private BroadcastReceiver bluetoothManager = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
+//			ImageButton btImage = (ImageButton) getActivity().findViewById(R.id.bluetooth);
 			BluetoothDevice device = intent.getParcelableExtra("device");
 			int state = intent.getIntExtra("state", 0);
 			switch (state) {
@@ -271,11 +264,11 @@ public class FooterFragment extends Fragment {
 					try {
 						Toast.makeText(getActivity(), "Connected to " + device.getName(), Toast.LENGTH_SHORT).show();
 					} catch (Exception e) {}
-					btImage.setImageResource(R.drawable.device_access_bluetooth_connected);
+//					btImage.setImageResource(R.drawable.device_access_bluetooth_connected);
 					break;
 				}
 				case BluetoothService.STATE_NONE: {
-					btImage.setImageResource(R.drawable.device_access_bluetooth);
+//					btImage.setImageResource(R.drawable.device_access_bluetooth);
 					break;
 				}
 			}
@@ -292,20 +285,50 @@ public class FooterFragment extends Fragment {
 			// use "float" to do the math, since it will be decimals.  convert back to integer by *100, this adds a ".0" to the end
 			float batteryPct = level / (float) scale * 100;
 //		find the text view
-			TextView battery = (TextView) getActivity().findViewById(R.id.battery_pct);
+//			TextView battery = (TextView) getActivity().findViewById(R.id.battery_pct);
 //		get the value of in string form, and update the view
-			battery.setText(String.valueOf((int)batteryPct) + "%");
+//			battery.setText(String.valueOf((int)batteryPct) + "%");
 
 //		add some color if the battery is low
 			if ((int)batteryPct < 10) {
-				battery.setTextColor(Color.RED);
+//				battery.setTextColor(Color.RED);
 			} else if ((int)batteryPct < 25) {
-				battery.setTextColor(Color.YELLOW);
+//				battery.setTextColor(Color.YELLOW);
 			} else {
-				battery.setTextColor(Color.WHITE);
+//				battery.setTextColor(Color.WHITE);
 			}
 		}
 	};
+
+	@Override
+	public void animationComplete(int direction) {
+		FragmentManager manager = getFragmentManager();
+		manager.beginTransaction()
+				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.home_screen_fragment, new HomeScreenFragment())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.home) {
+			if (!(getFragmentManager().findFragmentById(R.id.home_screen_fragment) instanceof HomeScreenFragment)) {
+				// if the passenger controls is hidden, animate it in and do the home slide up after
+				if (activity.findViewById(R.id.passenger_controls).getVisibility() == View.GONE) {
+					activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
+					((PassengerControlsFragment) getFragmentManager().findFragmentById(R.id.passenger_controls)).showFragment(this);
+					// if it's already here, just show home
+				} else {
+					getFragmentManager().beginTransaction()
+							.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+							.replace(R.id.home_screen_fragment, new HomeScreenFragment())
+							.addToBackStack(null)
+							.commit();
+				}
+			}
+		}
+	}
 
 }
 	

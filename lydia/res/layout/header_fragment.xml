@@ -4,19 +4,21 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
-	<ImageButton android:id="@+id/home"
-		android:src="@drawable/home"
-		style="@style/HeaderbarButtons"
-	    android:contentDescription="@string/home" />
+	<ImageButton android:id="@+id/mute"
+		android:src="@drawable/device_access_volume_on"
+		android:contentDescription=""
+		style="@style/HeaderbarButtons"/>
 	<ImageButton android:id="@+id/play_pause"
 		android:src="@drawable/av_play"
 		style="@style/HeaderbarRoundBottomRight"
-		android:layout_toRightOf="@id/home"
+		android:layout_toRightOf="@id/mute"
 	    android:contentDescription="@string/play"/>
 
 	<FrameLayout android:id="@+id/notification_bar"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
+		android:layout_height="80dip"
+		android:paddingLeft="175dip"
+		android:paddingRight="175dip"/>
 
 	<ImageButton android:id="@+id/next"
 		android:src="@drawable/av_next"

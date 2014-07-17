@@ -15,7 +15,7 @@ import ca.efriesen.lydia.services.ArduinoService;
  */
 public class Master extends Device {
 
-	private static final String TAG = "Lydia master";
+	private static final String TAG = Master.class.getSimpleName();
 
 	public static final int id = 10;
 
@@ -24,6 +24,7 @@ public class Master extends Device {
 	public static final String INSIDETEMPERATURE = "ca.efriesen.lydia.INSIDETEMPERATURE";
 	public static final String LIGHTVALUE = "ca.efriesen.lydia.LIGHTVALUE";
 	public static final String OUTSIDETEMPERATURE = "ca.efriesen.lydia.OUTSIDETEMPERATURE";
+
 
 	public static final int RADIOSEEKDOWN = 116;
 	public static final int RADIOSEEKUP = 117;
@@ -34,6 +35,7 @@ public class Master extends Device {
 	public static final int INSIDETEMP = 160;
 	public static final int LIGHTLEVEL = 176;
 	public static final int OUTSIDETEMP = 161;
+	public static final int GETTEMP = 162;
 
 	public static final int SEATHEAT = 121;
 
@@ -64,7 +66,7 @@ public class Master extends Device {
 		switch (command) {
 			case INSIDETEMP: {
 				int insideTemp = Helpers.word(data[1], data[2]);
-				context.sendBroadcast(new Intent(INSIDETEMPERATURE).putExtra(INSIDETEMPERATURE, String.valueOf(insideTemp)));
+				context.sendBroadcast(new Intent(INSIDETEMPERATURE).putExtra(INSIDETEMPERATURE, insideTemp));
 				Log.d(TAG, "got inside temp: " + insideTemp);
 				break;
 			}
@@ -76,7 +78,7 @@ public class Master extends Device {
 			}
 			case OUTSIDETEMP: {
 				int outsideTemp = Helpers.word(data[1], data[2]);
-				context.sendBroadcast(new Intent(OUTSIDETEMPERATURE).putExtra(OUTSIDETEMPERATURE, String.valueOf(outsideTemp)));
+				context.sendBroadcast(new Intent(OUTSIDETEMPERATURE).putExtra(OUTSIDETEMPERATURE, outsideTemp));
 //				Log.d(TAG, "got outside temp: " + outsideTemp);
 				break;
 			}

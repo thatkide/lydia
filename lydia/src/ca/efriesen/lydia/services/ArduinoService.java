@@ -80,9 +80,7 @@ public class ArduinoService extends Service {
 			try {
 				mOutputStream.write(dataToSend);
 			} catch (IOException e) {
-				Log.e(TAG, "", e);
 			} catch (NullPointerException e) {
-				Log.e(TAG, "", e);
 			}
 		}
 	};
@@ -137,7 +135,7 @@ public class ArduinoService extends Service {
 		// The device constructor takes a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
 		devices = new SparseArray<Device>();
 		// populate the devices array with the devices, using their id as the key and the object as the value
-		devices.put(Master.id, new Master(this));
+		devices.put(Master.id, new Master(getApplicationContext()));
 		devices.put(IdiotLights.id, new IdiotLights(this));
 
 		// pass in the devices to the arduino.

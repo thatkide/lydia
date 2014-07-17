@@ -2,14 +2,14 @@ package ca.efriesen.lydia.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.*;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
-import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
 import ca.efriesen.lydia.services.MediaService;
 
@@ -19,12 +19,15 @@ import ca.efriesen.lydia.services.MediaService;
  * Date: 2012-10-06
  * Time: 10:31 AM
  */
-public class HeaderFragment extends Fragment implements FragmentAnimationCallback, View.OnClickListener { //implements View.OnTouchListener {
+public class HeaderFragment extends Fragment { //implements View.OnTouchListener {
 
-	public static final String TAG = "Header Fragment";
+	public static final String TAG = HeaderFragment.class.getSimpleName();
 
 	private Activity activity;
 	private LocalBroadcastManager localBroadcastManager;
+	private AudioManager mAudioManager;
+	// var to store the volume for when the mute button is pressed
+	private static int oldVolume;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,23 +40,40 @@ public class HeaderFragment extends Fragment implements FragmentAnimationCallbac
 		super.onActivityCreated(saved);
 		activity = getActivity();
 		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
-
-		getFragmentManager().beginTransaction()
-				.replace(R.id.notification_bar, new MusicNotificationFragment()).commit();
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 
+		// setup the audio manager from the main activity
+		mAudioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+
 		// get all the buttons
-		ImageButton home = (ImageButton) activity.findViewById(R.id.home);
+		ImageButton mute = (ImageButton) activity.findViewById(R.id.mute);
+
 		ImageButton playPause = (ImageButton) activity.findViewById(R.id.play_pause);
 		ImageButton previous = (ImageButton) activity.findViewById(R.id.previous);
 		ImageButton next = (ImageButton) activity.findViewById(R.id.next);
 
-
-		home.setOnClickListener(this);
+		// mute button
+		mute.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// get the current volume
+				int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+				// if it's not 0
+				if (currentVolume > 0) {
+					// mute the stream
+					mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+					// store the volume
+					oldVolume = currentVolume;
+					// it's currently 0, so use the stored value
+				} else {
+					mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume, 0);
+				}
+			}
+		});
 
 		playPause.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -66,6 +86,8 @@ public class HeaderFragment extends Fragment implements FragmentAnimationCallbac
 			@Override
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
+				// show the music bar on change
+				((Dashboard)activity).getNotificationController().setNotification(MusicNotificationFragment.class);
 			}
 		});
 
@@ -73,37 +95,8 @@ public class HeaderFragment extends Fragment implements FragmentAnimationCallbac
 			@Override
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
+				((Dashboard)activity).getNotificationController().setNotification(MusicNotificationFragment.class);
 			}
 		});
-	}
-
-	@Override
-	public void animationComplete(int direction) {
-		FragmentManager manager = getFragmentManager();
-		manager.beginTransaction()
-				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-				.replace(R.id.home_screen_fragment, new HomeScreenFragment())
-				.addToBackStack(null)
-				.commit();
-	}
-
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.home) {
-			if (!(getFragmentManager().findFragmentById(R.id.home_screen_fragment) instanceof HomeScreenFragment)) {
-				// if the passenger controls is hidden, animate it in and do the home slide up after
-				if (activity.findViewById(R.id.passenger_controls).getVisibility() == View.GONE) {
-					activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
-					((PassengerControlsFragment) getFragmentManager().findFragmentById(R.id.passenger_controls)).showFragment(this);
-				// if it's already here, just show home
-				} else {
-					getFragmentManager().beginTransaction()
-							.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-							.replace(R.id.home_screen_fragment, new HomeScreenFragment())
-							.addToBackStack(null)
-							.commit();
-				}
-			}
-		}
 	}
 }
