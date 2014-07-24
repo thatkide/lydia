@@ -46,7 +46,7 @@ public class MapHelpers {
 								"input="+ URLEncoder.encode(strings[0], "UTF-8") + "&" +
 								"language=en&" +
 								"sensor=true&" +
-								"location=" + location.getLatitude() + "," + location.getLongitude() + "&" +
+								(location != null ? "location=" + location.getLatitude() + "," + location.getLongitude() + "&" : "") +
 								"radius=1000&" + // 5 kilometer radius
 								"key=" + context.getString(R.string.googleApiBrowserKey));
 				URLConnection tc = googlePlaces.openConnection();

@@ -16,6 +16,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 import java.util.List;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.DrawScreenCallback;
@@ -24,6 +26,7 @@ import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
+import ca.efriesen.lydia.includes.ResizeWidthAnimation;
 
 public class PassengerControlsFragment extends Fragment implements View.OnClickListener, DrawScreenCallback {
 
@@ -149,40 +152,67 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 		return false;
 	}
 
-	public void showFragment(final Fragment fragment) {
-		Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_left);
-
+	public void showFragment(final Object object) {
+		// get the views
 		View passengerControls = activity.findViewById(R.id.passenger_controls);
-		passengerControls.startAnimation(animation);
-		animation.setAnimationListener(new Animation.AnimationListener() {
-			@Override
-			public void onAnimationStart(Animation animation) {	}
+		View homescreen = activity.findViewById(R.id.home_screen_fragment);
 
+		// passenger slide in animation
+		Animation controlsAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_left);
+		// we resize the home screen fragment, use the custom animation
+		ResizeWidthAnimation animation = new ResizeWidthAnimation(homescreen, homescreen.getWidth()-passengerControls.getWidth());
+		// set the proper duration
+		animation.setDuration(controlsAnimation.getDuration());
+		homescreen.startAnimation(animation);
+		// start the animation
+		passengerControls.startAnimation(controlsAnimation);
+		controlsAnimation.setAnimationListener(new Animation.AnimationListener() {
 			@Override
-			public void onAnimationEnd(Animation animation) {
-				if (fragment instanceof FragmentAnimationCallback) {
-					((FragmentAnimationCallback) fragment).animationComplete(FragmentAnimationCallback.SHOW);
+			public void onAnimationStart(Animation animation) {
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationStart(FragmentAnimationCallback.SHOW);
 				}
 			}
 
 			@Override
-			public void onAnimationRepeat(Animation animation) {}
+			public void onAnimationEnd(Animation animation) {
+				// reshow the controls fragment
+				activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
+
+				if (object instanceof FragmentAnimationCallback) {
+					// fire the callback
+					((FragmentAnimationCallback) object).animationComplete(FragmentAnimationCallback.SHOW);
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) { }
 		});
 	}
 
-	public void hideFragment(final BaseButton button) {
+	public void hideFragment(final Object object) {
 		Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
-
+		// reset the homescreen to match parent, ensuring it fills the screen
+		View homescreen = activity.findViewById(R.id.home_screen_fragment);
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) homescreen.getLayoutParams();
+		params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+		homescreen.setLayoutParams(params);
+		// start the animation of the controls fragment
 		View passengerControls = activity.findViewById(R.id.passenger_controls);
 		passengerControls.startAnimation(animation);
 		animation.setAnimationListener(new Animation.AnimationListener() {
 			@Override
-			public void onAnimationStart(Animation animation) {	}
+			public void onAnimationStart(Animation animation) {
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationStart(FragmentAnimationCallback.HIDE);
+				}
+			}
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				if (button instanceof FragmentAnimationCallback) {
-					((FragmentAnimationCallback) button).animationComplete(FragmentAnimationCallback.HIDE);
+				if (object instanceof FragmentAnimationCallback) {
+					// fire the callback
+					((FragmentAnimationCallback) object).animationComplete(FragmentAnimationCallback.HIDE);
 				}
 			}
 

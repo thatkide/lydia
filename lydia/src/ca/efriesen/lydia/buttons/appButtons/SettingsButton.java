@@ -64,10 +64,12 @@ public class SettingsButton extends BaseButton implements FragmentAnimationCallb
 			manager.beginTransaction()
 					.setCustomAnimations(R.anim.controls_slide_out_up, R.anim.controls_slide_in_up)
 					.replace(R.id.driver_controls, driverControlsFragment)
-					.addToBackStack(null)
 					.commit();
 			// remove the controls view from the layout
 			activity.findViewById(R.id.passenger_controls).setVisibility(View.GONE);
 		}
 	}
+
+	@Override
+	public void animationStart(int direction) { }
 }

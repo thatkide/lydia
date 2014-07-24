@@ -26,8 +26,11 @@ public class NavigationButton extends BaseButton implements FragmentAnimationCal
 
 	@Override
 	public void onClick(View view, Button button) {
-		PassengerControlsFragment fragment = (PassengerControlsFragment) activity.getFragmentManager().findFragmentById(R.id.passenger_controls);
+		FragmentManager manager = activity.getFragmentManager();
+		PassengerControlsFragment fragment = (PassengerControlsFragment) manager.findFragmentById(R.id.passenger_controls);
 		fragment.hideFragment(this);
+		DriverControlsFragment driverControlsFragment = (DriverControlsFragment) manager.findFragmentById(R.id.driver_controls);
+		driverControlsFragment.hideFragment(null);
 	}
 
 	@Override
@@ -50,10 +53,13 @@ public class NavigationButton extends BaseButton implements FragmentAnimationCal
 			manager.beginTransaction()
 					.setCustomAnimations(R.anim.controls_slide_out_up, R.anim.controls_slide_in_up)
 					.replace(R.id.driver_controls, driverControlsFragment)
-					.addToBackStack(null)
 					.commit();
 			// remove the controls view from the layout
 			activity.findViewById(R.id.passenger_controls).setVisibility(View.GONE);
+			activity.findViewById(R.id.driver_controls).setVisibility(GONE);
 		}
 	}
+
+	@Override
+	public void animationStart(int direction) { }
 }

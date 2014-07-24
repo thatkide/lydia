@@ -12,14 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
 import java.util.List;
-
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.SidebarEditorActivity;
+import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
@@ -28,6 +29,7 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 
 	private static final String TAG = "driver controls";
 
+	private Activity activity;
 	private int selectedScreen = 0;
 	private ButtonController buttonController;
 	private int group = BaseButton.GROUP_USER;
@@ -47,7 +49,7 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		Activity activity = getActivity();
+		activity = getActivity();
 		if (getArguments() != null) {
 			selectedScreen = getArguments().getInt(selectedDriverBar, 0);
 			group = getArguments().getInt("group");
@@ -83,6 +85,10 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 		driverDown.setOnClickListener(buttonController);
 		driverDown2.setTag(BaseButton.BUTTON_PREV);
 		driverDown2.setOnClickListener(buttonController);
+	}
+
+	public int getGroup() {
+		return group;
 	}
 
 	private void drawFragment(boolean direction) {
@@ -143,5 +149,65 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	@Override
 	public boolean fullDraw() {
 		return false;
+	}
+
+	public void showFragment(final Object object) {
+		Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
+
+		View driverControls = activity.findViewById(R.id.driver_controls);
+		driverControls.startAnimation(animation);
+		animation.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationStart(FragmentAnimationCallback.SHOW);
+				}
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				// reshow the controls fragment
+				activity.findViewById(R.id.driver_controls).setVisibility(View.VISIBLE);
+
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationComplete(FragmentAnimationCallback.SHOW);
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
+	}
+
+	public void hideFragment(final Object object) {
+		View homescreen = activity.findViewById(R.id.map_container);
+		View driverControls = activity.findViewById(R.id.driver_controls);
+
+		Animation controlsAnim = AnimationUtils.loadAnimation(activity, R.anim.slide_out_left);
+
+//		ResizeWidthAnimation animation = new ResizeWidthAnimation(homescreen, homescreen.getWidth()+driverControls.getWidth());
+		// set the proper duration
+//		animation.setDuration(controlsAnim.getDuration());
+//		homescreen.startAnimation(animation);
+
+		driverControls.startAnimation(controlsAnim);
+		controlsAnim.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationStart(FragmentAnimationCallback.HIDE);
+				}
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if (object instanceof FragmentAnimationCallback) {
+					((FragmentAnimationCallback) object).animationComplete(FragmentAnimationCallback.HIDE);
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
 	}
 }

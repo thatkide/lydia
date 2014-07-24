@@ -72,6 +72,13 @@
 		<item name="android:background">@drawable/button_bg</item>
 		<item name="android:textColor">@color/white</item>
 	</style>
+	<style name="MapButton">
+		<item name="android:layout_width">40.5dip</item>
+		<item name="android:layout_height">38dip</item>
+		<item name="android:background">@drawable/map_button</item>
+		<item name="android:alpha">0.7</item>
+		<item name="android:textColor">@color/black</item>
+	</style>
 	<style name="ControlButtonsSquare" parent="ControlButtons">
 		<item name="android:layout_width">80dip</item>
 	</style>

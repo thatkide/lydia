@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+
+import com.desarrollodroide.libraryfragmenttransactionextended.FragmentTransactionExtended;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ public class NotificationController {
 	// display time in seconds.  more urgency will increase the time
 	private int noteDisplayTime = 30;
 
+	private Activity activity;
 	private FragmentManager fragmentManager;
 	private final Handler handler = new Handler();
 	private Runnable runnable;
@@ -32,7 +36,8 @@ public class NotificationController {
 	private List<Bundle> states = new ArrayList<Bundle>();
 	private int currentNote = 0;
 
-	public NotificationController(Activity activity) {
+	public NotificationController(final Activity activity) {
+		this.activity = activity;
 		this.fragmentManager = activity.getFragmentManager();
 		// create the new runnable.  this does the job of rotating the notes
 		runnable = new Runnable() {
@@ -40,30 +45,41 @@ public class NotificationController {
 			public void run() {
 				// if we have more than one note to show
 				if (info.size() > 1) {
-					// save the state of the currently displayed note.  this is the "saveFragment" method.  it stores it here until next time it's needed
-					((NotificationInterface) fragmentManager.findFragmentById(R.id.notification_bar)).saveFragment(states.get(currentNote));
+					try {
+						// save the state of the currently displayed note.  this is the "saveFragment" method.  it stores it here until next time it's needed
+						((NotificationInterface) fragmentManager.findFragmentById(R.id.notification_bar)).saveFragment(states.get(currentNote));
 
-					// increment counter
-					currentNote++;
-					// if we went over the size, start over
-					if (currentNote >= info.size()) {
-						currentNote = 0;
+						// increment counter
+						currentNote++;
+						// if we went over the size, start over
+						if (currentNote >= info.size()) {
+							currentNote = 0;
+						}
+
+						// get next note screen
+						Bundle bundle = info.get(currentNote);
+						Fragment newFragment = (Fragment) bundle.getSerializable("fragment");
+						// replace the screen with the new note
+						FragmentTransactionExtended transactionExtended = new FragmentTransactionExtended(
+								activity,
+								fragmentManager.beginTransaction(),
+								fragmentManager.findFragmentById(R.id.notification_bar),
+								newFragment,
+								R.id.notification_bar);
+						transactionExtended.addTransition(FragmentTransactionExtended.FADE);
+						transactionExtended.commit();
+
+						// commit is async so we must force it.  do the commit, then do the restore fragment callback
+						fragmentManager.executePendingTransactions();
+						// pass the bundle to the fragment just inflated.
+						((NotificationInterface) newFragment).restoreFragment(states.get(currentNote));
+						// post with the proper display time
+						handler.postDelayed(this, getDisplayTime(bundle.getInt("priority")));
+					} catch (NullPointerException e) {
+						handler.removeCallbacks(runnable);
+					} catch (IllegalStateException e) {
+						handler.removeCallbacks(runnable);
 					}
-
-					// get next note screen
-					Bundle bundle = info.get(currentNote);
-					Fragment fragment = (Fragment) bundle.getSerializable("fragment");
-					// replace the screen with the new note
-					fragmentManager.beginTransaction()
-							.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
-							.replace(R.id.notification_bar, (Fragment) bundle.getSerializable("fragment"))
-							.commit();
-					// commit is async so we must force it.  do the commit, then do the restore fragment callback
-					fragmentManager.executePendingTransactions();
-					// pass the bundle to the fragment just inflated.
-					((NotificationInterface) fragment).restoreFragment(states.get(currentNote));
-					// post with the proper display time
-					handler.postDelayed(this, getDisplayTime(bundle.getInt("priority")));
 				}
 			}
 		};
@@ -107,12 +123,16 @@ public class NotificationController {
 		// get the bundle
 		Bundle bundle = info.get(currentNote);
 		// and the actual fragment
-		Fragment fragment = (Fragment) bundle.getSerializable("fragment");
+		Fragment newFragment = (Fragment) bundle.getSerializable("fragment");
 		// show it
-		fragmentManager.beginTransaction()
-				.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up)
-				.replace(R.id.notification_bar, fragment)
-				.commit();
+		FragmentTransactionExtended transactionExtended = new FragmentTransactionExtended(
+				activity,
+				fragmentManager.beginTransaction(),
+				fragmentManager.findFragmentById(R.id.notification_bar),
+				newFragment,
+				R.id.notification_bar);
+		transactionExtended.addTransition(FragmentTransactionExtended.FADE);
+		transactionExtended.commit();
 		// repost the handler to show the new fragment for the proper amount of time
 		handler.removeCallbacks(runnable);
 		handler.postDelayed(runnable, getDisplayTime(bundle.getInt("priority")));

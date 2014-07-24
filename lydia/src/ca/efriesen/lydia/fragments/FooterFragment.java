@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.devices.Master;
 import ca.efriesen.lydia_common.BluetoothService;
@@ -300,32 +301,70 @@ public class FooterFragment extends Fragment implements FragmentAnimationCallbac
 		}
 	};
 
+	// this only gets called if the passenger controls is gone
 	@Override
 	public void animationComplete(int direction) {
 		FragmentManager manager = getFragmentManager();
 		manager.beginTransaction()
 				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 				.replace(R.id.home_screen_fragment, new HomeScreenFragment())
-				.addToBackStack(null)
 				.commit();
+
+		if (((DriverControlsFragment)manager.findFragmentById(R.id.driver_controls)).getGroup() != BaseButton.GROUP_USER) {
+			manager.beginTransaction()
+				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.driver_controls, new DriverControlsFragment())
+				.commit();
+		}
 	}
+
+	@Override
+	public void animationStart(int direction) { }
 
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.home) {
 			if (!(getFragmentManager().findFragmentById(R.id.home_screen_fragment) instanceof HomeScreenFragment)) {
-				// if the passenger controls is hidden, animate it in and do the home slide up after
-				if (activity.findViewById(R.id.passenger_controls).getVisibility() == View.GONE) {
-					activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
-					((PassengerControlsFragment) getFragmentManager().findFragmentById(R.id.passenger_controls)).showFragment(this);
-					// if it's already here, just show home
-				} else {
-					getFragmentManager().beginTransaction()
+				View driverView = activity.findViewById(R.id.driver_controls);
+				View passengerView = activity.findViewById(R.id.passenger_controls);
+
+				final FragmentManager manager = getFragmentManager();
+
+				// both sides are in view, just replace the home screen
+				if (driverView.getVisibility() == View.VISIBLE && passengerView.getVisibility() == View.VISIBLE) {
+					manager.beginTransaction()
 							.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 							.replace(R.id.home_screen_fragment, new HomeScreenFragment())
-							.addToBackStack(null)
 							.commit();
 				}
+
+				// if the passenger controls is hidden, animate it in and do the home slide up after
+				if (passengerView.getVisibility() == View.GONE) {
+					((PassengerControlsFragment) manager.findFragmentById(R.id.passenger_controls)).showFragment(this);
+				}
+				// if the driver controls is hidden, animate it in and do the home slide up after
+				if (driverView.getVisibility() == View.GONE) {
+					((DriverControlsFragment) manager.findFragmentById(R.id.driver_controls)).showFragment(new FragmentAnimationCallback() {
+						@Override
+						public void animationComplete(int direction) {
+							activity.findViewById(R.id.driver_controls).setVisibility(View.VISIBLE);
+						}
+
+						@Override
+						public void animationStart(int direction) {
+							// Load new driver controls with nav buttons
+							DriverControlsFragment driverControlsFragment = new DriverControlsFragment();
+							Bundle args = new Bundle();
+							args.putInt("group", BaseButton.GROUP_USER);
+							driverControlsFragment.setArguments(args);
+
+							manager.beginTransaction()
+									.replace(R.id.driver_controls, driverControlsFragment)
+									.commit();
+						}
+					});
+				}
+
 			}
 		}
 	}

@@ -4,16 +4,31 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.*;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.buttons.BaseButton;
+import ca.efriesen.lydia.buttons.navButtons.ShowHide;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.includes.MapHelpers;
@@ -27,6 +42,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -42,6 +58,7 @@ public class MapFragment extends Fragment implements
 		GoogleMap.OnMapLongClickListener,
 		LocationSource.OnLocationChangedListener,
 		GoogleMap.OnCameraChangeListener,
+		GoogleMap.OnMyLocationButtonClickListener,
 		FragmentAnimationCallback, FragmentOnBackPressedCallback, RoutingListener {
 
 	private static final String TAG = MapFragment.class.getSimpleName();
@@ -64,6 +81,16 @@ public class MapFragment extends Fragment implements
 	private LocationClient locationClient;
 	private Location currentLocation;
 	private Address address;
+
+	private EditText search;
+
+	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		// create a new location client
+		locationClient = new LocationClient(getActivity(), this, this);
+		locationClient.connect();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,6 +117,7 @@ public class MapFragment extends Fragment implements
 						map.setMyLocationEnabled(true);
 						map.setOnMapClickListener(this);
 						map.setOnMapLongClickListener(this);
+						map.setOnMyLocationButtonClickListener(this);
 
 						UiSettings settings = map.getUiSettings();
 						settings.setAllGesturesEnabled(true);
@@ -114,18 +142,93 @@ public class MapFragment extends Fragment implements
 		super.onActivityCreated(saved);
 		activity = getActivity();
 
-		// create a new location client
-		locationClient = new LocationClient(getActivity().getApplicationContext(), this, this);
-		locationClient.connect();
-
 		int mode = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt("nav_mode", 1);
 		travelMode = Routing.TravelMode.values()[mode];
+
+		final ShowHide showHide = new ShowHide(activity);
+		final Button button = (Button) activity.findViewById(R.id.hide_driver_controls);
+		final ListView listView = (ListView) activity.findViewById(R.id.search_results);
+		search = (EditText) activity.findViewById(R.id.search_string);
+
+
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showHide.onClick(v, button);
+			}
+		});
+
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// this is just a skeleton address object.  we'll get the details below
+				Address address = (Address) parent.getAdapter().getItem(position);
+
+				try {
+					address = new MapHelpers.GetDetailsFromReferenceTask(activity).execute(address.getUrl()).get();
+					// close keyboard
+					InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(search.getWindowToken(), 0);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+						activity.getWindow().getDecorView().setSystemUiVisibility(
+								View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+										| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+						);
+					}
+					// clear any markers
+					map.clear();
+					// update the camera
+					CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), 16);
+					// animate it
+					map.animateCamera(cameraUpdate);
+					// draw new marker
+					drawMarker(address, true);
+					// clear the search text
+					search.setText("");
+					// clear the adapter
+					((AddressViewAdapter)parent.getAdapter()).clear();
+					// hide the results
+					listView.setVisibility(View.INVISIBLE);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					Log.e(TAG, "draw marker failed", e);
+				}
+			}
+		});
+
+		search.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+				try {
+					ArrayList<Address> addresses = new MapHelpers.GetLocationsFromStringTask(activity, currentLocation).execute(search.getText().toString()).get();
+					AddressViewAdapter adapter = new AddressViewAdapter(addresses, activity);
+					listView.setAdapter(adapter);
+					listView.setVisibility(View.VISIBLE);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) { }
+		});
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		mapView.onDestroy();
+		locationClient.disconnect();
 	}
 
 	@Override
@@ -145,9 +248,11 @@ public class MapFragment extends Fragment implements
 		// when the location provider is connected
 		// set the current location to the last known location
 		currentLocation = locationClient.getLastLocation();
-
-		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 10);
-		map.animateCamera(cameraUpdate);
+		if (map != null && currentLocation != null) {
+			// move the camera to the current location
+			CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 10);
+			map.animateCamera(cameraUpdate);
+		}
 	}
 
 	@Override
@@ -171,15 +276,6 @@ public class MapFragment extends Fragment implements
 		} else {
 			Log.d(TAG, "Connection failed");
 		}
-	}
-
-	// connect and disconnect on fragment hidden/visible
-	public void onFragmentVisible() {
-		locationClient.connect();
-	}
-
-	public void onFragmentHidden() {
-		locationClient.disconnect();
 	}
 
 	public void drawMarker(Location location, boolean showWindow) {
@@ -254,6 +350,7 @@ public class MapFragment extends Fragment implements
 
 	@Override
 	public void onLocationChanged(Location location) {
+		currentLocation = location;
 		if (followLocation) {
 			CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), cameraZoom);
 			map.animateCamera(cameraUpdate);
@@ -304,25 +401,14 @@ public class MapFragment extends Fragment implements
 				}
 				break;
 			}
-			case ADDRESS_SEARCH: {
-				if (resultCode == Activity.RESULT_OK) {
-					// store this address globally, so we can redraw the marker
-					address = intent.getParcelableExtra("address");
-					drawMarker(address, CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), getCameraZoom()), true);
-				}
-				break;
-			}
 		}
 	}
 
 
 	@Override
 	public void onBackPressed() {
-		clearMap();
-		Activity activity = getActivity();
-		activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
-		PassengerControlsFragment fragment = (PassengerControlsFragment) activity.getFragmentManager().findFragmentById(R.id.passenger_controls);
-		fragment.showFragment(this);
+		((PassengerControlsFragment) activity.getFragmentManager().findFragmentById(R.id.passenger_controls)).showFragment(this);
+		((DriverControlsFragment) activity.getFragmentManager().findFragmentById(R.id.driver_controls)).showFragment(null);
 	}
 
 	@Override
@@ -340,6 +426,9 @@ public class MapFragment extends Fragment implements
 				.addToBackStack(null)
 				.commit();
 	}
+
+	@Override
+	public void animationStart(int direction) { }
 
 	public boolean toggleTraffic() {
 		showTraffic = !showTraffic;
@@ -383,4 +472,53 @@ public class MapFragment extends Fragment implements
 
 		map.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 50));
 	}
+
+	@Override
+	public boolean onMyLocationButtonClick() {
+		if (!locationClient.isConnected()) {
+			locationClient.connect();
+		}
+		Toast.makeText(getActivity(), "Waiting for location...", Toast.LENGTH_SHORT).show();
+		return false;
+	}
+
+
+	class AddressViewAdapter extends BaseAdapter implements ListAdapter {
+		private final List<Address> content;
+		private final Activity activity;
+
+		public AddressViewAdapter(List<Address> content, Activity activity) {
+			this.content = content;
+			this.activity = activity;
+		}
+
+		public void clear() {
+			content.clear();
+		}
+
+		public int getCount() {
+			return content.size();
+		}
+
+		public Address getItem(int position) {
+			return content.get(position);
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public View getView(int position, View convertView,	ViewGroup parent) {
+			final LayoutInflater inflater = activity.getLayoutInflater();   // default layout inflater
+			final View listEntry = inflater.inflate(android.R.layout.simple_list_item_1, parent, false); // initialize the layout from xml
+			final TextView type = (TextView) listEntry.findViewById(android.R.id.text1);
+			type.setTextColor(Color.BLACK);
+			final Address current = content.get(position);
+
+			type.setText(current.getFeatureName());
+
+			return listEntry;
+		}
+	}
+
 }

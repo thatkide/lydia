@@ -9,10 +9,8 @@ import java.util.List;
 
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.buttons.BaseButton;
-import ca.efriesen.lydia.buttons.appButtons.NavigationButton;
 import ca.efriesen.lydia.buttons.navButtons.ClearMapButton;
 import ca.efriesen.lydia.buttons.navButtons.MapDirectionsMode;
-import ca.efriesen.lydia.buttons.navButtons.NavSearchButton;
 import ca.efriesen.lydia.buttons.navButtons.ToggleTrafficButton;
 import ca.efriesen.lydia.callbacks.ButtonCheckerCallback;
 import ca.efriesen.lydia.databases.Button;
@@ -30,15 +28,15 @@ public class NavigationButtonsConfig implements ButtonCheckerCallback {
 		List<Button> buttons = new ArrayList<Button>();
 		int area = 0;
 
-		Button navSearch = new Button();
-		navSearch.setAction(NavSearchButton.class.getSimpleName());
-		navSearch.setButtonType(type);
-		navSearch.setDisplayArea(area);
-		navSearch.setGroup(group);
-		navSearch.setPosition(0);
-		navSearch.setTitle(activity.getString(R.string.search));
-		navSearch.setUsesDrawable(false);
-		navSearch.setDrawable("blank");
+		Button mapDirections = new Button();
+		mapDirections.setAction(MapDirectionsMode.class.getSimpleName());
+		mapDirections.setButtonType(type);
+		mapDirections.setDisplayArea(area);
+		mapDirections.setGroup(group);
+		mapDirections.setPosition(0);
+		mapDirections.setTitle("Driving");
+		mapDirections.setUsesDrawable(false);
+		mapDirections.setDrawable("blank");
 
 		Button toggleTraffic = new Button();
 		toggleTraffic.setAction(ToggleTrafficButton.class.getSimpleName());
@@ -60,16 +58,6 @@ public class NavigationButtonsConfig implements ButtonCheckerCallback {
 		clearMap.setUsesDrawable(false);
 		clearMap.setDrawable("blank");
 
-		Button mapDirections = new Button();
-		mapDirections.setAction(MapDirectionsMode.class.getSimpleName());
-		mapDirections.setButtonType(type);
-		mapDirections.setDisplayArea(area+1);
-		mapDirections.setGroup(group);
-		mapDirections.setPosition(0);
-		mapDirections.setTitle("Driving");
-		mapDirections.setUsesDrawable(false);
-		mapDirections.setDrawable("blank");
-
 		SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		// modes
 		// 0 - biking
@@ -78,10 +66,9 @@ public class NavigationButtonsConfig implements ButtonCheckerCallback {
 		// 3 - transit
 		sharedPreferences.edit().putInt("nav_mode", 1).apply();
 
-		buttons.add(navSearch);
+		buttons.add(mapDirections);
 		buttons.add(toggleTraffic);
 		buttons.add(clearMap);
-		buttons.add(mapDirections);
 
 		return buttons;
 	}

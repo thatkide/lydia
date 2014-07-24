@@ -1,6 +1,7 @@
 package ca.efriesen.lydia.buttons;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
@@ -19,7 +20,6 @@ import ca.efriesen.lydia.buttons.appButtons.VideosButton;
 import ca.efriesen.lydia.buttons.appButtons.WeatherButton;
 import ca.efriesen.lydia.buttons.navButtons.ClearMapButton;
 import ca.efriesen.lydia.buttons.navButtons.MapDirectionsMode;
-import ca.efriesen.lydia.buttons.navButtons.NavSearchButton;
 import ca.efriesen.lydia.buttons.navButtons.ToggleTrafficButton;
 import ca.efriesen.lydia.buttons.settingsButtons.ArduinoSettingsButton;
 import ca.efriesen.lydia.buttons.settingsButtons.MediaSettingsButton;
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Created by eric on 2014-06-14.
  */
-public abstract class BaseButton {
+public abstract class BaseButton extends android.widget.Button {
 
 	public static final int GROUP_ADMIN = -1;
 	public static final int GROUP_USER = 0;
@@ -51,10 +51,11 @@ public abstract class BaseButton {
 	public static final int BUTTONS_PER_SIDEBAR = 3;
 	public static final int BUTTONS_PER_HOMESCREEN = 6;
 
-	private Activity activity;
+	private Context context;
 
-	public BaseButton(Activity activity) {
-		this.activity = activity;
+	public BaseButton(Context context) {
+		super(context);
+		this.context = context;
 	}
 
 	public abstract void onClick(View view, Button passed);
@@ -72,8 +73,8 @@ public abstract class BaseButton {
 	// get the description from the strings.xml file
 	public final String getDescription() {
 		try {
-			int resId = activity.getResources().getIdentifier(getClass().getSimpleName() + "Desc", "string", activity.getPackageName());
-			return activity.getString(resId);
+			int resId = context.getResources().getIdentifier(getClass().getSimpleName() + "Desc", "string", context.getPackageName());
+			return context.getString(resId);
 		} catch (Exception e) {
 			// No description
 			return "";
@@ -83,8 +84,8 @@ public abstract class BaseButton {
 	public final String getDefaultName() {
 		try {
 			// In the strings.xml file the resources are specified as the class name.  get the resource and return the string
-			int resid = activity.getResources().getIdentifier(getClass().getSimpleName(), "string", activity.getPackageName());
-			return activity.getString(resid);
+			int resid = context.getResources().getIdentifier(getClass().getSimpleName(), "string", context.getPackageName());
+			return context.getString(resid);
 		} catch (Exception e) {
 			// No default name specified
 			return "";
@@ -108,7 +109,6 @@ public abstract class BaseButton {
 		// navigation buttons
 		buttons.put(ClearMapButton.class.getSimpleName(), new ClearMapButton(activity));
 		buttons.put(MapDirectionsMode.class.getSimpleName(), new MapDirectionsMode(activity));
-		buttons.put(NavSearchButton.class.getSimpleName(), new NavSearchButton(activity));
 		buttons.put(ToggleTrafficButton.class.getSimpleName(), new ToggleTrafficButton(activity));
 
 		return buttons;

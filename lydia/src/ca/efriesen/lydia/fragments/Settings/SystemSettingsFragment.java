@@ -94,9 +94,7 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 
 	@Override
 	public void onBackPressed() {
-		Activity activity = getActivity();
-		activity.findViewById(R.id.passenger_controls).setVisibility(View.VISIBLE);
-		PassengerControlsFragment fragment = (PassengerControlsFragment) activity.getFragmentManager().findFragmentById(R.id.passenger_controls);
+		PassengerControlsFragment fragment = (PassengerControlsFragment) getActivity().getFragmentManager().findFragmentById(R.id.passenger_controls);
 		fragment.showFragment(this);
 	}
 
@@ -112,7 +110,9 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 		manager.beginTransaction()
 				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 				.replace(R.id.driver_controls, new DriverControlsFragment())
-				.addToBackStack(null)
 				.commit();
 	}
+
+	@Override
+	public void animationStart(int direction) { }
 }
