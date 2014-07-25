@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.settings.ButtonEditor;
+import ca.efriesen.lydia.buttons.appButtons.AppLaunchButton;
 import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
@@ -275,19 +276,19 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		clearButtons();
 		dataSource.open();
 		// get the buttons in our area
-		List<ca.efriesen.lydia.databases.Button> buttons = dataSource.getButtonsInArea(buttonType, selectedScreen, group);
+		List<ca.efriesen.lydia.databases.Button> buttonsInDb = dataSource.getButtonsInArea(buttonType, selectedScreen, group);
 
 		// close the db, we don't need it any more
 		dataSource.close();
 
 		// check if the activity has the callback
 		if (activity instanceof DrawScreenCallback) {
-			((DrawScreenCallback) activity).drawScreen(buttons);
+			((DrawScreenCallback) activity).drawScreen(buttonsInDb);
 		}
 
 		// we might also have been passed a fragment.  if so check it too
 		if (fragment instanceof DrawScreenCallback) {
-			((DrawScreenCallback) fragment).drawScreen(buttons);
+			((DrawScreenCallback) fragment).drawScreen(buttonsInDb);
 		}
 
 		if (admin) {
@@ -305,9 +306,9 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		}
 
 		// loop over all buttons and populate accordingly
-		for (int i=0; i<buttons.size(); i++) {
+		for (int i=0; i<buttonsInDb.size(); i++) {
 			// get the button
-			ca.efriesen.lydia.databases.Button myButton = buttons.get(i);
+			ca.efriesen.lydia.databases.Button myButton = buttonsInDb.get(i);
 			// get the resource id for the button
 			int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());
 			// get the button
@@ -317,10 +318,20 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 				button.setText(myButton.getTitle());
 			} catch (Exception e) {}
 			if (myButton.getUsesDrawable()) {
-				// get the image resource id
-				int imgId = activity.getResources().getIdentifier(myButton.getDrawable(), "drawable", activity.getPackageName());
-				// get the drawable
-				Drawable img = activity.getResources().getDrawable(imgId);
+				Drawable img;
+				if (!myButton.getDrawable().equalsIgnoreCase("blank")) {
+					// get the image resource id
+					int imgId = activity.getResources().getIdentifier(myButton.getDrawable(), "drawable", activity.getPackageName());
+					// get the drawable
+					img = activity.getResources().getDrawable(imgId);
+				} else {
+					BaseButton baseButton = buttons.get(myButton.getAction());
+					if (baseButton instanceof AppLaunchButton) {
+						img = ((AppLaunchButton)baseButton).getIcon(myButton.getExtraData());
+					} else {
+						img = activity.getResources().getDrawable(R.drawable.blank);
+					}
+				}
 				// set it to the top on the button
 				button.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
 			}

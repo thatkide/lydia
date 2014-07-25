@@ -14,6 +14,7 @@ import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.controllers.ButtonController;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.*;
+import ca.efriesen.lydia.includes.AppInfo;
 
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		button = getIntent().getParcelableExtra("button");
 		buttonType = getIntent().getIntExtra("buttonType", BaseButton.TYPE_HOMESCREEN);
 
-		TextView title = (TextView) findViewById(R.id.button_title_text);
+		final TextView title = (TextView) findViewById(R.id.button_title_text);
 		buttonView = (Button) findViewById(R.id.button_background);
 
 		if (buttonType != BaseButton.TYPE_HOMESCREEN) {
@@ -98,6 +99,22 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 				if (baseButton.hasExtraData()) {
 					extraDataSpinner.setVisibility(View.VISIBLE);
 					extraDataSpinner.setAdapter(baseButton.getAdapterData());
+
+					extraDataSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+						@Override
+						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+							Object selectedItem = extraDataSpinner.getSelectedItem();
+							if (selectedItem instanceof AppInfo) {
+								buttonView.setCompoundDrawablesWithIntrinsicBounds(null, ((AppInfo)selectedItem).getIcon(), null, null);
+								title.setText(((AppInfo)selectedItem).getAppName());
+							}
+						}
+
+						@Override
+						public void onNothingSelected(AdapterView<?> parent) {
+
+						}
+					});
 				} else {
 					extraDataSpinner.setVisibility(View.GONE);
 				}

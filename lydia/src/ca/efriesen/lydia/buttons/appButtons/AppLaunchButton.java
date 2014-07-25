@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -57,6 +58,19 @@ public class AppLaunchButton extends BaseButton {
 		List<AppInfo> apps = getInstalledPackages(activity);
 		adapter = new ArrayAdapter<AppInfo>(activity, android.R.layout.simple_spinner_dropdown_item, apps);
 		return adapter;
+	}
+
+	public Drawable getIcon(String data) {
+		try {
+			Intent intent = Intent.parseUri(data, Intent.URI_INTENT_SCHEME);
+			intent.setType("image/png");
+			final List<ResolveInfo> matches = activity.getPackageManager().queryIntentActivities(intent, 0);
+			for (ResolveInfo match : matches) {
+				Drawable icon = match.loadIcon(activity.getPackageManager());
+				return icon;
+			}
+		} catch (URISyntaxException e) {}
+		return null;
 	}
 
 	@Override
