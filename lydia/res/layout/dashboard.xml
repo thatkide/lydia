@@ -4,7 +4,9 @@
 	android:id="@+id/dashboard_container"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:keepScreenOn="true" >
+	android:keepScreenOn="true"
+	android:layout_marginRight="-1dip"
+	android:layout_marginBottom="-1dip">
 
 	<FrameLayout android:id="@+id/header_fragment"
 		android:layout_height="wrap_content"

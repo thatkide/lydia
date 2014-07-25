@@ -5,41 +5,41 @@
 	</style>
 
 	<style name="ControlTextSize">
-		<item name="android:textSize">18dip</item>
+		<item name="android:textSize">18sp</item>
 	</style>
 
 	<style name="XSmallText">
-		<item name="android:textSize">18dip</item>
+		<item name="android:textSize">18sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="SmallText">
-		<item name="android:textSize">20dip</item>
+		<item name="android:textSize">20sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="MediumText">
-		<item name="android:textSize">25dip</item>
+		<item name="android:textSize">25sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="LargeText">
-		<item name="android:textSize">30dip</item>
+		<item name="android:textSize">30sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XLargeText">
-		<item name="android:textSize">35dip</item>
+		<item name="android:textSize">35sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XXLargeText">
-		<item name="android:textSize">40dip</item>
+		<item name="android:textSize">40sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XXXLargeText">
-		<item name="android:textSize">80dip</item>
+		<item name="android:textSize">80sp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
@@ -47,8 +47,8 @@
 	<style name="HeaderbarButtons">
 		<item name="android:layout_height">80dip</item>
 		<item name="android:layout_width">80dip</item>
-		<item name="android:layout_marginLeft">1dip</item>
-		<item name="android:layout_marginRight">0dip</item>
+		<item name="android:layout_marginLeft">0dip</item>
+		<item name="android:layout_marginRight">1dip</item>
 		<item name="android:background">@drawable/button_bg</item>
 	</style>
 	<style name="HeaderbarRoundBottomLeft" parent="HeaderbarButtons">
@@ -67,8 +67,10 @@
 	<style name="ControlButtons" parent="ControlTextSize">
 		<item name="android:layout_width">161dip</item>
 		<item name="android:layout_height">80dip</item>
-		<item name="android:layout_marginLeft">1dip</item>
-		<item name="android:layout_marginRight">0dip</item>
+		<item name="android:layout_marginLeft">0dip</item>
+		<item name="android:layout_marginRight">1dip</item>
+		<item name="android:layout_marginBottom">1dip</item>
+		<item name="android:layout_marginTop">0dip</item>
 		<item name="android:background">@drawable/button_bg</item>
 		<item name="android:textColor">@color/white</item>
 	</style>
@@ -101,10 +103,10 @@
 		<item name="android:gravity">bottom|center_horizontal</item>
 		<item name="android:paddingTop">30dip</item>
 		<item name="android:paddingBottom">5dip</item>
-		<item name="android:layout_marginLeft">1dip</item>
-		<item name="android:layout_marginRight">0dip</item>
-		<item name="android:layout_marginTop">1dip</item>
-		<item name="android:layout_marginBottom">0dip</item>
+		<item name="android:layout_marginLeft">0dip</item>
+		<item name="android:layout_marginRight">1dip</item>
+		<item name="android:layout_marginTop">0dip</item>
+		<item name="android:layout_marginBottom">1dip</item>
 		<item name="android:background">@drawable/button_bg</item>
 	</style>
 
