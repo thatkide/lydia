@@ -15,7 +15,7 @@ import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.controllers.NotificationController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
-import ca.efriesen.lydia.fragments.NotificationFragments.TemperatureNotificationFragment;
+import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
@@ -88,10 +88,7 @@ public class Dashboard extends Activity {
 
 		// start with the default music notification
 		notificationController.addNotification(MusicNotificationFragment.class, NotificationInterface.PRIORITY_HIGH);
-
-		// FIXME
-		// if we use the arduino, and have temperature sensors, load the note fragment
-		notificationController.addNotification(TemperatureNotificationFragment.class, NotificationInterface.PRIORITY_NORMAL);
+		notificationController.addNotification(SystemNotificationFragment.class, NotificationInterface.PRIORITY_LOW);
 
 		// start with the music
 		notificationController.setNotification(MusicNotificationFragment.class);

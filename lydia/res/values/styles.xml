@@ -9,7 +9,7 @@
 	</style>
 
 	<style name="XSmallText">
-		<item name="android:textSize">15dip</item>
+		<item name="android:textSize">18dip</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>

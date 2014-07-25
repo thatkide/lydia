@@ -141,9 +141,6 @@ public class NotificationController {
 	// calculate the display time based on the priority
 	private int getDisplayTime(int priority) {
 		// turn seconds into milliseconds
-		int time = (noteDisplayTime * 1000);
-		// each level of priority will add an additional 5 seconds
-		time += (priority*10*1000);
-		return time;
+		return  (noteDisplayTime * 1000);
 	}
 }

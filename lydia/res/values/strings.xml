@@ -28,8 +28,10 @@
 	<string name="back">Back</string>
 	<string name="backlight">Backlight</string>
 	<string name="backlight_summary">Set the backlight brightness of the gauges</string>
+	<string name="battery">Battery</string>
 	<string name="bluetooth">Bluetooth</string>
 	<string name="button_scan">Search for devices</string>
+	<string name="brightness">Brightness</string>
 	<string name="cancel">Cancel</string>
 	<string name="calendar">Calendar</string>
 	<string name="calibrate_speedo">Calibrate Speedometer Input</string>
