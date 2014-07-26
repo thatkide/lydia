@@ -2,6 +2,8 @@ package ca.efriesen.lydia.activities.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -105,8 +107,10 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 							Object selectedItem = extraDataSpinner.getSelectedItem();
 							if (selectedItem instanceof AppInfo) {
-								buttonView.setCompoundDrawablesWithIntrinsicBounds(null, ((AppInfo)selectedItem).getIcon(), null, null);
-								title.setText(((AppInfo)selectedItem).getAppName());
+								Drawable drawable = ((AppInfo) selectedItem).getIcon();
+								Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+								buttonView.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getApplicationContext().getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true)), null, null);
+								title.setText(((AppInfo) selectedItem).getAppName());
 							}
 						}
 

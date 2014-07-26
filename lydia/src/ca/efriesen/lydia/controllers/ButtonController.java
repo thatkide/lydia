@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.DragEvent;
@@ -315,7 +317,12 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 			Button button = (Button) activity.findViewById(resId);
 			// set the text to the proper title
 			try {
-				button.setText(myButton.getTitle());
+				String title = myButton.getTitle();
+				if (title.length() > 12 ) {
+					// if the length of the title is too long, truncate it
+					title = title.substring(0, 12);
+				}
+				button.setText(title);
 			} catch (Exception e) {}
 			if (myButton.getUsesDrawable()) {
 				Drawable img;
@@ -327,7 +334,9 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 				} else {
 					BaseButton baseButton = buttons.get(myButton.getAction());
 					if (baseButton instanceof AppLaunchButton) {
-						img = ((AppLaunchButton)baseButton).getIcon(myButton.getExtraData());
+						Drawable drawable = ((AppLaunchButton)baseButton).getIcon(myButton.getExtraData());
+						Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+						img = new BitmapDrawable(activity.getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
 					} else {
 						img = activity.getResources().getDrawable(R.drawable.blank);
 					}
