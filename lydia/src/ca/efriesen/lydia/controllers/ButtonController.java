@@ -93,6 +93,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 
 	// Must be called from activity
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// after we've edited a button, redraw the screen
 		if (requestCode == EDIT_BUTTON && resultCode == Activity.RESULT_OK) {
 			drawScreen();
 		}
@@ -114,7 +115,9 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 	}
 
 	public ArrayList<BaseButton> getButtonActions() {
+		// get a map of all available user buttons
 		Map<String, BaseButton> buttons = BaseButton.getUserButtons(activity);
+		// translate it into an array list
 		ArrayList<BaseButton> list = new ArrayList<BaseButton>(buttons.values());
 
 		// sort alphabetically
@@ -228,6 +231,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		return true;
 	}
 
+	// get the proper rounded corners from where the button is located
 	private Drawable getButtonBgFromPos(int pos) {
 		Drawable background;
 		if (buttonType == BaseButton.TYPE_HOMESCREEN) {
@@ -313,6 +317,8 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 			ca.efriesen.lydia.databases.Button myButton = buttonsInDb.get(i);
 			// get the resource id for the button
 			int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());
+			// set the res id for the buttons
+			(buttons.get(myButton.getAction())).setResourceName(baseName + myButton.getPosition());
 			// get the button
 			Button button = (Button) activity.findViewById(resId);
 			// set the text to the proper title

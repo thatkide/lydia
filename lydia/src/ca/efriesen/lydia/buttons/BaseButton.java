@@ -53,6 +53,8 @@ public abstract class BaseButton extends android.widget.Button {
 
 	private Context context;
 
+	private String resourceName;
+
 	public BaseButton(Context context) {
 		super(context);
 		this.context = context;
@@ -93,6 +95,14 @@ public abstract class BaseButton extends android.widget.Button {
 	}
 
 	public String getExtraData(int position) { return ""; }
+
+	protected String getResourceName() {
+		return resourceName;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
 
 	// return the description using the tostring method.  the adapter for the spinner uses tostring
 	public final String toString() {

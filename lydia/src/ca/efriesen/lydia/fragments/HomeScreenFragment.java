@@ -53,7 +53,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 		for (int i=0; i<BaseButton.BUTTONS_PER_HOMESCREEN; i++) {
 			// get the resource id for the button
 			int resId = getResources().getIdentifier(HomeScreenEditorActivity.BASENAME + i, "id", activity.getPackageName());
-			// get the button
+			// get the *android* buttons and tell them to invoke but button controller for their needs
 			Button button = (Button) activity.findViewById(resId);
 			button.setOnClickListener(buttonController);
 			button.setOnLongClickListener(buttonController);
