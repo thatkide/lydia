@@ -87,6 +87,14 @@ public class NotificationController {
 		handler.postDelayed(runnable, getDisplayTime(NotificationInterface.PRIORITY_NORMAL));
 	}
 
+	public void onPause() {
+		handler.removeCallbacks(runnable);
+	}
+
+	public void onResume() {
+		handler.postDelayed(runnable, getDisplayTime(NotificationInterface.PRIORITY_NORMAL));
+	}
+
 	// add a new notification to the stack
 	// take a class and a priority
 	public void addNotification(Class<? extends NotificationInterface> fragmentClass, Integer priority) {

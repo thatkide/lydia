@@ -112,6 +112,7 @@ public class Dashboard extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		notificationController.onResume();
 
 		checkGooglePlayServices();
 
@@ -166,6 +167,7 @@ public class Dashboard extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
+		notificationController.onPause();
 	}
 
 	@Override
