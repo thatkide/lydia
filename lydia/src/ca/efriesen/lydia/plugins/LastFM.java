@@ -31,6 +31,7 @@ public class LastFM extends Plugin {
 	private Thread updateTrackThread;
 
 	private boolean isPlaying = false;
+	private boolean validSession = false;
 
 	public LastFM(final Context context) {
 		this.context = context;
@@ -42,7 +43,6 @@ public class LastFM extends Plugin {
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 		localBroadcastManager.registerReceiver(songFinishedReceiver, new IntentFilter(MediaService.SONG_FINISHED));
 
-		Log.d(TAG, "using lastfm");
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -58,6 +58,7 @@ public class LastFM extends Plugin {
 							context.getString(R.string.lastFmKey),
 							context.getString(R.string.lastFmSecret)
 					);
+					validSession = true;
 					// we're done, quit the thread
 					Thread.currentThread().interrupt();
 					return;
@@ -88,6 +89,9 @@ public class LastFM extends Plugin {
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			if (!validSession) {
+				return;
+			}
 			// kill old instances
 			if (updateTrackThread != null) {
 				updateTrackThread.interrupt();
@@ -107,9 +111,7 @@ public class LastFM extends Plugin {
 								try {
 									// update the track info
 									Track.updateNowPlaying(song.getAlbum().getArtist().getName(), song.getName(), session);
-								} catch (Exception e) {
-									Log.e(TAG, e.toString());
-								}
+								} catch (Exception e) { }
 								try {
 									Thread.sleep(25000);
 								} catch (InterruptedException e) {
@@ -149,7 +151,6 @@ public class LastFM extends Plugin {
 			scrobbleThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					Log.d(TAG, "scrobble");
 					try {
 						// get the time
 						int now = (int) (System.currentTimeMillis() / 1000);
