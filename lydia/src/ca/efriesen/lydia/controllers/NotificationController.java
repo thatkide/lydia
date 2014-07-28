@@ -1,16 +1,11 @@
 package ca.efriesen.lydia.controllers;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-
 import com.desarrollodroide.libraryfragmenttransactionextended.FragmentTransactionExtended;
-
 import java.util.ArrayList;
 import java.util.List;
 import ca.efriesen.lydia.R;
@@ -21,9 +16,6 @@ import ca.efriesen.lydia.interfaces.NotificationInterface;
  */
 public class NotificationController {
 	private static final String TAG = NotificationController.class.getSimpleName();
-
-	// display time in seconds.  more urgency will increase the time
-	private int noteDisplayTime = 30;
 
 	private Activity activity;
 	private FragmentManager fragmentManager;
@@ -57,24 +49,8 @@ public class NotificationController {
 						}
 
 						// get next note screen
-						Bundle bundle = info.get(currentNote);
-						Fragment newFragment = (Fragment) bundle.getSerializable("fragment");
-						// replace the screen with the new note
-						FragmentTransactionExtended transactionExtended = new FragmentTransactionExtended(
-								activity,
-								fragmentManager.beginTransaction(),
-								fragmentManager.findFragmentById(R.id.notification_bar),
-								newFragment,
-								R.id.notification_bar);
-						transactionExtended.addTransition(FragmentTransactionExtended.FADE);
-						transactionExtended.commit();
+						replaceFragment(currentNote);
 
-						// commit is async so we must force it.  do the commit, then do the restore fragment callback
-						fragmentManager.executePendingTransactions();
-						// pass the bundle to the fragment just inflated.
-						((NotificationInterface) newFragment).restoreFragment(states.get(currentNote));
-						// post with the proper display time
-						handler.postDelayed(this, getDisplayTime(bundle.getInt("priority")));
 					} catch (NullPointerException e) {
 						handler.removeCallbacks(runnable);
 					} catch (IllegalStateException e) {
@@ -100,14 +76,8 @@ public class NotificationController {
 	public void addNotification(Class<? extends NotificationInterface> fragmentClass, Integer priority) {
 		// create a new bundle to store locally
 		Bundle bundle = new Bundle();
-		try {
-			// add the new instance of the fragment class passed
-			bundle.putSerializable("fragment", fragmentClass.newInstance());
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		// add the new instance of the fragment class passed
+		bundle.putString("fragment", fragmentClass.getCanonicalName());
 		// store the priority
 		bundle.putInt("priority", priority);
 		// add the arrays
@@ -128,27 +98,47 @@ public class NotificationController {
 	public void setNotification(Class<? extends NotificationInterface> fragmentClass) {
 		// get the index
 		currentNote = names.indexOf(fragmentClass.getSimpleName());
-		// get the bundle
-		Bundle bundle = info.get(currentNote);
-		// and the actual fragment
-		Fragment newFragment = (Fragment) bundle.getSerializable("fragment");
-		// show it
-		FragmentTransactionExtended transactionExtended = new FragmentTransactionExtended(
-				activity,
-				fragmentManager.beginTransaction(),
-				fragmentManager.findFragmentById(R.id.notification_bar),
-				newFragment,
-				R.id.notification_bar);
-		transactionExtended.addTransition(FragmentTransactionExtended.FADE);
-		transactionExtended.commit();
-		// repost the handler to show the new fragment for the proper amount of time
-		handler.removeCallbacks(runnable);
-		handler.postDelayed(runnable, getDisplayTime(bundle.getInt("priority")));
+		// and the replace the fragment
+		replaceFragment(currentNote);
 	}
 
 	// calculate the display time based on the priority
 	private int getDisplayTime(int priority) {
 		// turn seconds into milliseconds
-		return  (noteDisplayTime * 1000);
+		return  (priority * 1000);
+	}
+
+	private void replaceFragment(int currentNote) {
+		Bundle bundle = info.get(currentNote);
+		try {
+			Fragment newFragment = (Fragment) Class.forName(bundle.getString("fragment")).newInstance();
+			// show it
+			FragmentTransactionExtended transactionExtended = new FragmentTransactionExtended(
+					activity,
+					fragmentManager.beginTransaction(),
+					fragmentManager.findFragmentById(R.id.notification_bar),
+					newFragment,
+					R.id.notification_bar);
+			transactionExtended.addTransition(FragmentTransactionExtended.FADE);
+			transactionExtended.commit();
+
+			// commit is async so we must force it.  do the commit, then do the restore fragment callback
+			fragmentManager.executePendingTransactions();
+			// pass the bundle to the fragment just inflated.
+			try {
+				((NotificationInterface) newFragment).restoreFragment(states.get(currentNote));
+			} catch (NullPointerException e) {}
+
+			// repost the handler to show the new fragment for the proper amount of time
+			handler.removeCallbacks(runnable);
+			handler.postDelayed(runnable, getDisplayTime(bundle.getInt("priority")));
+
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import ca.efriesen.lydia_common.includes.Intents;
  * Created by eric on 2014-07-24.
  */
 public class SystemNotificationFragment extends Fragment implements NotificationInterface {
+
+	private static final String TAG = SystemNotificationFragment.class.getSimpleName();
 
 	private Activity activity;
 	private TextView outsideTemp;

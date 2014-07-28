@@ -140,8 +140,8 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onStop() {
+		super.onStop();
 		try {
 			localBroadcastManager.unregisterReceiver(mMusicInfo);
 		} catch (Exception e) {}
