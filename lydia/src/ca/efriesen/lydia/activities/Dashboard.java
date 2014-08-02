@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
@@ -132,6 +133,8 @@ public class Dashboard extends Activity {
 			String imagePath = sharedPreferences.getString(BackgroundSettingsFragment.BG_IMG_PATH, "");
 			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
 			layout.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeFile(imagePath)));
+			RelativeLayout colorMask = (RelativeLayout) findViewById(R.id.color_mask);
+			colorMask.setBackgroundColor(Color.argb(0xAA, 0x22, 0x23, 0x22));
 		}
 
 		// get bluetooth adapter

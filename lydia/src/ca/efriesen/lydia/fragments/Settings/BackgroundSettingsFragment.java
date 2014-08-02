@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
@@ -90,6 +91,8 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 
 					final Bitmap bitmap = ImageHelper.decodeUri(activity, imageReturned.getData());
 					layout.setBackground(new BitmapDrawable(getResources(), bitmap));
+					RelativeLayout colorMask = (RelativeLayout) activity.findViewById(R.id.color_mask);
+					colorMask.setBackgroundColor(Color.argb(0xAA, 0x22, 0x23, 0x22));
 
 					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
