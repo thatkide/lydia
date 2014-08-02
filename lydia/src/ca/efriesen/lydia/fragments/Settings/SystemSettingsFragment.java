@@ -93,8 +93,7 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 
 	@Override
 	public void onBackPressed() {
-		PassengerControlsFragment fragment = (PassengerControlsFragment) getActivity().getFragmentManager().findFragmentById(R.id.passenger_controls);
-		fragment.showFragment(this);
+		((PassengerControlsFragment) getActivity().getFragmentManager().findFragmentById(R.id.passenger_controls)).showFragment(this);
 	}
 
 	@Override
@@ -119,8 +118,9 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 	public boolean onPreferenceClick(Preference preference) {
 		if (preference.getKey().equalsIgnoreCase("background")) {
 			getFragmentManager().beginTransaction()
-				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+					.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 				.replace(R.id.home_screen_fragment, new BackgroundSettingsFragment())
+					.addToBackStack(null)
 				.commit();
 		}
 		return true;

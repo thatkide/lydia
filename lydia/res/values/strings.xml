@@ -127,10 +127,10 @@
 	<string name="recent_calls">Recent Calls</string>
 	<string name="rear_defroster">Rear Defroster</string>
 	<string name="remove">Remove</string>
-	<string name="remove_background_image">Remove Background Image</string>
 	<string name="remove_from_playlist">Remove from playlist</string>
 	<string name="repeat">Repeat</string>
 	<string name="reply">Reply</string>
+	<string name="reset_background_default">Reset background to default</string>
 	<string name="rewind">Rewind</string>
 	<string name="rfid_nothing_found">No tags found.  Scan one now to add it.</string>
 	<string name="rfid_tags">RFID tags</string>

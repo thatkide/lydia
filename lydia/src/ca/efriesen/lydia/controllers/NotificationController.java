@@ -118,7 +118,8 @@ public class NotificationController {
 					fragmentManager.beginTransaction(),
 					fragmentManager.findFragmentById(R.id.notification_bar),
 					newFragment,
-					R.id.notification_bar);
+					R.id.notification_bar,
+					false);
 			transactionExtended.addTransition(FragmentTransactionExtended.FADE);
 			transactionExtended.commit();
 

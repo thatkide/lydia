@@ -4,8 +4,9 @@
 
 	<PreferenceCategory android:title="@string/background">
 		<Preference android:key="imageChooser" android:title="@string/choose_image" />
-		<!--<Preference android:key="colorChooser" android:title="@string/choose_colors" />-->
+		<yuku.ambilwarna.widget.AmbilWarnaPreference android:key="topBgColor" android:title="Top Color" />
+		<yuku.ambilwarna.widget.AmbilWarnaPreference android:key="bottomBgColor" android:title="Bottom Color" />
 		<net.jayschwa.android.preference.SliderPreference android:key="backgroundBrightness" android:title="@string/brightness" />
-		<Preference android:key="removeImage" android:title="@string/remove_background_image" />
+		<Preference android:key="removeImage" android:title="@string/reset_background_default" />
 	</PreferenceCategory>
 </PreferenceScreen>

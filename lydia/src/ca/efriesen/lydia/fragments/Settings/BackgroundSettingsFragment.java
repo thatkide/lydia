@@ -10,11 +10,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 import android.widget.RelativeLayout;
 import net.jayschwa.android.preference.SliderPreference;
 import java.io.File;
@@ -52,6 +52,10 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 				float brightness = sharedPreferences.getFloat("backgroundBrightness", 0);
 				colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
 				sharedPreferences.edit().putFloat(BG_BRIGHTNESS, brightness).apply();
+			} else if (s.equalsIgnoreCase("topBgColor") || s.equalsIgnoreCase("bottomBgColor")) {
+				GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {sharedPreferences.getInt("topBgColor", 1), sharedPreferences.getInt("bottomBgColor", 1)});
+				gradientDrawable.setCornerRadius(0f);
+				layout.setBackground(gradientDrawable);
 			}
 		}
 	};
@@ -92,7 +96,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 			startActivityForResult(photoPickerIntent, ACTIVITY_SELECT_IMAGE);
 		} else if (preference.getKey().equalsIgnoreCase("removeImage")) {
 			// remove the background image and go back to default
-			clearImage();
+			defaultBackground();
 		}
 		return true;
 	}
@@ -130,7 +134,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							// don't save image, revert
-							clearImage();
+							defaultBackground();
 						}
 					});
 
@@ -140,9 +144,10 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		}
 	}
 
-	private void clearImage() {
+	private void defaultBackground() {
 		// remove the background image and go back to default
 		sharedPreferences.edit().putBoolean(USE_BG_IMAGE, false).putString(BG_IMG_PATH, "").apply();
+		sharedPreferences.edit().putInt("topBgColor", 0).putInt("bottomBgColor", 0).apply();
 		layout.setBackground(null);
 		colorMask.setBackground(null);
 	}

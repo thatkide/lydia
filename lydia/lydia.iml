@@ -59,6 +59,7 @@
     <orderEntry type="library" name="google-play-services" level="project" />
     <orderEntry type="module" module-name="google-directions" />
     <orderEntry type="module" module-name="LibraryFragmentTransactionExtended" />
+    <orderEntry type="module" module-name="AmbilWarna" />
   </component>
 </module>
 

@@ -7,15 +7,14 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
-import android.net.Uri;
 import android.os.*;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
 import android.widget.RelativeLayout;
-
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.controllers.NotificationController;
@@ -24,7 +23,6 @@ import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragme
 import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
 import ca.efriesen.lydia.fragments.Settings.BackgroundSettingsFragment;
 import ca.efriesen.lydia.includes.Helpers;
-import ca.efriesen.lydia.includes.ImageHelper;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
@@ -35,8 +33,6 @@ import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-
-import java.io.FileNotFoundException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -130,14 +126,22 @@ public class Dashboard extends Activity {
 		// set background image if we have one set
 		SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		boolean useBgImg = sharedPreferences.getBoolean(BackgroundSettingsFragment.USE_BG_IMAGE, false);
+		// if we have opted to use a background image, set it
 		if (useBgImg) {
 			String imagePath = sharedPreferences.getString(BackgroundSettingsFragment.BG_IMG_PATH, "");
 			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
 			layout.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeFile(imagePath)));
-			RelativeLayout colorMask = (RelativeLayout) findViewById(R.id.color_mask);
-			float brightness = sharedPreferences.getFloat(BackgroundSettingsFragment.BG_BRIGHTNESS, 0.5f);
-			colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
+		// else if we have a non default top or bottom color, use those
+		} else if (sharedPreferences.getInt("topBgColor", 0) != 0 || sharedPreferences.getInt("bottomBgColor", 0) != 0) {
+			GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{sharedPreferences.getInt("topBgColor", 1), sharedPreferences.getInt("bottomBgColor", 1)});
+			gradientDrawable.setCornerRadius(0f);
+			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
+			layout.setBackground(gradientDrawable);
 		}
+		// set overall brightness
+		float brightness = sharedPreferences.getFloat(BackgroundSettingsFragment.BG_BRIGHTNESS, 0.5f);
+		RelativeLayout colorMask = (RelativeLayout) findViewById(R.id.color_mask);
+		colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
 
 		// get bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
