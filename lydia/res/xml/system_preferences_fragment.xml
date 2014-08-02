@@ -15,6 +15,7 @@
 		<Preference android:title="@string/setup_sidebars" android:summary="@string/setup_sidebars_summary">
 			<intent android:action=".activities.settings.SidebarEditorActivity" />
 		</Preference>
+		<Preference android:title="@string/background" android:summary="@string/background_summary" android:key="background" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/wifi">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference

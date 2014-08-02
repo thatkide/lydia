@@ -1,6 +1,5 @@
 package ca.efriesen.lydia.fragments.Settings;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
@@ -9,13 +8,12 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-import android.view.View;
-
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.fragments.DriverControlsFragment;
 import ca.efriesen.lydia.fragments.HomeScreenFragment;
+import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
 import ca.efriesen.lydia.fragments.PassengerControlsFragment;
 import ca.efriesen.lydia_common.includes.Intents;
 import java.text.SimpleDateFormat;
@@ -27,10 +25,9 @@ import java.util.Locale;
  * Date: 2012-10-24
  * Time: 1:09 PM
  */
-public class SystemSettingsFragment extends PreferenceFragment implements FragmentAnimationCallback, FragmentOnBackPressedCallback {
+public class SystemSettingsFragment extends PreferenceFragment implements FragmentAnimationCallback, FragmentOnBackPressedCallback, Preference.OnPreferenceClickListener {
 
-	public static final String TAG = "lydia system Settings Preference";
-	public SharedPreferences sharedPreferences;
+	private static final String TAG = SystemNotificationFragment.class.getSimpleName();
 
 	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		@Override
@@ -68,7 +65,7 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		// get our radio managers
@@ -80,7 +77,6 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 		calendar.setTimeInMillis(lastUpdateCheck);
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-
 		Preference updateCheck = findPreference("checkForUpdate");
 		updateCheck.setSummary("Last checked: " + format.format(calendar.getTime()));
 
@@ -90,6 +86,9 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 		// set the wifi state
 				.putBoolean("systemWiFi", manager.isWifiEnabled())
 				.apply();
+
+		Preference background = findPreference("background");
+		background.setOnPreferenceClickListener(this);
 	}
 
 	@Override
@@ -115,4 +114,15 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 
 	@Override
 	public void animationStart(int direction) { }
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		if (preference.getKey().equalsIgnoreCase("background")) {
+			getFragmentManager().beginTransaction()
+				.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+				.replace(R.id.home_screen_fragment, new BackgroundSettingsFragment())
+				.commit();
+		}
+		return true;
+	}
 }

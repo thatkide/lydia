@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="@string/background">
+		<Preference android:key="imageChooser" android:title="@string/choose_image" />
+		<Preference android:key="colorChooser" android:title="@string/choose_colors" />
+		<Preference android:key="removeImage" android:title="@string/remove_background_image" />
+	</PreferenceCategory>
+</PreferenceScreen>

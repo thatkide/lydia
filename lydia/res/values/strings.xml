@@ -26,6 +26,9 @@
 	<string name="auto_upgrade_firmware">Automatically upgrade Arduino firmware</string>
 	<string name="auto_find_slaves">Automatically find slave devices</string>
 	<string name="back">Back</string>
+	<string name="background">Background</string>
+	<string name="background_set">Set Background</string>
+	<string name="background_summary">Change the screen background</string>
 	<string name="backlight">Backlight</string>
 	<string name="backlight_summary">Set the backlight brightness of the gauges</string>
 	<string name="battery">Battery</string>
@@ -44,6 +47,8 @@
 	<string name="call">Call</string>
 	<string name="clear">Clear</string>
 	<string name="check_for_update">Check for update</string>
+	<string name="choose_colors">Choose colors</string>
+	<string name="choose_image">Choose image</string>
 	<string name="chrome">Chrome</string>
 	<string name="clear_playlist_confirm">Really clear playlist</string>
 	<string name="close">Close</string>
@@ -122,6 +127,7 @@
 	<string name="recent_calls">Recent Calls</string>
 	<string name="rear_defroster">Rear Defroster</string>
 	<string name="remove">Remove</string>
+	<string name="remove_background_image">Remove Background Image</string>
 	<string name="remove_from_playlist">Remove from playlist</string>
 	<string name="repeat">Repeat</string>
 	<string name="reply">Reply</string>

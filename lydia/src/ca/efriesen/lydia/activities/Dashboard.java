@@ -4,18 +4,25 @@ import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.*;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
+import android.widget.RelativeLayout;
+
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.controllers.NotificationController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
 import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
+import ca.efriesen.lydia.fragments.Settings.BackgroundSettingsFragment;
+import ca.efriesen.lydia.includes.ImageHelper;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
@@ -26,6 +33,8 @@ import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import java.io.FileNotFoundException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -115,6 +124,15 @@ public class Dashboard extends Activity {
 		notificationController.onResume();
 
 		checkGooglePlayServices();
+
+		// set background image if we have one set
+		SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		boolean useBgImg = sharedPreferences.getBoolean(BackgroundSettingsFragment.USE_BG_IMAGE, false);
+		if (useBgImg) {
+			String imagePath = sharedPreferences.getString(BackgroundSettingsFragment.BG_IMG_PATH, "");
+			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
+			layout.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeFile(imagePath)));
+		}
 
 		// get bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
