@@ -4,7 +4,8 @@
 
 	<PreferenceCategory android:title="@string/background">
 		<Preference android:key="imageChooser" android:title="@string/choose_image" />
-		<Preference android:key="colorChooser" android:title="@string/choose_colors" />
+		<!--<Preference android:key="colorChooser" android:title="@string/choose_colors" />-->
+		<net.jayschwa.android.preference.SliderPreference android:key="backgroundBrightness" android:title="@string/brightness" />
 		<Preference android:key="removeImage" android:title="@string/remove_background_image" />
 	</PreferenceCategory>
 </PreferenceScreen>

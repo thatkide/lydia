@@ -8,26 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
+import net.jayschwa.android.preference.SliderPreference;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.includes.ImageHelper;
 
 /**
@@ -38,13 +33,28 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 	private static final String TAG = BackgroundSettingsFragment.class.getSimpleName();
 
 	public static final String USE_BG_IMAGE = "use_bg_image";
+	public static final String BG_BRIGHTNESS = "bg_brightness";
 	public static final String BG_IMG_PATH = "bg_img_path";
 
 	private Activity activity;
 	private SharedPreferences sharedPreferences;
 	private RelativeLayout layout;
+	private RelativeLayout colorMask;
 
 	private static final int ACTIVITY_SELECT_IMAGE = 100;
+
+	public SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+		@Override
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+			// if the backlight pref has changed
+			if (s.equalsIgnoreCase("backgroundBrightness")) {
+				// convert the float of the slider (0.0 - 1.0) to a range of 0-255
+				float brightness = sharedPreferences.getFloat("backgroundBrightness", 0);
+				colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
+				sharedPreferences.edit().putFloat(BG_BRIGHTNESS, brightness).apply();
+			}
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle saved) {
@@ -59,22 +69,30 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		activity = getActivity();
 
 		sharedPreferences = activity.getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
+		// auto update the background brightness on slider change
+		((SliderPreference) findPreference("backgroundBrightness")).setAutoUpdate(true);
+
+		// set the preferences onclick listener to this class
 		findPreference("imageChooser").setOnPreferenceClickListener(this);
 		findPreference("removeImage").setOnPreferenceClickListener(this);
-
+		// get the two layouts. dashboard container is the lowest, we set the image there and the mask is to darken the image up
 		layout = (RelativeLayout) activity.findViewById(R.id.dashboard_container);
+		colorMask = (RelativeLayout) activity.findViewById(R.id.color_mask);
 	}
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
+		// one of the buttons was pressed
 		if (preference.getKey().equalsIgnoreCase("imageChooser")) {
+			// if it was the image chooser, launch an intent to get an image
 			Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
 			photoPickerIntent.setType("image/*");
 			startActivityForResult(photoPickerIntent, ACTIVITY_SELECT_IMAGE);
 		} else if (preference.getKey().equalsIgnoreCase("removeImage")) {
-			sharedPreferences.edit().putBoolean(USE_BG_IMAGE, false).putString(BG_IMG_PATH, "").apply();
-			layout.setBackground(null);
+			// remove the background image and go back to default
+			clearImage();
 		}
 		return true;
 	}
@@ -88,27 +106,31 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		switch (requestCode) {
 			case ACTIVITY_SELECT_IMAGE: {
 				if (resultCode == Activity.RESULT_OK) {
-
+					// decode the image passed.  this will resize for us
 					final Bitmap bitmap = ImageHelper.decodeUri(activity, imageReturned.getData());
+					// set the background
 					layout.setBackground(new BitmapDrawable(getResources(), bitmap));
-					RelativeLayout colorMask = (RelativeLayout) activity.findViewById(R.id.color_mask);
-					colorMask.setBackgroundColor(Color.argb(0xAA, 0x22, 0x23, 0x22));
+					// set the color mask
+					colorMask.setBackgroundColor(Color.argb(0, 0x00, 0x00, 0x00));
+					// reset the brightness
+					sharedPreferences.edit().putFloat(BG_BRIGHTNESS, 1).apply();
 
+					// create a new alert asking to save or cancel
 					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
 					builder.setTitle(activity.getString(R.string.background_set));
 					builder.setPositiveButton(activity.getString(R.string.save), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							// save image
-								sharedPreferences.edit().putBoolean(USE_BG_IMAGE, true).apply();
-								new SaveImage(activity).execute(bitmap);
+							sharedPreferences.edit().putBoolean(USE_BG_IMAGE, true).apply();
+							new SaveImage(activity).execute(bitmap);
 						}
 					})
 					.setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							// don't save image, revert
+							clearImage();
 						}
 					});
 
@@ -116,6 +138,13 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 				}
 			}
 		}
+	}
+
+	private void clearImage() {
+		// remove the background image and go back to default
+		sharedPreferences.edit().putBoolean(USE_BG_IMAGE, false).putString(BG_IMG_PATH, "").apply();
+		layout.setBackground(null);
+		colorMask.setBackground(null);
 	}
 
 	private class SaveImage extends AsyncTask<Bitmap,Void,Void> {
@@ -138,8 +167,6 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 				out = new FileOutputStream(imagePath);
 				bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 				sharedPreferences.edit().putString(BG_IMG_PATH, imagePath.getAbsolutePath()).apply();
-
-
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {

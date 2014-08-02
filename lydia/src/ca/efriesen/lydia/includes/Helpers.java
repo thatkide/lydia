@@ -58,4 +58,10 @@ public class Helpers {
 		Object temp = list.set(first, list.get(second));
 		list.set(second, temp);
 	}
+
+	public static int map(float value, int fromLow, int fromHigh, int toLow, int toHigh) {
+		float Y;
+		Y = (value-fromLow)/(fromHigh-fromLow) * (toHigh-toLow) + toLow;
+		return (int)Y;
+	}
 }

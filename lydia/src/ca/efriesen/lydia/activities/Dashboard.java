@@ -23,6 +23,7 @@ import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
 import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
 import ca.efriesen.lydia.fragments.Settings.BackgroundSettingsFragment;
+import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.includes.ImageHelper;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
@@ -134,7 +135,8 @@ public class Dashboard extends Activity {
 			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
 			layout.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeFile(imagePath)));
 			RelativeLayout colorMask = (RelativeLayout) findViewById(R.id.color_mask);
-			colorMask.setBackgroundColor(Color.argb(0xAA, 0x22, 0x23, 0x22));
+			float brightness = sharedPreferences.getFloat(BackgroundSettingsFragment.BG_BRIGHTNESS, 0.5f);
+			colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
 		}
 
 		// get bluetooth adapter
