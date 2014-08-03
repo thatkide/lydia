@@ -9,7 +9,11 @@
 			</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/home_screen">
-		<Preference android:title="@string/setup_home_screen" android:summary="@string/setup_home_screen_summary">
+		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useHomeScreenButtons"
+			android:title="@string/use_homescreen_buttons"
+			android:summary="@string/use_homescreen_buttons_summary"
+			android:defaultValue="true" />
+		<Preference android:title="@string/setup_home_screen" android:summary="@string/setup_home_screen_summary" android:dependency="useHomeScreenButtons">
 			<intent android:action=".activities.settings.HomeScreenEditorActivity" />
 		</Preference>
 		<Preference android:title="@string/setup_sidebars" android:summary="@string/setup_sidebars_summary">

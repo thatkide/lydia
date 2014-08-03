@@ -78,7 +78,7 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
 		Preference updateCheck = findPreference("checkForUpdate");
-		updateCheck.setSummary("Last checked: " + format.format(calendar.getTime()));
+		updateCheck.setSummary("Last checked: " + (lastUpdateCheck != 0 ? format.format(calendar.getTime()) : getActivity().getString(R.string.never)));
 
 		// set our internal preference for the bluetooth state
 		sharedPreferences.edit()

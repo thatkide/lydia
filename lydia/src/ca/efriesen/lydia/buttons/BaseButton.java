@@ -39,6 +39,7 @@ public abstract class BaseButton extends android.widget.Button {
 	public static final int GROUP_USER = 0;
 	public static final int GROUP_NAVIGATION = 1;
 
+	public static final int TYPE_ANY = 0;
 	public static final int TYPE_HOMESCREEN = 1;
 	public static final int TYPE_SIDEBAR_LEFT = 2;
 	public static final int TYPE_SIDEBAR_RIGHT = 3;

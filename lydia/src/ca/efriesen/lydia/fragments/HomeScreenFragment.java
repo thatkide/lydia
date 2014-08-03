@@ -14,7 +14,6 @@ import ca.efriesen.lydia.activities.settings.HomeScreenEditorActivity;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
 import ca.efriesen.lydia.controllers.ButtonController;
-
 import java.util.List;
 
 /**
@@ -24,7 +23,7 @@ import java.util.List;
  */
 public class HomeScreenFragment extends Fragment implements View.OnClickListener, DrawScreenCallback {
 
-	private static final String TAG = "lydia HomeScreen";
+	private static final String TAG = HomeScreenFragment.class.getSimpleName();
 
 	private int selectedScreen;
 	private int numScreens;
@@ -48,6 +47,12 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		numScreens = buttonController.getNumScreens();
 		selectedScreen = sharedPreferences.getInt("selectedScreen", 0);
+
+		// if we want the buttons gone, hide them
+		boolean showButtons = sharedPreferences.getBoolean("useHomeScreenButtons", true);
+		if (!showButtons) {
+			activity.findViewById(R.id.homescreen_container).setVisibility(View.GONE);
+		}
 
 		// tell every button to call the button controller, it will decide your fate
 		for (int i=0; i<BaseButton.BUTTONS_PER_HOMESCREEN; i++) {
@@ -120,7 +125,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 	@Override
 	public void drawScreen(List<ca.efriesen.lydia.databases.Button> buttons) {
 		// this block ensures we always have a settings button on screen somewhere
-		if (!buttonController.hasValidSettingsButton() && selectedScreen == 0) {
+		if (!buttonController.hasValidSettingsButton(BaseButton.TYPE_ANY) && selectedScreen == 0) {
 			// start at 0
 			int position = 0;
 			// if we have a full screen but no settings

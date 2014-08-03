@@ -267,8 +267,10 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 
 	public void cleanup() {
 		for (Map.Entry<String , BaseButton>entry : buttons.entrySet()) {
-			BaseButton button = entry.getValue();
-			button.cleanUp();
+			try {
+				BaseButton button = entry.getValue();
+				button.cleanUp();
+			} catch (NullPointerException e) { }
 		}
 	}
 
@@ -354,9 +356,9 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		}
 	}
 
-	public boolean hasValidSettingsButton() {
+	public boolean hasValidSettingsButton(int buttonType) {
 		dataSource.open();
-		boolean hasButton = dataSource.hasSettingsButton();
+		boolean hasButton = dataSource.hasSettingsButton(buttonType);
 		dataSource.close();
 		return hasButton;
 	}

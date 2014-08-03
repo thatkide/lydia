@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.configs.AdminButtonsConfig;
 import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
 import ca.efriesen.lydia.callbacks.ButtonCheckerCallback;
@@ -164,10 +165,12 @@ public class ButtonConfigDataSource {
 		return count;
 	}
 
-	public boolean hasSettingsButton() {
+	public boolean hasSettingsButton(int type) {
 		Cursor cursor = database.query(ButtonConfigOpenHelper.TABLE_NAME, PROJECTION,
 				ButtonConfigOpenHelper.ACTION + " = " + DatabaseUtils.sqlEscapeString(SettingsButton.class.getSimpleName()) +
-				" AND " + ButtonConfigOpenHelper.GROUP + " = 0", null, null, null, null);
+				" AND " + ButtonConfigOpenHelper.GROUP + " = 0" +
+				(type != BaseButton.TYPE_ANY ? " AND " + ButtonConfigOpenHelper.BUTTONTYPE + " = " + type : "")
+				, null, null, null, null);
 		cursor.moveToFirst();
 		boolean hasButton = cursor.getCount() > 0;
 		cursor.close();

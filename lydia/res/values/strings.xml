@@ -102,6 +102,7 @@
 	<string name="name">Name</string>
 	<string name="navigation">Navigation</string>
 	<string name="navigation_mode">Navigation Mode</string>
+	<string name="never">Never</string>
 	<string name="new_playlist">New Playlist</string>
 	<string name="next">Next</string>
 	<string name="none_found">No devices found</string>
@@ -193,6 +194,8 @@
 	<string name="use_arduino">Use Arduino to communicate with other hardware</string>
 	<string name="use_bluetooth">Use Bluetooth</string>
 	<string name="use_bluetooth_summary">Use Bluetooth in app</string>
+	<string name="use_homescreen_buttons">Homescreen buttons</string>
+	<string name="use_homescreen_buttons_summary">Optionally hide homescreen buttons and just use sidebars</string>
 	<string name="use_phone">Use this phone in app</string>
 	<string name="quick_call">Who would you like to call?</string>
 	<string name="videos">Videos</string>

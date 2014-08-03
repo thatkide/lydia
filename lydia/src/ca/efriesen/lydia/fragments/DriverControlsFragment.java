@@ -7,6 +7,8 @@ package ca.efriesen.lydia.fragments;
  */
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import java.util.List;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.buttons.appButtons.SettingsButton;
 import ca.efriesen.lydia.callbacks.DrawScreenCallback;
 import ca.efriesen.lydia.activities.settings.SidebarEditorActivity;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
@@ -143,6 +146,37 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 			driverAdminNavGroup.setVisibility(View.VISIBLE);
 			driverDown.setVisibility(View.GONE);
 			driverUp.setVisibility(View.GONE);
+		}
+
+		SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+		boolean showButtons = sharedPreferences.getBoolean("useHomeScreenButtons", true);
+		if (!buttonController.hasValidSettingsButton(BaseButton.TYPE_SIDEBAR_LEFT) && selectedScreen == 0 && !showButtons) {
+			// start at 0
+			int position = 0;
+			// if we have a full screen but no settings
+			if (buttons.size() == BaseButton.BUTTONS_PER_SIDEBAR) {
+				// remove the last button and set it to the settings button
+				buttons.remove(position = BaseButton.BUTTONS_PER_SIDEBAR - 1);
+				// we don't have a full screen, but we also don't have a settings button
+			} else {
+				// loop over all the settings and find the next empty position
+				for (ca.efriesen.lydia.databases.Button button : buttons) {
+					// if our current selected position is in use, increment it.  the buttons are in position order from sqlite
+					if (position == button.getPosition()) {
+						position++;
+					}
+				}
+			}
+			// Hard code the settings button to always show up if nothing else is on screen
+			ca.efriesen.lydia.databases.Button settingsButton = new ca.efriesen.lydia.databases.Button();
+			settingsButton.setDisplayArea(0);
+			settingsButton.setPosition(position);
+			settingsButton.setTitle(getString(R.string.settings));
+			settingsButton.setAction(SettingsButton.class.getSimpleName());
+			settingsButton.setDrawable("settings");
+			settingsButton.setUsesDrawable(false);
+
+			buttons.add(settingsButton);
 		}
 	}
 
