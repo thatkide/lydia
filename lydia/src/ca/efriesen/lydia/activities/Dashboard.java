@@ -4,6 +4,11 @@ import android.app.*;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.database.Cursor;
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.gesture.Prediction;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,9 +17,12 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.*;
 import android.provider.ContactsContract;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.controllers.NotificationController;
@@ -33,12 +41,16 @@ import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Dashboard extends Activity {
+public class Dashboard extends Activity implements GestureOverlayView.OnGesturePerformedListener {
 	private static final String TAG = Dashboard.class.getSimpleName();
 	private BluetoothAdapter mBluetoothAdapter = null;
+	private GestureLibrary gestureLibrary;
+	private GestureOverlayView gestureOverlayView;
 
 	// plugins
 	private LastFM lastFm;
@@ -77,7 +89,22 @@ public class Dashboard extends Activity {
 //			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
-		setContentView(R.layout.dashboard);
+		gestureLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		gestureLibrary.load();
+
+		gestureOverlayView = new GestureOverlayView(this);
+//		gestureOverlayView.setGestureStrokeAngleThreshold(90.f);
+//		gestureOverlayView.setGestureStrokeLengthThreshold(90.f);
+		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
+
+		gestureOverlayView.addView(inflate);
+		gestureOverlayView.addOnGesturePerformedListener(this);
+		gestureOverlayView.setGestureColor(Color.TRANSPARENT);
+		gestureOverlayView.setUncertainGestureColor(Color.TRANSPARENT);
+
+		setContentView(gestureOverlayView);
+
+//		setContentView(R.layout.dashboard);
 
 		// start the hardware manager service
 		startService(new Intent(this, HardwareManagerService.class));
@@ -334,6 +361,25 @@ public class Dashboard extends Activity {
 		}
 	}
 
+	@Override
+	public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+		ArrayList<Prediction> predictions = gestureLibrary.recognize(gesture);
+		for (Prediction prediction : predictions) {
+			if (prediction.score > 1.0) {
+				LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+				if (prediction.name.equalsIgnoreCase("right")) {
+					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
+					// show the music bar on change
+					getNotificationController().setNotification(MusicNotificationFragment.class);
+				} else {
+					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
+					getNotificationController().setNotification(MusicNotificationFragment.class);
+				}
+			}
+		}
+	}
+
 	public static class ErrorDialogFragment extends DialogFragment {
 		private Dialog mDialog;
 
@@ -380,5 +426,6 @@ public class Dashboard extends Activity {
 	public NotificationController getNotificationController() {
 		return notificationController;
 	}
+	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
 
 }
