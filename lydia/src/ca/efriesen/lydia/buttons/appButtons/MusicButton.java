@@ -96,30 +96,33 @@ public class MusicButton extends BaseButton {
 				// find the music button on the home screen
 				int resId = activity.getResources().getIdentifier(getResourceName(), "id", activity.getPackageName());
 				android.widget.Button music = (android.widget.Button) activity.findViewById(resId);
-				try {
-//					// save the album id
-//					PreferenceManager.getDefaultSharedPreferences(activity).edit().putInt("currentAlbum", album.getId()).commit();
+				Button button = (Button) music.getTag();
+				if (button.getButtonType() == TYPE_HOMESCREEN) {
+					try {
+//						// save the album id
+//						PreferenceManager.getDefaultSharedPreferences(activity).edit().putInt("currentAlbum", album.getId()).commit();
 
-					// set the background of the button to the album art
-					Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
+						// set the background of the button to the album art
+						Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
 
-					if (bitmap != null) {
-						BitmapDrawable bitmapDrawable = new BitmapDrawable(activity.getResources(), bitmap);
-						// create a drawable from the bitmap, and set the background of the music button to the file
-						music.setBackground(bitmapDrawable);
-						// remove the record image
-						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-						// remove the text on the button
-						music.setText("");
-					} else {
+						if (bitmap != null) {
+							BitmapDrawable bitmapDrawable = new BitmapDrawable(activity.getResources(), bitmap);
+							// create a drawable from the bitmap, and set the background of the music button to the file
+							music.setBackground(bitmapDrawable);
+							// remove the record image
+							music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+							// remove the text on the button
+							music.setText("");
+						} else {
+							music.setBackgroundResource(R.drawable.button_bg);
+							music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
+							music.setText(R.string.music);
+						}
+					} catch (Exception e) {
 						music.setBackgroundResource(R.drawable.button_bg);
 						music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
 						music.setText(R.string.music);
 					}
-				} catch (Exception e) {
-					music.setBackgroundResource(R.drawable.button_bg);
-					music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
-					music.setText(R.string.music);
 				}
 			} catch (Exception e) {}
 		}

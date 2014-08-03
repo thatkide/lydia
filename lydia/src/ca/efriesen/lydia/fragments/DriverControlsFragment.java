@@ -150,7 +150,7 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 
 		SharedPreferences sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		boolean showButtons = sharedPreferences.getBoolean("useHomeScreenButtons", true);
-		if (!buttonController.hasValidSettingsButton(BaseButton.TYPE_SIDEBAR_LEFT) && selectedScreen == 0 && !showButtons) {
+		if (!buttonController.hasValidSettingsButton(BaseButton.TYPE_SIDEBAR_LEFT) && selectedScreen == 0 && !showButtons && group == BaseButton.GROUP_USER) {
 			// start at 0
 			int position = 0;
 			// if we have a full screen but no settings
