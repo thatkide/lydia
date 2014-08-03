@@ -39,6 +39,7 @@ import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
+import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -93,8 +94,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		gestureLibrary.load();
 
 		gestureOverlayView = new GestureOverlayView(this);
-//		gestureOverlayView.setGestureStrokeAngleThreshold(90.f);
-//		gestureOverlayView.setGestureStrokeLengthThreshold(90.f);
 		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
 
 		gestureOverlayView.addView(inflate);
