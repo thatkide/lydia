@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.activities.PlaceDetails;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.buttons.navButtons.ShowHide;
@@ -142,6 +143,9 @@ public class MapFragment extends Fragment implements
 		super.onActivityCreated(saved);
 		activity = getActivity();
 
+		// disable gesture listener.  otherwise it takes over the map controls
+		((Dashboard)activity).getGestureOverlayView().removeAllOnGesturePerformedListeners();
+
 		int mode = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt("nav_mode", 1);
 		travelMode = Routing.TravelMode.values()[mode];
 
@@ -235,6 +239,13 @@ public class MapFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 		mapView.onResume();
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		// reenable gesture listener
+		((Dashboard)activity).getGestureOverlayView().addOnGesturePerformedListener((Dashboard)activity);
 	}
 
 	@Override
