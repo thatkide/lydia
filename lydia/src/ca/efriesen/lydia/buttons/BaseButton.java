@@ -66,7 +66,8 @@ public abstract class BaseButton extends android.widget.Button {
 		return false;
 	};
 
-	public void cleanUp() { };
+	public void onStart() { };
+	public void onStop() { };
 	public final String getAction() {
 		return this.getClass().getSimpleName();
 	};

@@ -458,11 +458,11 @@ public class MediaService extends Service implements
 	private BroadcastReceiver getCurrentSongReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (getState() != stoppedState) {
+			try {
 				Song song = playlist.get(playlistPosition);
 				// send the new song as the update media info intent
 				localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra(IS_PLAYING, mMediaPlayer.isPlaying()).putExtra(SONG, song));
-			}
+			} catch (NullPointerException e) {}
 		}
 	};
 }

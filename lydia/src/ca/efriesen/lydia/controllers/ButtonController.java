@@ -269,7 +269,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		for (Map.Entry<String , BaseButton>entry : buttons.entrySet()) {
 			try {
 				BaseButton button = entry.getValue();
-				button.cleanUp();
+				button.onStop();
 			} catch (NullPointerException e) { }
 		}
 	}
@@ -317,10 +317,14 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		for (int i=0; i<buttonsInDb.size(); i++) {
 			// get the button
 			ca.efriesen.lydia.databases.Button myButton = buttonsInDb.get(i);
+			// run the onstart method of the base button
 			// get the resource id for the button
 			int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());
 			// set the res id for the buttons
 			(buttons.get(myButton.getAction())).setResourceName(baseName + myButton.getPosition());
+			// this must be after the setresource command above
+			BaseButton baseButton = buttons.get(myButton.getAction());
+			baseButton.onStart();
 			// get the button
 			Button button = (Button) activity.findViewById(resId);
 			// set the text to the proper title
@@ -332,6 +336,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 				}
 				button.setText(title);
 			} catch (Exception e) {}
+			// try the background image if set
 			if (myButton.getUsesDrawable()) {
 				Drawable img;
 				if (!myButton.getDrawable().equalsIgnoreCase("blank")) {
@@ -340,7 +345,6 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 					// get the drawable
 					img = activity.getResources().getDrawable(imgId);
 				} else {
-					BaseButton baseButton = buttons.get(myButton.getAction());
 					if (baseButton instanceof AppLaunchButton) {
 						Drawable drawable = ((AppLaunchButton)baseButton).getIcon(myButton.getExtraData());
 						Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
