@@ -5,14 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.*;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
+import ca.efriesen.lydia.includes.SongAdapter;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.*;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ import java.util.Arrays;
  */
 abstract public class SongState implements MusicFragmentState {
 
-	private static final String TAG = "lydia songstate";
+	private static final String TAG = SongState.class.getSimpleName();
 
 	private Activity activity;
 	private MusicFragment musicFragment;
@@ -37,7 +35,6 @@ abstract public class SongState implements MusicFragmentState {
 		this.activity = musicFragment.getActivity();
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
-
 
 	@Override
 	public boolean onBackPressed() {
@@ -77,6 +74,7 @@ abstract public class SongState implements MusicFragmentState {
 
 	@Override
 	public void search(String text) {
+		Log.d(TAG, "state is " + musicFragment.getState());
 		try {
 			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, text);
 			setView(true, medias.toArray(new Song[medias.size()]));
@@ -98,6 +96,7 @@ abstract public class SongState implements MusicFragmentState {
 				if (musicFragment.getState() == musicFragment.getAlbumSongState()) {
 					if (intent.hasExtra(MediaService.SONG)) {
 						currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
+						adapter.setCurrentSong(currentSong);
 						int pos = songs.indexOf(currentSong);
 						adapter.notifyDataSetChanged();
 						view.setSelection(pos);
@@ -108,44 +107,4 @@ abstract public class SongState implements MusicFragmentState {
 			}
 		}
 	};
-
-	class SongAdapter extends ArrayAdapter<Song> {
-
-		private final Context context;
-		private final ArrayList<Song> songs;
-		private final int layoutId;
-
-		public SongAdapter(Context context, int layoutId, ArrayList<Song> songs) {
-			super(context, layoutId, songs);
-			this.context = context;
-			this.layoutId = layoutId;
-			this.songs = songs;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(layoutId, parent, false);
-
-			TextView songTrack = (TextView) rowView.findViewById(R.id.row_song_track);
-			TextView songTitle = (TextView) rowView.findViewById(R.id.row_song_title);
-			TextView songDuration = (TextView) rowView.findViewById(R.id.row_song_duration);
-
-			Song song = songs.get(position);
-			try {
-				songTrack.setText(song.getTrack().substring(2, 4));
-			}catch (StringIndexOutOfBoundsException e) {}
-			songTitle.setText(song.getName());
-			// If we populate all the songs, it's SLOW
-			// If we don't we get one at a time, so it's turned off for now
-//			songDuration.setText(song.getDurationString());
-
-			if (currentSong != null && song.getId() == currentSong.getId()) {
-				songTitle.setTypeface(null, Typeface.BOLD_ITALIC);
-			} else {
-				songTitle.setTypeface(null, Typeface.NORMAL);
-			}
-			return rowView;
-		}
-	}
 }

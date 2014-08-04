@@ -11,13 +11,11 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,7 +24,7 @@ import java.util.Arrays;
  */
 public class ArtistState implements MusicFragmentState {
 
-	private final String TAG = "lydia artistState";
+	private final String TAG = ArtistState.class.getSimpleName();
 
 	private Activity activity;
 	private MusicFragment musicFragment;
@@ -48,9 +46,7 @@ public class ArtistState implements MusicFragmentState {
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-	}
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) { }
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -133,18 +129,31 @@ public class ArtistState implements MusicFragmentState {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+			ViewHolder viewHolder;
 
-			TextView textView = (TextView) rowView.findViewById(android.R.id.text1);
-			Artist artist = artists.get(position);
-			textView.setText(artist.getName());
-			if (currentArtist != null && artist.getId() == currentArtist.getId()) {
-				textView.setTypeface(null, Typeface.BOLD_ITALIC);
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+
+				viewHolder = new ViewHolder();
+				viewHolder.artistView = (TextView) convertView.findViewById(android.R.id.text1);
+				convertView.setTag(viewHolder);
 			} else {
-				textView.setTypeface(null, Typeface.NORMAL);
+				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			return rowView;
+
+			Artist artist = artists.get(position);
+			viewHolder.artistView.setText(artist.getName());
+			if (currentArtist != null && artist.getId() == currentArtist.getId()) {
+				viewHolder.artistView.setTypeface(null, Typeface.BOLD_ITALIC);
+			} else {
+				viewHolder.artistView.setTypeface(null, Typeface.NORMAL);
+			}
+			return convertView;
 		}
+	}
+
+	private static class ViewHolder {
+		TextView artistView;
 	}
 }

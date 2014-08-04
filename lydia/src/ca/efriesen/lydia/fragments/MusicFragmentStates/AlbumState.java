@@ -162,18 +162,33 @@ public class AlbumState implements MusicFragmentState {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+			ViewHolder viewHolder;
 
-			TextView textView = (TextView) rowView.findViewById(android.R.id.text1);
-			Album album = albums.get(position);
-			textView.setText(album.getName());
-			if (currentAlbum != null && album.getId() == currentAlbum.getId()) {
-				textView.setTypeface(null, Typeface.BOLD_ITALIC);
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+
+				viewHolder = new ViewHolder();
+				viewHolder.album = (TextView) convertView.findViewById(android.R.id.text1);
+
+				convertView.setTag(viewHolder);
 			} else {
-				textView.setTypeface(null, Typeface.NORMAL);
+				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			return rowView;
+
+			Album album = albums.get(position);
+			viewHolder.album.setText(album.getName());
+			if (currentAlbum != null && album.getId() == currentAlbum.getId()) {
+				viewHolder.album.setTypeface(null, Typeface.BOLD_ITALIC);
+			} else {
+				viewHolder.album.setTypeface(null, Typeface.NORMAL);
+			}
+			return convertView;
 		}
 	}
+
+	private static class ViewHolder {
+		TextView album;
+	}
+
 }

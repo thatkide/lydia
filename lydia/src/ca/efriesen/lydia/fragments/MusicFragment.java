@@ -27,7 +27,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	// bind to the media service
 	public MediaService mediaService;
 
-	private static final String TAG = "lydia media music fragment";
+	private static final String TAG = MusicFragment.class.getSimpleName();
 
 	private MusicFragmentState homeState;
 	private MusicFragmentState artistState;
@@ -100,10 +100,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 			public void afterTextChanged(Editable s) {
 				String text = search.getText().toString();
 
-				// if the length of the text is greater than 0, we filter
-				if (text.length() > 2) {
-					musicFragmentState.search(text);
-				}
+				musicFragmentState.search(text);
 			}
 		});
 	}
@@ -111,7 +108,6 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		Log.d(TAG, "trying to bind");
 		// bind to the media service
 		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
 	}
