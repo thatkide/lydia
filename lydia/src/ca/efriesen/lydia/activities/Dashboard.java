@@ -149,6 +149,28 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 
 		checkGooglePlayServices();
 
+		// only add the listener for > kitkat
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+				@Override
+				public void onSystemUiVisibilityChange(int visibility) {
+					// android studio complains if this isn't here...
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+						if(visibility == 0) {
+							getWindow().getDecorView().setSystemUiVisibility(
+									View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+											| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+											| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+											| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+											| View.SYSTEM_UI_FLAG_FULLSCREEN
+											| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+							);
+						}
+					}
+				}
+			});
+		}
+
 		// set background image if we have one set
 		SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		boolean useBgImg = sharedPreferences.getBoolean(BackgroundSettingsFragment.USE_BG_IMAGE, false);
