@@ -39,6 +39,7 @@ public class ArtistState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+	@Override
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getHomeState());
 		musicFragment.setView();
@@ -61,16 +62,18 @@ public class ArtistState implements MusicFragmentState {
 		}
 	}
 
+	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// save the position, so when we come back, it's where we left off
 		artistListPosition = position;
 		// get the artist from the arraylist
-		Artist artist = (Artist)artists.get(position);
+		Artist artist = (Artist) artists.get(position);
 		// transition states and set the view
 		musicFragment.setState(musicFragment.getAlbumState());
 		musicFragment.setView(artist);
 	}
 
+	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 
 		// we only use medias if we're searching
@@ -91,10 +94,13 @@ public class ArtistState implements MusicFragmentState {
 		view.setSelection(artistListPosition);
 	}
 
+	@Override
 	public void search(String text) {
 		try {
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
 			// search for artists like our string
-			ArrayList<Artist> artists = Media.getAllLike(Artist.class, activity, text);
+			ArrayList<Artist> artists = Media.getAllLike(Artist.class, activity, search);
 			// set the view to the returned array
 			setView(true, artists.toArray(new Artist[artists.size()]));
 		} catch (ClassNotFoundException e) {

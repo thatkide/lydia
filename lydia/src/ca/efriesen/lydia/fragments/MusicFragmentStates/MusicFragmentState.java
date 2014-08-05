@@ -1,13 +1,10 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
-import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import ca.efriesen.lydia_common.media.Media;
-
-import java.util.ArrayList;
 
 /**
  * Created by eric on 1/5/2014.

@@ -43,6 +43,7 @@ public class AlbumState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+	@Override
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getArtistState());
 		musicFragment.setView();
@@ -92,18 +93,21 @@ public class AlbumState implements MusicFragmentState {
 		return false;
 	}
 
+	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
 		} catch (Exception e) {}
 	}
 
+	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// transition states and set the view
 		musicFragment.setState(musicFragment.getAlbumSongState());
 		musicFragment.setView(artist, (Album)albums.get(position));
 	}
 
+	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 		// remove all old stuff
 		albums = new ArrayList<Media>();
@@ -126,9 +130,13 @@ public class AlbumState implements MusicFragmentState {
 		view.setAdapter(adapter);
 	}
 
+	@Override
 	public void search(String text) {
 		try {
-			ArrayList<Album> medias = Media.getAllLike(Album.class, activity, text);
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
+			search.add(String.valueOf(artist.getId()));
+			ArrayList<Album> medias = Media.getAllLike(Album.class, activity, search);
 			setView(true, medias.toArray(new Album[medias.size()]));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

@@ -11,6 +11,7 @@ import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by eric on 1/13/2014.
@@ -20,8 +21,6 @@ public class AlbumSongState extends SongState {
 	private static final String TAG = "lydia albumsongstate";
 	private Activity activity;
 	private MusicFragment musicFragment;
-	private ArrayList<Song> songs;
-	private Artist artist;
 	// i keep the known menu items in the negative, because the playlist id's are all positive, but unknown
 	private final int NewPlaylistId = -1;
 
@@ -84,10 +83,16 @@ public class AlbumSongState extends SongState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		artist = (Artist) medias[0];
-		Album album = (Album) medias[1];
-		// we need the artist for the transition back using the back button
-		songs = album.getAllSongs(artist);
+		ArrayList<Song> songs;
+		if (!fromSearch) {
+			artist = (Artist) medias[0];
+			album = (Album) medias[1];
+			// we need the artist for the transition back using the back button
+			songs = album.getAllSongs(artist);
+		} else {
+			songs = new ArrayList(Arrays.asList(medias));
+		}
 		super.setView(fromSearch, songs.toArray(new Song[songs.size()]));
 	}
+
 }

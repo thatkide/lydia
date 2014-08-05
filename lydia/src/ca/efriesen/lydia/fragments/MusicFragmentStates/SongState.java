@@ -5,12 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.*;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.fragments.MusicFragment;
-import ca.efriesen.lydia.includes.SongAdapter;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.media.*;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ abstract public class SongState implements MusicFragmentState {
 
 	private Activity activity;
 	private MusicFragment musicFragment;
+	protected Artist artist;
+	protected Album album;
 	private ArrayList songs;
 	private SongAdapter adapter;
 	private Song currentSong;
@@ -72,17 +76,6 @@ abstract public class SongState implements MusicFragmentState {
 		musicFragment.registerForContextMenu(view);
 	}
 
-	@Override
-	public void search(String text) {
-		Log.d(TAG, "state is " + musicFragment.getState());
-		try {
-			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, text);
-			setView(true, medias.toArray(new Song[medias.size()]));
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
 	protected void updateView(ArrayList<Song> songs) {
 		this.songs.clear();
 		this.songs.addAll(songs);
@@ -107,4 +100,79 @@ abstract public class SongState implements MusicFragmentState {
 			}
 		}
 	};
+
+	public class SongAdapter extends ArrayAdapter<Song> {
+
+		private final Context context;
+		private final ArrayList<Song> songs;
+		private final int layoutId;
+		private Song currentSong;
+
+		public SongAdapter(Context context, int layoutId, ArrayList<Song> songs) {
+			super(context, layoutId, songs);
+			this.context = context;
+			this.layoutId = layoutId;
+			this.songs = songs;
+		}
+
+		public void setCurrentSong(Song song) {
+			currentSong = song;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder viewHolder;
+
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(layoutId, parent, false);
+
+				viewHolder = new ViewHolder();
+				viewHolder.songTrack = (TextView) convertView.findViewById(R.id.row_song_track);
+				viewHolder.songTitle = (TextView) convertView.findViewById(R.id.row_song_title);
+				viewHolder.songDuration = (TextView) convertView.findViewById(R.id.row_song_duration);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (ViewHolder) convertView.getTag();
+			}
+
+			Song song = songs.get(position);
+			try {
+				viewHolder.songTrack.setText(song.getTrack().substring(2, 4));
+			}catch (StringIndexOutOfBoundsException e) {}
+
+			viewHolder.songTitle.setText(song.getName());
+			// If we populate all the songs, it's SLOW
+			// If we don't we get one at a time, so it's turned off for now
+//		viewHolder.songDuration.setText(song.getDurationString());
+
+			if (currentSong != null && song.getId() == currentSong.getId()) {
+				viewHolder.songTitle.setTypeface(null, Typeface.BOLD_ITALIC);
+			} else {
+				viewHolder.songTitle.setTypeface(null, Typeface.NORMAL);
+			}
+			return convertView;
+		}
+	}
+
+	@Override
+	public void search(String text) {
+		try {
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
+			search.add(String.valueOf(artist.getId()));
+			search.add(String.valueOf(album.getId()));
+			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, search);
+			setView(true, medias.toArray(new Song[medias.size()]));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private static class ViewHolder {
+		TextView songTrack;
+		TextView songTitle;
+		TextView songDuration;
+	}
 }

@@ -38,6 +38,8 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	private MusicFragmentState playlistState;
 
 	public LocalBroadcastManager localBroadcastManager;
+	private EditText search;
+	private TextWatcher textWatcher;
 
 	public void setState(MusicFragmentState musicFragmentState) {
 		setListAdapter(null);
@@ -87,9 +89,8 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		// set to the home view
 		musicFragmentState.setView(false);
 
-		// the text input for the filter
-		final EditText search = (EditText) getActivity().findViewById(R.id.filter);
-		search.addTextChangedListener(new TextWatcher() {
+		search = (EditText) getActivity().findViewById(R.id.filter);
+		textWatcher = new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -99,10 +100,12 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 			@Override
 			public void afterTextChanged(Editable s) {
 				String text = search.getText().toString();
-
 				musicFragmentState.search(text);
 			}
-		});
+		};
+
+		// the text input for the filter
+		search.addTextChangedListener(textWatcher);
 	}
 
 	@Override
@@ -158,8 +161,12 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		musicFragmentState.onListItemClick(list, v, position, id);
 		// clear the text in the filter box
-		EditText search = (EditText) getActivity().findViewById(R.id.filter);
+		// remove the listener first, otherwise it will be fired when we set the text
+		search.removeTextChangedListener(textWatcher);
 		search.setText("");
+		// re-enable it
+		search.addTextChangedListener(textWatcher);
+
 		// hide keyboard
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(search.getWindowToken(), 0);
@@ -184,7 +191,6 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder iBinder) {
 			mediaService = ((MediaService.MediaServiceBinder) iBinder).getService();
-			Log.d(TAG, "media service bound");
 		}
 
 		@Override

@@ -50,6 +50,7 @@ public class MediaService extends Service implements
 	public static final String PROGRESS = "ca.efriesen.lydia.MediaService.Progress";
 	public static final String REPEAT = "ca.efriesen.lydia.MediaService.Repeat";
 	public static final String REPEAT_STATE = "ca.efriesen.lydia.MediaService.RepeatState";
+	public static final String SET_PLAYLIST = "ca.efriesen.lydia.MediaService.SetPlaylist";
 	public static final String SET_POSITION = "ca.efriesen.lydia.MediaService.SetPosition";
 	public static final String SHUFFLE = "ca.efriesen.lydia.MediaService.Shuffle";
 	public static final String SHUFFLE_PLAY = "ca.efriesen.lydia.MediaService.ShufflePlay";
@@ -443,6 +444,8 @@ public class MediaService extends Service implements
 				mediaState.playPause();
 			} else if (command.equals(REPEAT)) {
 				toggleRepeat();
+			} else if (command.equals(SET_PLAYLIST)) {
+//				setPlaylist(intent.getIntegerArrayListExtra("playlist"), intent.getIntExtra("position", 0));
 			} else if (command.equals(SET_POSITION)) {
 				setCurrentPosition(intent.getIntExtra(SET_POSITION, 0));
 			} else if (command.equals(SHUFFLE)) {
