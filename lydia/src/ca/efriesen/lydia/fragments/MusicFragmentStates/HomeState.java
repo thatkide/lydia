@@ -18,6 +18,7 @@ import ca.efriesen.lydia.fragments.MusicFragment;
 import ca.efriesen.lydia.fragments.RadioFragment;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
+import ca.efriesen.lydia_common.media.Song;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,8 @@ public class HomeState implements MusicFragmentState {
 	private static final int PlaylistsID = 0;
 	private static final  int ArtistsId = 1;
 	private static final int AlbumsId = 2;
-	private static final int RadioId = 3;
+	private static final int SongsId = 3;
+	private static final int RadioId = 4;
 
 	// context menu ids
 	private static final int NewPlaylistId = 100;
@@ -49,6 +51,7 @@ public class HomeState implements MusicFragmentState {
 		options.add(PlaylistsID, activity.getString(R.string.playlists));
 		options.add(ArtistsId, activity.getString(R.string.artists));
 		options.add(AlbumsId, activity.getString(R.string.albums));
+		options.add(SongsId, activity.getString(R.string.songs));
 		options.add(RadioId, activity.getString(R.string.radio));
 	}
 
@@ -99,7 +102,7 @@ public class HomeState implements MusicFragmentState {
 
 	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
-		switch ((int)(long)id) {
+		switch ((int)id) {
 			case ArtistsId: {
 				// if we pressed artist on the home screen
 				// transition states and set the view
@@ -128,6 +131,11 @@ public class HomeState implements MusicFragmentState {
 						.addToBackStack(null)
 						.commit();
 
+				break;
+			}
+			case SongsId: {
+				musicFragment.setState(musicFragment.getAllSongsState());
+				musicFragment.setView();
 				break;
 			}
 		}

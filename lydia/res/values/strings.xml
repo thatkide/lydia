@@ -156,6 +156,7 @@
 	<string name="sms">SMS</string>
 	<string name="sms_received">SMS Received</string>
 	<string name="song_title">Title</string>
+	<string name="songs">Songs</string>
 	<string name="speaker">Speaker</string>
 	<string name="speaker_summary">Beep speaker on initial powerup</string>
 	<string name="speaker_title">Speaker</string>

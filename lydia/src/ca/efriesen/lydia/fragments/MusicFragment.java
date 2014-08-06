@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -36,6 +35,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	private MusicFragmentState playlistSongState;
 	private MusicFragmentState musicFragmentState;
 	private MusicFragmentState playlistState;
+	private MusicFragmentState allSongState;
 
 	public LocalBroadcastManager localBroadcastManager;
 	private EditText search;
@@ -68,10 +68,11 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 
 	public MusicFragmentState getPlaylistState() { return playlistState; }
 
+	public MusicFragmentState getAllSongsState() { return allSongState; }
+
 	public MusicFragmentState getState() {
 		return musicFragmentState;
 	}
-
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
@@ -85,6 +86,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		albumSongState = new AlbumSongState(this);
 		playlistSongState = new PlaylistSongState(this);
 		playlistState = new PlaylistState(this);
+		allSongState = new AllSongsState(this);
 		musicFragmentState = homeState;
 		// set to the home view
 		musicFragmentState.setView(false);
@@ -133,6 +135,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		albumSongState.onDestroy();
 		playlistSongState.onDestroy();
 		playlistState.onDestroy();
+		allSongState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);
 		} catch (Exception e) {

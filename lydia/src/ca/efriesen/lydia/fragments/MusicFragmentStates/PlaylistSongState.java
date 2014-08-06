@@ -20,8 +20,6 @@ import java.util.ArrayList;
  */
 public class PlaylistSongState extends SongState {
 
-	private Activity activity;
-	private MusicFragment musicFragment;
 	private Playlist playlist;
 
 	// context menu ids
@@ -29,8 +27,6 @@ public class PlaylistSongState extends SongState {
 
 	public PlaylistSongState(MusicFragment musicFragment) {
 		super(musicFragment);
-		this.musicFragment = musicFragment;
-		this.activity = musicFragment.getActivity();
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.*;
 import android.widget.AdapterView;
@@ -19,15 +18,12 @@ import java.util.Arrays;
 public class AlbumSongState extends SongState {
 
 	private static final String TAG = "lydia albumsongstate";
-	private Activity activity;
-	private MusicFragment musicFragment;
+
 	// i keep the known menu items in the negative, because the playlist id's are all positive, but unknown
 	private final int NewPlaylistId = -1;
 
 	public AlbumSongState(MusicFragment musicFragment) {
 		super(musicFragment);
-		this.musicFragment = musicFragment;
-		this.activity = musicFragment.getActivity();
 	}
 
 	@Override

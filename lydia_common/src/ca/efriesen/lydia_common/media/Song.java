@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 
 /**
@@ -124,6 +125,44 @@ public class Song extends Media implements Serializable {
 		this.track = track;
 	}
 
+	public static ArrayList<Song> getAllSongs(Context context) {
+		String[] PROJECTION = new String[] {
+				MediaStore.Audio.Media._ID,
+				MediaStore.Audio.Media.ALBUM,
+				MediaStore.Audio.Media.ALBUM_ID,
+				MediaStore.Audio.Media.ARTIST,
+				MediaStore.Audio.Media.ARTIST_ID,
+				MediaStore.Audio.Media.TITLE,
+				MediaStore.Audio.Media.TRACK,
+				MediaStore.Audio.Media.YEAR,
+				MediaStore.Audio.Media.IS_MUSIC
+		};
+		// always order by artist, then album, the track
+		String ORDER = MediaStore.Audio.Media.ARTIST + ", " + MediaStore.Audio.Media.ALBUM + ", " + MediaStore.Audio.Media.TRACK;
+		//set the selection
+		String SELECTION = MediaStore.Audio.Media.IS_MUSIC + " > 0";
+
+		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
+		// reset the cursor the the first item
+		cursor.moveToFirst();
+		if (cursor.getCount() > 0) {
+			ArrayList<Song> songs = new ArrayList<Song>();
+			while (!cursor.isAfterLast()) {
+				// create a new song object
+				Song song = new Song(context);
+				// pass the song the cursor data
+				song.setCursorData(cursor);
+				songs.add(song);
+				// and return the song
+				cursor.moveToNext();
+			}
+			cursor.close();
+			return songs;
+		} else {
+			cursor.close();
+			return null;
+		}
+	}
 
 	public static Song getSong(Context context, int id) {
 		String[] PROJECTION = new String[] {

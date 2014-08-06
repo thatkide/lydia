@@ -25,8 +25,8 @@ abstract public class SongState implements MusicFragmentState {
 
 	private static final String TAG = SongState.class.getSimpleName();
 
-	private Activity activity;
-	private MusicFragment musicFragment;
+	protected Activity activity;
+	protected MusicFragment musicFragment;
 	protected Artist artist;
 	protected Album album;
 	private ArrayList songs;
