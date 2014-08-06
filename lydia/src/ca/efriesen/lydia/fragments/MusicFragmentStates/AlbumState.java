@@ -43,6 +43,7 @@ public class AlbumState implements MusicFragmentState {
 		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+	@Override
 	public boolean onBackPressed() {
 		musicFragment.setState(musicFragment.getArtistState());
 		musicFragment.setView();
@@ -92,18 +93,21 @@ public class AlbumState implements MusicFragmentState {
 		return false;
 	}
 
+	@Override
 	public void onDestroy() {
 		try {
 			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
 		} catch (Exception e) {}
 	}
 
+	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
 		// transition states and set the view
 		musicFragment.setState(musicFragment.getAlbumSongState());
 		musicFragment.setView(artist, (Album)albums.get(position));
 	}
 
+	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 		// remove all old stuff
 		albums = new ArrayList<Media>();
@@ -126,9 +130,13 @@ public class AlbumState implements MusicFragmentState {
 		view.setAdapter(adapter);
 	}
 
+	@Override
 	public void search(String text) {
 		try {
-			ArrayList<Album> medias = Media.getAllLike(Album.class, activity, text);
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
+			search.add(String.valueOf(artist.getId()));
+			ArrayList<Album> medias = Media.getAllLike(Album.class, activity, search);
 			setView(true, medias.toArray(new Album[medias.size()]));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -162,18 +170,33 @@ public class AlbumState implements MusicFragmentState {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+			ViewHolder viewHolder;
 
-			TextView textView = (TextView) rowView.findViewById(android.R.id.text1);
-			Album album = albums.get(position);
-			textView.setText(album.getName());
-			if (currentAlbum != null && album.getId() == currentAlbum.getId()) {
-				textView.setTypeface(null, Typeface.BOLD_ITALIC);
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+
+				viewHolder = new ViewHolder();
+				viewHolder.album = (TextView) convertView.findViewById(android.R.id.text1);
+
+				convertView.setTag(viewHolder);
 			} else {
-				textView.setTypeface(null, Typeface.NORMAL);
+				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			return rowView;
+
+			Album album = albums.get(position);
+			viewHolder.album.setText(album.getName());
+			if (currentAlbum != null && album.getId() == currentAlbum.getId()) {
+				viewHolder.album.setTypeface(null, Typeface.BOLD_ITALIC);
+			} else {
+				viewHolder.album.setTypeface(null, Typeface.NORMAL);
+			}
+			return convertView;
 		}
 	}
+
+	private static class ViewHolder {
+		TextView album;
+	}
+
 }

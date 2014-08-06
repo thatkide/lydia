@@ -198,17 +198,32 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(layoutId, parent, false);
+			ViewHolder viewHolder;
 
-			TextView playlistName = (TextView) rowView.findViewById(R.id.row_playlist_name);
-			TextView playlistCount = (TextView) rowView.findViewById(R.id.row_playlist_song_count);
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(layoutId, parent, false);
+
+				viewHolder = new ViewHolder();
+
+				viewHolder.playlistName = (TextView) convertView.findViewById(R.id.row_playlist_name);
+				viewHolder.playlistCount = (TextView) convertView.findViewById(R.id.row_playlist_song_count);
+
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (ViewHolder) convertView.getTag();
+			}
 
 			Playlist playlist = playlists.get(position);
-			playlistName.setText(playlist.getName());
-			playlistCount.setText(String.valueOf(playlist.getCount()));
+			viewHolder.playlistName.setText(playlist.getName());
+			viewHolder.playlistCount.setText(String.valueOf(playlist.getCount()));
 
-			return rowView;
+			return convertView;
 		}
+	}
+
+	private static class ViewHolder {
+		TextView playlistName;
+		TextView playlistCount;
 	}
 }
