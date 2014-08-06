@@ -33,6 +33,7 @@ import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
+import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import java.util.ArrayList;
@@ -101,8 +102,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		gestureOverlayView.setUncertainGestureColor(Color.TRANSPARENT);
 
 		setContentView(gestureOverlayView);
-
-//		setContentView(R.layout.dashboard);
 
 		// start the hardware manager service
 		startService(new Intent(this, HardwareManagerService.class));
