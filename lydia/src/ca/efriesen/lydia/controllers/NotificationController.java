@@ -14,10 +14,9 @@ import ca.efriesen.lydia.interfaces.NotificationInterface;
 /**
  * Created by eric on 2014-07-14.
  */
-public class NotificationController {
+public class NotificationController extends Controller {
 	private static final String TAG = NotificationController.class.getSimpleName();
 
-	private Activity activity;
 	private FragmentManager fragmentManager;
 	private final Handler handler = new Handler();
 	private Runnable runnable;
@@ -29,7 +28,7 @@ public class NotificationController {
 	private int currentNote = 0;
 
 	public NotificationController(final Activity activity) {
-		this.activity = activity;
+		super(activity);
 		this.fragmentManager = activity.getFragmentManager();
 		// create the new runnable.  this does the job of rotating the notes
 		runnable = new Runnable() {

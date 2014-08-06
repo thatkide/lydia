@@ -9,10 +9,7 @@ import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.*;
@@ -20,17 +17,14 @@ import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
+import ca.efriesen.lydia.controllers.BackgroundController;
+import ca.efriesen.lydia.controllers.Controller;
 import ca.efriesen.lydia.controllers.NotificationController;
 import ca.efriesen.lydia.databases.ButtonConfigDataSource;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
 import ca.efriesen.lydia.fragments.NotificationFragments.SystemNotificationFragment;
-import ca.efriesen.lydia.fragments.Settings.BackgroundSettingsFragment;
-import ca.efriesen.lydia.includes.Helpers;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.ArduinoService;
 import ca.efriesen.lydia.fragments.*;
@@ -39,16 +33,18 @@ import ca.efriesen.lydia.services.HardwareManagerService;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
-import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Dashboard extends Activity implements GestureOverlayView.OnGesturePerformedListener {
 	private static final String TAG = Dashboard.class.getSimpleName();
+
+	public static final int BACKGROUND_CONTROLLER = 2;
+	public static final int NOTIFICATION_CONTROLLER = 1;
+
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private GestureLibrary gestureLibrary;
 	private GestureOverlayView gestureOverlayView;
@@ -63,6 +59,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private boolean mPermissionRequestPending;
 	private UsbAccessory mUsbAccessory;
 
+	private BackgroundController backgroundController;
 	private NotificationController notificationController;
 
 	/**
@@ -72,7 +69,9 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 
+		backgroundController = new BackgroundController(this);
 		notificationController = new NotificationController(this);
+
 		final UpdateChecker checker = new UpdateChecker(this, true);
 		checker.addObserver(new Observer() {
 			@Override
@@ -171,25 +170,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			});
 		}
 
-		// set background image if we have one set
-		SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-		boolean useBgImg = sharedPreferences.getBoolean(BackgroundSettingsFragment.USE_BG_IMAGE, false);
-		// if we have opted to use a background image, set it
-		if (useBgImg) {
-			String imagePath = sharedPreferences.getString(BackgroundSettingsFragment.BG_IMG_PATH, "");
-			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
-			layout.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeFile(imagePath)));
-		// else if we have a non default top or bottom color, use those
-		} else if (sharedPreferences.getInt("topBgColor", 0) != 0 || sharedPreferences.getInt("bottomBgColor", 0) != 0) {
-			GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{sharedPreferences.getInt("topBgColor", 1), sharedPreferences.getInt("bottomBgColor", 1)});
-			gradientDrawable.setCornerRadius(0f);
-			RelativeLayout layout = (RelativeLayout) findViewById(R.id.dashboard_container);
-			layout.setBackground(gradientDrawable);
-		}
-		// set overall brightness
-		float brightness = sharedPreferences.getFloat(BackgroundSettingsFragment.BG_BRIGHTNESS, 0.5f);
-		RelativeLayout colorMask = (RelativeLayout) findViewById(R.id.color_mask);
-		colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
+		backgroundController.applyBackground();
 
 		// get bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -392,10 +373,10 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 				if (prediction.name.equalsIgnoreCase("right")) {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 					// show the music bar on change
-					getNotificationController().setNotification(MusicNotificationFragment.class);
+					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 				} else {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-					getNotificationController().setNotification(MusicNotificationFragment.class);
+					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 				}
 			}
 		}
@@ -444,9 +425,16 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		}
 	};
 
-	public NotificationController getNotificationController() {
-		return notificationController;
+	public Controller getController(int controller) {
+		switch (controller) {
+			case NOTIFICATION_CONTROLLER:
+				return notificationController;
+			case BACKGROUND_CONTROLLER:
+				return backgroundController;
+		}
+		return null;
 	}
+
 	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
 
 }

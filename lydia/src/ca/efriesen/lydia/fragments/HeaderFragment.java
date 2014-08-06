@@ -10,6 +10,7 @@ import android.view.*;
 import android.widget.*;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
+import ca.efriesen.lydia.controllers.NotificationController;
 import ca.efriesen.lydia.fragments.NotificationFragments.MusicNotificationFragment;
 import ca.efriesen.lydia.services.MediaService;
 
@@ -87,7 +88,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 				// show the music bar on change
-				((Dashboard)activity).getNotificationController().setNotification(MusicNotificationFragment.class);
+				((NotificationController)((Dashboard)activity).getController(Dashboard.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 
@@ -95,7 +96,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			@Override
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-				((Dashboard)activity).getNotificationController().setNotification(MusicNotificationFragment.class);
+				((NotificationController)((Dashboard)activity).getController(Dashboard.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 	}

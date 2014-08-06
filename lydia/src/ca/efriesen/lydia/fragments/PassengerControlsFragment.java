@@ -124,7 +124,9 @@ public class PassengerControlsFragment extends Fragment implements View.OnClickL
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		buttonController.cleanup();
+		try {
+			buttonController.cleanup();
+		} catch (NullPointerException e) {}
 	}
 
 	@Override

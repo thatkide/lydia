@@ -126,7 +126,9 @@ public class DriverControlsFragment extends Fragment implements View.OnClickList
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		buttonController.cleanup();
+		try {
+			buttonController.cleanup();
+		} catch (NullPointerException e) {}
 	}
 
 	@Override
