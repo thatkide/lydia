@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.fragments.MusicFragment;
@@ -67,15 +68,14 @@ public class MusicButton extends BaseButton {
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (sharedPreferences.getBoolean("useAlbumArtMusicBtn", false)) {
+			// Only set the image if we have it yes in the preferences, and we're in the home dashboard activity
+			if (sharedPreferences.getBoolean("useAlbumArtMusicBtn", false) && activity instanceof Dashboard) {
 				try {
 					// find the music button on the home screen
 					int resId = activity.getResources().getIdentifier(getResourceName(), "id", activity.getPackageName());
 					android.widget.Button music = (android.widget.Button) activity.findViewById(resId);
 					Button button = (Button) music.getTag();
-					// Only set the image if it's actully a music button
-					Log.d(TAG, button.getAction());
-					Log.d(TAG, getAction());
+					// Only set the image if it's actually a music button
 					if (button.getButtonType() == TYPE_HOMESCREEN && button.getAction().equalsIgnoreCase(getAction())) {
 						try {
 							// set the background of the button to the album art

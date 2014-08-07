@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.buttons.BaseButton;
 import ca.efriesen.lydia.callbacks.FragmentAnimationCallback;
 import ca.efriesen.lydia.devices.Master;
@@ -142,10 +143,16 @@ public class FooterFragment extends Fragment implements FragmentAnimationCallbac
 			}
 
 			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {}
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// disable global gestures while changing volume
+				((Dashboard)activity).getGestureOverlayView().removeAllOnGesturePerformedListeners();
+			}
 
 			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {}
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// re-enable gesture
+				((Dashboard)activity).getGestureOverlayView().addOnGesturePerformedListener((Dashboard)activity);
+			}
 		});
 
 
