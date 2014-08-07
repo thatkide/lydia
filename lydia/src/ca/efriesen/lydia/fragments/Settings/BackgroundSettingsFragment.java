@@ -10,10 +10,15 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
+
+import com.bugsense.trace.BugSenseHandler;
+
 import net.jayschwa.android.preference.SliderPreference;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.controllers.BackgroundController;
+import yuku.ambilwarna.widget.AmbilWarnaPreference;
 
 /**
  * Created by eric on 2014-08-01.
@@ -36,6 +41,11 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 				float brightness = sharedPreferences.getFloat("backgroundBrightness", 0);
 				backgroundController.setBrightness(brightness);
 			} else if (s.equalsIgnoreCase("topBgColor") || s.equalsIgnoreCase("bottomBgColor")) {
+				int topColor = sharedPreferences.getInt("topBgColor", 1);
+				int bottomColor = sharedPreferences.getInt("bottomBgColor", 1);
+				// update the onscreen colors
+				((AmbilWarnaPreference) findPreference("topBgColor")).forceSetValue(topColor);
+				((AmbilWarnaPreference) findPreference("bottomBgColor")).forceSetValue(bottomColor);
 				backgroundController.setBackgroundColor(sharedPreferences.getInt("topBgColor", 1), sharedPreferences.getInt("bottomBgColor", 1));
 			}
 		}
@@ -87,28 +97,34 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		switch (requestCode) {
 			case ACTIVITY_SELECT_IMAGE: {
 				if (resultCode == Activity.RESULT_OK) {
-					// pass the uri and get the bitmap back
-					final Bitmap bitmap = backgroundController.setBackgroundImage(imageReturned.getData());
+					try {
+						// pass the uri and get the bitmap back
+						final Bitmap bitmap = backgroundController.setBackgroundImage(imageReturned.getData());
 
-					// create a new alert asking to save or cancel
-					AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-					builder.setTitle(activity.getString(R.string.background_set));
-					builder.setPositiveButton(activity.getString(R.string.save), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// if the user clicked yes, save the image
-							backgroundController.saveImage(bitmap);
-						}
-					})
-					.setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// don't save image, revert
-							backgroundController.setDefaultBackground();
-						}
-					});
+						// create a new alert asking to save or cancel
+						AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+						builder.setTitle(activity.getString(R.string.background_set));
+						builder.setPositiveButton(activity.getString(R.string.save), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// if the user clicked yes, save the image
+								backgroundController.saveImage(bitmap);
+							}
+						})
+								.setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										// don't save image, revert
+										backgroundController.setDefaultBackground();
+									}
+								});
 
-					builder.create().show();
+						builder.create().show();
+					} catch (NullPointerException e) {
+						Toast.makeText(getActivity(), "Error, Sending Bug Report", Toast.LENGTH_SHORT).show();
+						e.printStackTrace();
+						BugSenseHandler.sendException(e);
+					}
 				}
 			}
 		}

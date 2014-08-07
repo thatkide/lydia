@@ -10,13 +10,19 @@
 	<string name="alarm_length_summary">Length of alarm in seconds</string>
 	<string name="alarm_settings">Alarm settings</string>
 	<string name="alarm_settings_summary">Setup times, delays, etc...</string>
+	<string name="album_art_bg">Album Artwork</string>
+	<string name="album_art_bg_summary">Use currently playing music album art for background</string>
+	<string name="album_art_music_button_summary">Use currently playing music album art for the music button</string>
 	<string name="albums">Albums</string>
 	<string name="all_apps">Apps</string>
+	<string name="artist_art_bg">Artist Artwork</string>
+	<string name="artist_art_bg_summary">Use currently playing artist image for background</string>
 	<string name="answer">Answer</string>
 	<string name="app_name">lydia</string>
 	<string name="arduino">Arduino</string>
 	<string name="artist">Artist</string>
 	<string name="artists">Artists</string>
+	<string name="artwork">Artwork</string>
 	<string name="auto_arm">Auto arm alarm</string>
 	<string name="auto_arm_summary">Enables/disables auto arming</string>
 	<string name="auto_arm_delay">Auto arm delay</string>
@@ -78,6 +84,7 @@
 	<string name="ignore">Ignore</string>
 	<string name="incoming_call">Incoming Call</string>
 	<string name="inside_temp">Inside</string>
+	<string name="lastfm">last.fm</string>
 	<string name="lastfm_login_failed">last.fm Login Failed</string>
 	<string name="lastfm_login_successful">last.fm Login Successful</string>
 	<string name="lastfm_use">Use last.fm to scrobble songs</string>

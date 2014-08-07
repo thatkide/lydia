@@ -2,7 +2,12 @@
 
 <PreferenceScreen
 		xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/music">
+	<PreferenceCategory android:title="@string/artwork">
+		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useAlbumArtMusicBtn" android:title="@string/album_art_bg" android:summary="@string/album_art_music_button_summary" android:defaultValue="false" />
+		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useAlbumArtBg" android:title="@string/album_art_bg" android:summary="@string/album_art_bg_summary" android:defaultValue="false" />
+		<ca.efriesen.lydia.includes.CustomSwitchPreference android:key="useArtistArtBg" android:title="@string/artist_art_bg" android:summary="@string/artist_art_bg_summary" android:defaultValue="false" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/lastfm">
 		<ca.efriesen.lydia.includes.CustomSwitchPreference
 				android:key="useLastFm"
 				android:defaultValue="false"

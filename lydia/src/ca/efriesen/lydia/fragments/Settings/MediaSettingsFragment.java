@@ -1,6 +1,7 @@
 package ca.efriesen.lydia.fragments.Settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.includes.CustomSwitchPreference;
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
 
@@ -72,6 +74,15 @@ public class MediaSettingsFragment extends PreferenceFragment {
 					});
 					thread.start();
 				}
+			// enable the two to be mutually exclusive
+			} else if (s.equalsIgnoreCase("useAlbumArtBg")) {
+				if (sharedPreferences.getBoolean("useAlbumArtBg", false)) {
+					((CustomSwitchPreference) findPreference("useArtistArtBg")).setChecked(false);
+				}
+			} else if (s.equalsIgnoreCase("useArtistArtBg")) {
+				if (sharedPreferences.getBoolean("useArtistArtBg", false)) {
+					((CustomSwitchPreference) findPreference("useAlbumArtBg")).setChecked(false);
+				}
 			}
 		}
 	};
@@ -79,7 +90,7 @@ public class MediaSettingsFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		addPreferencesFromResource(R.xml.media_preferences_fragment);

@@ -1,8 +1,11 @@
 package ca.efriesen.lydia.controllers;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,13 +14,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.RelativeLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.databases.Button;
 import ca.efriesen.lydia.includes.Helpers;
+import ca.efriesen.lydia.services.MediaService;
+import ca.efriesen.lydia_common.media.Song;
 
 /**
  * Created by eric on 2014-08-05.
@@ -31,6 +38,7 @@ public class BackgroundController extends Controller {
 	private SharedPreferences sharedPreferences;
 	private RelativeLayout layout;
 	private RelativeLayout colorMask;
+	private LocalBroadcastManager localBroadcastManager;
 
 	public BackgroundController(Activity activity) {
 		super(activity);
@@ -38,6 +46,9 @@ public class BackgroundController extends Controller {
 
 		// get the two layouts. dashboard container is the lowest, we set the image there and the mask is to darken the image up
 		setLayouts();
+
+		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
 	public void applyBackground() {
@@ -75,16 +86,20 @@ public class BackgroundController extends Controller {
 		layout.setBackground(gradientDrawable);
 	}
 
-	public Bitmap setBackgroundImage(Uri uri) {
-		// decode the image passed.  this will resize for us
-		Bitmap bitmap = decodeUri(activity, uri);
+	public void setBackgroundImage(Bitmap image) {
+		setLayouts();
 		// set the background
-		layout.setBackground(new BitmapDrawable(activity.getResources(), bitmap));
+		layout.setBackground(new BitmapDrawable(activity.getResources(), image));
 		// set the color mask
 		colorMask.setBackgroundColor(Color.argb(0, 0x00, 0x00, 0x00));
 		// reset the brightness
 		sharedPreferences.edit().putFloat(BG_BRIGHTNESS, 1).apply();
+	}
 
+	public Bitmap setBackgroundImage(Uri uri) {
+		// decode the image passed.  this will resize for us
+		Bitmap bitmap = decodeUri(activity, uri);
+		setBackgroundImage(bitmap);
 		return bitmap;
 	}
 
@@ -184,4 +199,22 @@ public class BackgroundController extends Controller {
 			return null;
 		}
 	}
+
+
+	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// if we want to use the album art as the background
+			if (sharedPreferences.getBoolean("useAlbumArtBg", false)) {
+				// get the bitmap from the song
+				Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
+				// if it's valid
+				if (bitmap != null) {
+					// set the background
+					setBackgroundImage(bitmap);
+				}
+			}
+		}
+	};
+
 }

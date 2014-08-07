@@ -22,8 +22,10 @@ public class AllSongsState extends AlbumSongState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		ArrayList<Song> songs = Song.getAllSongs(activity);
-		super.setView(true, songs.toArray(new Song[songs.size()]));
+		try {
+			ArrayList<Song> songs = Song.getAllSongs(activity);
+			super.setView(true, songs.toArray(new Song[songs.size()]));
+		} catch (NullPointerException e) {}
 	}
 
 }
