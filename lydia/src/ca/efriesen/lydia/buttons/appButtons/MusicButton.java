@@ -73,7 +73,10 @@ public class MusicButton extends BaseButton {
 					int resId = activity.getResources().getIdentifier(getResourceName(), "id", activity.getPackageName());
 					android.widget.Button music = (android.widget.Button) activity.findViewById(resId);
 					Button button = (Button) music.getTag();
-					if (button.getButtonType() == TYPE_HOMESCREEN) {
+					// Only set the image if it's actully a music button
+					Log.d(TAG, button.getAction());
+					Log.d(TAG, getAction());
+					if (button.getButtonType() == TYPE_HOMESCREEN && button.getAction().equalsIgnoreCase(getAction())) {
 						try {
 							// set the background of the button to the album art
 							Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
@@ -92,12 +95,14 @@ public class MusicButton extends BaseButton {
 								music.setText(R.string.music);
 							}
 						} catch (Exception e) {
+							e.printStackTrace();
 							music.setBackgroundResource(R.drawable.button_bg);
 							music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
 							music.setText(R.string.music);
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
