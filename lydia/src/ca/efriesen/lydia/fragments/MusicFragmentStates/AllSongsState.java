@@ -22,10 +22,27 @@ public class AllSongsState extends AlbumSongState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		try {
-			ArrayList<Song> songs = Song.getAllSongs(activity);
-			super.setView(true, songs.toArray(new Song[songs.size()]));
-		} catch (NullPointerException e) {}
+		if (fromSearch) {
+			super.setView(true, medias);
+		} else {
+			try {
+				ArrayList<Song> songs = Song.getAllSongs(activity);
+				super.setView(true, songs.toArray(new Song[songs.size()]));
+			} catch (NullPointerException e) {}
+		}
 	}
+
+	@Override
+	public void search(String text) {
+		try {
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
+			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, search);
+			setView(true, medias.toArray(new Song[medias.size()]));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 }

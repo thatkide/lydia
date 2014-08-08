@@ -82,7 +82,6 @@ public class Media implements Serializable {
 		}
 
 		Cursor cursor = context.getContentResolver().query(mediaUri, PROJECTION, SELECTION, null, ORDER);
-		DatabaseUtils.dumpCursor(cursor);
 		cursor.moveToFirst();
 		// if we found 1 item or more
 		if (cursor.getCount() > 0) {

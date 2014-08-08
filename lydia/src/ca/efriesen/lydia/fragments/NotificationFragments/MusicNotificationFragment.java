@@ -23,6 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.efriesen.lydia.R;
+import ca.efriesen.lydia.activities.Dashboard;
 import ca.efriesen.lydia.interfaces.NotificationInterface;
 import ca.efriesen.lydia.services.MediaService;
 import ca.efriesen.lydia_common.includes.Constants;
@@ -85,10 +86,16 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 			}
 
 			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {}
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// disable global gestures while changing volume
+				((Dashboard)activity).getGestureOverlayView().removeAllOnGesturePerformedListeners();
+			}
 
 			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {}
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// re-enable gesture
+				((Dashboard)activity).getGestureOverlayView().addOnGesturePerformedListener((Dashboard)activity);
+			}
 		});
 
 //		artist.setOnTouchListener(this);
