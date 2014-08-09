@@ -1,6 +1,5 @@
 package ca.efriesen.lydia.fragments.MusicFragmentStates;
 
-import android.app.Activity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;

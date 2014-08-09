@@ -29,13 +29,14 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	private static final String TAG = MusicFragment.class.getSimpleName();
 
 	private MusicFragmentState homeState;
+	private MusicFragmentState allSongState;
 	private MusicFragmentState artistState;
 	private MusicFragmentState albumState;
 	private MusicFragmentState albumSongState;
 	private MusicFragmentState playlistSongState;
-	private MusicFragmentState musicFragmentState;
 	private MusicFragmentState playlistState;
-	private MusicFragmentState allSongState;
+	private MusicFragmentState nowPlayingState;
+	private MusicFragmentState musicFragmentState;
 
 	public LocalBroadcastManager localBroadcastManager;
 	private EditText search;
@@ -50,17 +51,11 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		musicFragmentState.setView(false, medias);
 	}
 
-	public MusicFragmentState getArtistState() {
-		return artistState;
-	}
+	public MusicFragmentState getArtistState() { return artistState; }
 
-	public MusicFragmentState getAlbumState() {
-		return albumState;
-	}
+	public MusicFragmentState getAlbumState() { return albumState; }
 
-	public MusicFragmentState getHomeState() {
-		return homeState;
-	}
+	public MusicFragmentState getHomeState() { return homeState; }
 
 	public MusicFragmentState getAlbumSongState() { return albumSongState; }
 
@@ -70,9 +65,9 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 
 	public MusicFragmentState getAllSongsState() { return allSongState; }
 
-	public MusicFragmentState getState() {
-		return musicFragmentState;
-	}
+	public MusicFragmentState getNowPlayingState() { return nowPlayingState; }
+
+	public MusicFragmentState getState() { return musicFragmentState; }
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
@@ -87,6 +82,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		playlistSongState = new PlaylistSongState(this);
 		playlistState = new PlaylistState(this);
 		allSongState = new AllSongsState(this);
+		nowPlayingState = new NowPlayingState(this);
 		musicFragmentState = homeState;
 		// set to the home view
 		musicFragmentState.setView(false);
@@ -136,6 +132,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		playlistSongState.onDestroy();
 		playlistState.onDestroy();
 		allSongState.onDestroy();
+		nowPlayingState.onDestroy();
 		try {
 			getActivity().unbindService(mediaServiceConnection);
 		} catch (Exception e) {

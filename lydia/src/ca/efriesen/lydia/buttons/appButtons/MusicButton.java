@@ -95,15 +95,12 @@ public class MusicButton extends BaseButton {
 								music.setText(R.string.music);
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
 							music.setBackgroundResource(R.drawable.button_bg);
 							music.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.vinyl, 0, 0);
 							music.setText(R.string.music);
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				} catch (Exception e) { }
 			}
 		}
 	};

@@ -31,11 +31,12 @@ public class HomeState implements MusicFragmentState {
 
 	ArrayList<String> options = new ArrayList<String>();
 	// main menu ids
-	private static final int PlaylistsID = 0;
-	private static final  int ArtistsId = 1;
-	private static final int AlbumsId = 2;
-	private static final int SongsId = 3;
-	private static final int RadioId = 4;
+	private static final int NowPlayingId = 0;
+	private static final int PlaylistsID = 1;
+	private static final  int ArtistsId = 2;
+	private static final int AlbumsId = 3;
+	private static final int SongsId = 4;
+	private static final int RadioId = 5;
 
 	// context menu ids
 	private static final int NewPlaylistId = 100;
@@ -48,6 +49,7 @@ public class HomeState implements MusicFragmentState {
 		this.activity = musicFragment.getActivity();
 
 		// items in the home menu are added here
+		options.add(NowPlayingId, activity.getString(R.string.now_playing));
 		options.add(PlaylistsID, activity.getString(R.string.playlists));
 		options.add(ArtistsId, activity.getString(R.string.artists));
 		options.add(AlbumsId, activity.getString(R.string.albums));
@@ -121,6 +123,11 @@ public class HomeState implements MusicFragmentState {
 			}
 			case PlaylistsID: {
 				musicFragment.setState(musicFragment.getPlaylistState());
+				musicFragment.setView();
+				break;
+			}
+			case NowPlayingId: {
+				musicFragment.setState(musicFragment.getNowPlayingState());
 				musicFragment.setView();
 				break;
 			}

@@ -21,7 +21,6 @@ import ca.efriesen.lydia.services.media_states.PlayState;
 import ca.efriesen.lydia.services.media_states.StoppedState;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.media.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -35,9 +34,11 @@ public class MediaService extends Service implements
 		MediaPlayer.OnPreparedListener,
 		AudioManager.OnAudioFocusChangeListener {
 
+	public static final String TAG = MediaService.class.getSimpleName();
+
 	// other services
-	AudioManager audioManager = null;
-	MediaPlayer mMediaPlayer = null;
+	private AudioManager audioManager = null;
+	private MediaPlayer mMediaPlayer = null;
 
 	// Intent strings
 	public static final String GET_CURRENT_SONG = "ca.efriesen.lydia.MediaService.GetCurrentSong";
@@ -68,8 +69,6 @@ public class MediaService extends Service implements
 	private NotificationManager notificationManager;
 	private int notificationId = 12;
 
-	public static final String TAG = "lydia mediaService";
-
 	// other stuff
 	private SharedPreferences sharedPreferences;
 
@@ -77,7 +76,6 @@ public class MediaService extends Service implements
 	private MediaState playState;
 	private MediaState stoppedState;
 	private MediaState mediaState;
-
 
 	// media player stuff
 	public ArrayList<Song> playlist;
@@ -255,6 +253,10 @@ public class MediaService extends Service implements
 
 	public MediaState getPlayingState() {
 		return playState;
+	}
+
+	public ArrayList<Song> getPlaylist() {
+		return playlist;
 	}
 
 	public MediaState getStoppedState() {

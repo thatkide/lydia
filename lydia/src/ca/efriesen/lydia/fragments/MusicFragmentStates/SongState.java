@@ -82,6 +82,20 @@ abstract public class SongState implements MusicFragmentState {
 		adapter.notifyDataSetChanged();
 	}
 
+	@Override
+	public void search(String text) {
+		try {
+			ArrayList<String> search = new ArrayList<String>();
+			search.add(text);
+			search.add(String.valueOf(artist.getId()));
+			search.add(String.valueOf(album.getId()));
+			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, search);
+			setView(true, medias.toArray(new Song[medias.size()]));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -139,7 +153,7 @@ abstract public class SongState implements MusicFragmentState {
 			Song song = songs.get(position);
 			try {
 				viewHolder.songTrack.setText(song.getTrack().substring(2, 4));
-			}catch (StringIndexOutOfBoundsException e) {}
+			} catch (StringIndexOutOfBoundsException e) {}
 
 			viewHolder.songTitle.setText(song.getName());
 			// If we populate all the songs, it's SLOW
@@ -154,21 +168,6 @@ abstract public class SongState implements MusicFragmentState {
 			return convertView;
 		}
 	}
-
-	@Override
-	public void search(String text) {
-		try {
-			ArrayList<String> search = new ArrayList<String>();
-			search.add(text);
-			search.add(String.valueOf(artist.getId()));
-			search.add(String.valueOf(album.getId()));
-			ArrayList<Song> medias = Media.getAllLike(Song.class, activity, search);
-			setView(true, medias.toArray(new Song[medias.size()]));
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	private static class ViewHolder {
 		TextView songTrack;

@@ -115,6 +115,7 @@
 	<string name="next">Next</string>
 	<string name="none_found">No devices found</string>
 	<string name="none_paired">No devices have been paired</string>
+	<string name="now_playing">Now Playing</string>
 	<string name="ok">OK</string>
 	<string name="outside_temp">Outside</string>
 	<string name="paired">Paired</string>

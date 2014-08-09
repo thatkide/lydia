@@ -46,7 +46,9 @@ public abstract class MediaState {
 	public void play() {};
 
 	public void playPause() {
-		mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra(MediaService.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
+		try {
+			mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra(MediaService.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
+		} catch (NullPointerException e) {}
 	};
 
 	public void previous() {
