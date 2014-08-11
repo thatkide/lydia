@@ -68,6 +68,8 @@ abstract public class SongState implements MusicFragmentState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
+		// send a request to update the song info
+		musicFragment.localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
 		songs = new ArrayList<Media>(Arrays.asList(medias));
 		view = (ListView) activity.findViewById(android.R.id.list);
 		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
