@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">ACTIVITY_ENTRY_NAME</string>
+	<string name="all_albums">All Albums</string>
+	<string name="all_artists">All Artists</string>
+	<string name="all_songs">All Songs</string>
+	<string name="nothing_found">Nothing found</string>
+</resources>

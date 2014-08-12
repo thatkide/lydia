@@ -1,0 +1,33 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '20.0.0'
+
+    defaultConfig {
+        applicationId "ca.efriesen.lydia"
+        minSdkVersion 16
+        targetSdkVersion 19
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+	compile project(':lydia_common')
+	compile project(':yWeatherGetter4a')
+	compile project(':sliderPreference')
+	compile project(':library')
+	compile project(':libraryFragmentTransactionExtended')
+	compile project(':ambilWarna')
+	compile 'com.android.support:support-v4:20.+'
+	compile 'com.google.android.gms:play-services:+'
+	compile files('libs/bugsense-3.6.jar')
+	compile files('libs/lastfm-java-0.1.2.jar')
+	compile files('libs/updatechecker.jar')
+}

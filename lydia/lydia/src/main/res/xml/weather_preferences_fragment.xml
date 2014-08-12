@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+		xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/weather">
+		<ca.efriesen.lydia.includes.CustomSwitchPreference
+			android:key="weatherUseMetric"
+			android:defaultValue="true"
+			android:title="@string/map_use_metric" />
+		<EditTextPreference android:key="weatherCity"
+			android:title="City" />
+		<ca.efriesen.lydia.includes.CustomSwitchPreference
+			android:key="weatherUseCurrentLocation"
+			android:defaultValue="true"
+			android:summary="Use Current location for weather information"/>
+	</PreferenceCategory>
+</PreferenceScreen>

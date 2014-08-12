@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="@string/background">
+		<Preference android:key="imageChooser" android:title="@string/choose_image" />
+		<yuku.ambilwarna.widget.AmbilWarnaPreference android:key="topBgColor" android:title="Top Color" />
+		<yuku.ambilwarna.widget.AmbilWarnaPreference android:key="bottomBgColor" android:title="Bottom Color" />
+		<net.jayschwa.android.preference.SliderPreference android:key="backgroundBrightness" android:title="@string/brightness" android:defaultValue="1"/>
+		<Preference android:key="removeImage" android:title="@string/reset_background_default" />
+	</PreferenceCategory>
+</PreferenceScreen>

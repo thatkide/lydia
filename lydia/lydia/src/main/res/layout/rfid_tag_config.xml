@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="10dip"
+		>
+	<TextView android:id="@+id/tag_description_title"
+			  style="@style/LargeText"/>
+
+	<View android:layout_width="match_parent"
+		  android:layout_height="1dip"
+		  android:background="#33B5E5"
+		  android:layout_below="@id/tag_description_title" android:id="@+id/view"/>
+
+	<TextView android:id="@+id/description_text"
+			  android:text="Description: "
+			  style="@style/MediumText"
+			  android:layout_below="@id/tag_description_title" />
+	<EditText android:id="@+id/tag_description"
+			  android:layout_width="match_parent"
+			  android:layout_height="wrap_content"
+			  android:layout_below="@+id/tag_description_title"
+			  android:layout_toRightOf="@+id/description_text"/>
+
+	<TextView android:id="@+id/tag_number_desc"
+			  android:text="@string/tag_number"
+			  style="@style/MediumText"
+			  android:layout_below="@id/description_text"/>
+	<TextView android:id="@+id/tag_number"
+			  style="@style/MediumText"
+			  android:layout_below="@id/description_text"
+			  android:layout_toRightOf="@+id/tag_number_desc"/>
+
+	<TextView android:id="@+id/enabled_desc"
+			  android:text="Enabled: "
+			  style="@style/MediumText"
+			  android:layout_below="@id/tag_number_desc" />
+	<CheckBox android:id="@+id/tag_enabled"
+			  android:layout_height="wrap_content"
+			  android:layout_width="wrap_content"
+			  android:gravity="right"
+			  android:layout_below="@id/tag_number"
+			  android:layout_alignRight="@+id/view"/>
+
+	<TextView android:id="@+id/unlock_doors_desc"
+			  android:text="Can unlock doors: "
+			  style="@style/MediumText"
+			  android:layout_below="@id/enabled_desc" />
+	<CheckBox android:id="@+id/unlock_doors"
+			  android:layout_height="wrap_content"
+			  android:layout_width="wrap_content"
+			  android:gravity="right"
+			  android:layout_below="@id/tag_enabled"
+			  android:layout_alignRight="@+id/view"/>
+
+	<TextView android:id="@+id/start_car_desc"
+			  android:text="Can start car: "
+			  style="@style/MediumText"
+			  android:layout_below="@id/unlock_doors_desc" />
+	<CheckBox android:id="@+id/start_car"
+			  android:layout_height="wrap_content"
+			  android:layout_width="wrap_content"
+			  android:gravity="right"
+			  android:layout_below="@id/unlock_doors"
+			  android:layout_alignRight="@+id/view"/>
+
+	<Button android:id="@+id/save_tag"
+			android:text="Save"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/start_car_desc"/>
+
+</RelativeLayout>
