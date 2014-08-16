@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class HomeScreenEditorActivity extends Activity implements View.OnClickListener, DrawScreenCallback {
 
-	private static final String TAG = "homescreen editor";
+	private static final String TAG = HomeScreenEditorActivity.class.getSimpleName();
 
 	private ButtonController buttonController;
 

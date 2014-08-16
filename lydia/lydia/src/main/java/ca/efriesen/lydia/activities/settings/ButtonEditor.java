@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 public class ButtonEditor extends Activity implements View.OnClickListener {
 
-	private static final String TAG = "button editor";
+	private static final String TAG = ButtonEditor.class.getSimpleName();
 
 	public static final int ICON_SELECTOR = 1;
 	private ca.efriesen.lydia.databases.Button button;

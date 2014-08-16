@@ -123,10 +123,6 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".activities.MusicSearch"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
-				  android:windowSoftInputMode="stateAlwaysVisible" />
-
 		<activity android:name=".activities.WebActivity"
 		          android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
@@ -146,9 +142,6 @@
 		</activity>
 
 		<activity android:name=".activities.SMSConversation"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
-
-		<activity android:name=".activities.AddressSearch"
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
 
 		<activity android:name=".activities.PlaceDetails"
