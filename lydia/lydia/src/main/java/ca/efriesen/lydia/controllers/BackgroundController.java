@@ -105,6 +105,7 @@ public class BackgroundController extends Controller {
 
 	// range of 0.0 - 1.0
 	public void setBrightness(float brightness) {
+		setLayouts();
 		if (brightness > 1) brightness = 1;
 		if (brightness < 0) brightness = 0;
 
