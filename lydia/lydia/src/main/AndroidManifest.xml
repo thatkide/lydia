@@ -3,7 +3,7 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:tools="http://schemas.android.com/tools"
 		package="ca.efriesen.lydia"
-		android:versionCode="34"
+		android:versionCode="35"
 		android:versionName="1.0">
 
 	<uses-sdk tools:node="replace" />

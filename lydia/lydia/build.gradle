@@ -23,6 +23,10 @@ android {
 			buildConfigField "boolean", "INCLUDE_UPDATER", "true"
         }
     }
+
+	lintOptions {
+		disable "MockLocation"
+	}
 }
 
 dependencies {

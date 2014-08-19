@@ -1,5 +1,3 @@
-*.apk
-*.ap_
 *.dex
 *.class
 bin/
@@ -20,6 +18,5 @@ local.properties
 *.swp
 /lydia/proguard_logs/
 /lydia/proguard-project.txt
-!lydia_signed.apk
 lydia/build/intermediates/dex-cache/cache.xml
 lydia/lydia/src/release/res/values/keys.xml

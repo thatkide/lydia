@@ -36,12 +36,12 @@
 			  android:text="@string/auto_arm"
 			  style="@style/MediumText"
 			  android:layout_below="@id/alarm_length_title" />
-	<TextView android:id="@+id/seconds"
+	<TextView android:id="@+id/auto_arm_seconds"
 			  android:text="@string/seconds"
 			  style="@style/MediumText"
 			  android:layout_alignBaseline="@+id/auto_arm_delay_title"
 			  android:layout_alignRight="@+id/alarm_settings_hr" />
-	<EditText android:id="@+id/alarm_length"
+	<EditText android:id="@+id/auto_arm_alarm_length"
 			  android:layout_width="match_parent"
 			  android:layout_height="wrap_content"
 			  android:inputType="number"
@@ -54,6 +54,6 @@
 			android:text="Save"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/alarm_length"/>
+			android:layout_below="@id/auto_arm_alarm_length"/>
 
 </RelativeLayout>
