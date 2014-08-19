@@ -17,6 +17,8 @@ import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
+
+import ca.efriesen.lydia.BuildConfig;
 import ca.efriesen.lydia.R;
 import ca.efriesen.lydia.callbacks.FragmentOnBackPressedCallback;
 import ca.efriesen.lydia.controllers.BackgroundController;
@@ -73,21 +75,23 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		backgroundController = new BackgroundController(this);
 		notificationController = new NotificationController(this);
 
-		final UpdateChecker checker = new UpdateChecker(this, true);
-		checker.addObserver(new Observer() {
-			@Override
-			public void update(Observable observable, Object o) {
-				if (checker.isUpdateAvailable()) {
-					checker.downloadAndInstall(getString(R.string.update_apk_url));
+		if (BuildConfig.INCLUDE_UPDATER) {
+			final UpdateChecker checker = new UpdateChecker(this, true);
+			checker.addObserver(new Observer() {
+				@Override
+				public void update(Observable observable, Object o) {
+					if (checker.isUpdateAvailable()) {
+						checker.downloadAndInstall(getString(R.string.update_apk_url));
+					}
 				}
-			}
-		});
+			});
 
-//		checker.checkForUpdateByVersionCode(getString(R.string.update_url));
+			checker.checkForUpdateByVersionCode(getString(R.string.update_url));
+		}
 
 		// don't include bug sense it the key hasn't been changed
-		if (!getString(R.string.bugsenseApiKey).equalsIgnoreCase("Your Bugsense Key")) {
-//			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
+		if (BuildConfig.INCLUDE_BUGSENSE) {
+			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
 		gestureLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
