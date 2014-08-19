@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:gravity="center_vertical">
+	<!-- left side menu controls -->
+	<Button android:id="@+id/driver_0"
+        style="@style/ControlRoundTopRight" />
+	<Button android:id="@+id/driver_1"
+        style="@style/ControlButtons"
+		android:layout_below="@id/driver_0"/>
+	<Button android:id="@+id/driver_2"
+        style="@style/ControlButtons"
+		android:layout_below="@id/driver_1"/>
+	<ImageButton android:id="@+id/driver_up"
+		android:src="@drawable/navigation_collapse"
+        style="@style/ControlRoundBottomRight"
+		android:layout_below="@id/driver_2"/>
+    <ImageButton android:id="@+id/driver_down"
+        android:src="@drawable/navigation_expand"
+        style="@style/ControlRoundBottomRight"
+		android:visibility="gone"
+		android:layout_below="@id/driver_2"/>
+
+	<LinearLayout android:id="@+id/driver_nav_group"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:visibility="gone"
+		android:layout_below="@id/driver_2">
+		<ImageButton android:id="@+id/driver_down_2"
+			style="@style/ControlButtonsSquare"
+			android:src="@drawable/navigation_expand"/>
+		<ImageButton android:id="@+id/driver_up_2"
+			style="@style/ControlRoundBottomRight"
+            android:layout_width="79.5dip"
+			android:src="@drawable/navigation_collapse"/>
+	</LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/map_container"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<com.google.android.gms.maps.MapView
+		android:id="@+id/map"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent" />
+
+	<ca.efriesen.lydia.includes.EditTextExtended android:id="@+id/search_string"
+		style="@style/MapButton"
+		android:layout_marginTop="11dip"
+		android:layout_marginRight="61dip"
+		android:layout_marginLeft="10.5dip"
+		android:layout_width="match_parent"
+		android:paddingLeft="10.5dip"
+		android:textCursorDrawable="@null"
+		android:hint="@string/search" />
+	
+	<ListView android:id="@+id/search_results"
+		style="@style/MapButton"
+		android:layout_below="@id/search_string"
+		android:layout_marginTop="11dip"
+		android:layout_marginRight="61dip"
+		android:layout_marginLeft="10.5dip"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingLeft="10.5dip"
+		android:visibility="visible"/>
+
+	<Button android:id="@+id/hide_driver_controls"
+		style="@style/MapButton"
+		android:layout_marginBottom="55dip"
+		android:layout_marginLeft="-20dip"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentStart="true"
+		android:drawableTop="@drawable/action_settings" android:paddingTop="3dip"
+		android:paddingLeft="6dip"/>
+	<!--10.5 side 55 bottom-->
+</RelativeLayout>

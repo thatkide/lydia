@@ -1,28 +1,11 @@
-# built application files
-*.apk
-*.ap_
-
-# files for the dex VM
 *.dex
-
-# Java class files
 *.class
-
-# generated files
 bin/
 gen/
-
-# Local configuration file (sdk path, etc)
 local.properties
-
-# Eclipse project files
 .classpath
 .project
-
-# IntelliJ project files
 *.idea/
-
-# Android Studio
 .idea/
 .gradle
 /*/local.properties
@@ -33,9 +16,7 @@ local.properties
 *.ipr
 *~
 *.swp
-
-
-/lydia/res/values/keys.xml
 /lydia/proguard_logs/
 /lydia/proguard-project.txt
-!lydia_signed.apk
+lydia/build/intermediates/dex-cache/cache.xml
+lydia/lydia/src/release/res/values/keys.xml

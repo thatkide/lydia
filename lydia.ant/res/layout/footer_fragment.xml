@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_marginTop="5dip">
+
+	<ImageButton android:id="@+id/volume_down"
+		android:src="@drawable/navigation_expand"
+		android:contentDescription=""
+		style="@style/HeaderbarButtons" />
+	<ImageButton android:id="@+id/volume_up"
+		android:src="@drawable/navigation_collapse"
+		android:contentDescription=""
+		style="@style/HeaderbarRoundTopRight"
+		android:layout_toRightOf="@id/volume_down"/>
+
+	<SeekBar android:id="@+id/volume_control"
+		android:layout_height="wrap_content"
+		android:layout_width="320dp"
+		android:layout_centerHorizontal="true"/>
+		style="@style/MediumText"
+	<DigitalClock android:id="@+id/clock"
+		style="@style/LargeText"
+		android:layout_below="@id/volume_control"
+		android:layout_centerInParent="true"/>
+
+	<ImageButton android:id="@+id/home"
+		android:src="@drawable/home"
+		style="@style/HeaderbarButtons"
+		android:layout_alignParentRight="true"
+		android:contentDescription="@string/home" />
+	<ImageButton android:id="@+id/back"
+		android:src="@drawable/navigation_back"
+		style="@style/HeaderbarRoundTopLeft"
+		android:layout_toLeftOf="@id/home"
+		android:contentDescription="@string/back" />
+
+</RelativeLayout>

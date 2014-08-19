@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+
+	<LinearLayout android:layout_height="match_parent"
+		android:layout_width="0dip"
+		android:layout_weight="1"
+		android:orientation="vertical"
+		android:layout_marginRight="5dip">
+		<TextView android:text="@string/sms" style="@style/MediumText" />
+		<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+		<ListView android:id="@+id/sms_list"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent">
+		</ListView>
+	</LinearLayout>
+
+	<LinearLayout android:layout_height="match_parent"
+		android:layout_width="0dip"
+		android:layout_weight="1"
+		android:orientation="vertical"
+		android:layout_marginLeft="5dip">
+		<TextView android:text="@string/recent_calls" style="@style/MediumText" />
+		<View android:layout_width="match_parent" android:layout_height="1dip" android:background="#33B5E5"/>
+		<ListView android:id="@+id/recent_calls"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent">
+		</ListView>
+	  </LinearLayout>
+</LinearLayout>

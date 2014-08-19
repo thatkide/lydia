@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="10dip"
+		>
+	<TextView android:id="@+id/alarm_settings"
+			style="@style/LargeText"
+			android:text="@string/alarm_settings" />
+	<View android:layout_width="match_parent"
+		  android:layout_height="1dip"
+		  android:background="#33B5E5"
+		  android:layout_below="@id/alarm_settings"
+		  android:id="@+id/alarm_settings_hr"/>
+
+	<TextView android:id="@+id/alarm_length_title"
+			  android:text="@string/alarm_length"
+			  style="@style/MediumText"
+			  android:layout_below="@id/alarm_settings_hr" />
+	<TextView android:id="@+id/seconds"
+			  android:text="@string/seconds"
+			  style="@style/MediumText"
+			  android:layout_alignBaseline="@+id/alarm_length_title"
+			  android:layout_alignRight="@+id/alarm_settings_hr" />
+	<EditText android:id="@+id/alarm_length"
+			  android:layout_width="match_parent"
+			  android:layout_height="wrap_content"
+			  android:inputType="number"
+			  android:layout_below="@id/alarm_settings_hr"
+			  android:layout_toRightOf="@+id/alarm_length_title"
+			  android:layout_toLeftOf="@+id/seconds"/>
+
+	<TextView android:id="@+id/auto_arm_delay_title"
+			  android:text="@string/auto_arm"
+			  style="@style/MediumText"
+			  android:layout_below="@id/alarm_length_title" />
+	<TextView android:id="@+id/auto_arm_seconds"
+			  android:text="@string/seconds"
+			  style="@style/MediumText"
+			  android:layout_alignBaseline="@+id/auto_arm_delay_title"
+			  android:layout_alignRight="@+id/alarm_settings_hr" />
+	<EditText android:id="@+id/auto_arm_alarm_length"
+			  android:layout_width="match_parent"
+			  android:layout_height="wrap_content"
+			  android:inputType="number"
+			  android:layout_below="@id/alarm_length"
+			  android:layout_toRightOf="@+id/alarm_length_title"
+			  android:layout_toLeftOf="@+id/seconds"/>
+
+
+	<Button android:id="@+id/save_settings"
+			android:text="Save"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/auto_arm_alarm_length"/>
+
+</RelativeLayout>
