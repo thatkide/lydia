@@ -119,7 +119,9 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		buttonController.cleanup();
+		try {
+			buttonController.cleanup();
+		} catch (NullPointerException e) {}
 	}
 
 	@Override
