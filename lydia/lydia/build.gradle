@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+versionNumber = 36
+
 android {
     compileSdkVersion 19
     buildToolsVersion '20.0.0'
@@ -8,7 +10,7 @@ android {
         applicationId "ca.efriesen.lydia"
         minSdkVersion 16
         targetSdkVersion 19
-		versionCode 36
+		versionCode = versionNumber
     }
 
     buildTypes {
@@ -42,4 +44,13 @@ dependencies {
 	compile files('libs/bugsense-3.6.jar')
 	compile files('libs/lastfm-java-0.1.2.jar')
 	compile files('libs/updatechecker.jar')
+}
+
+outputFile = file("src/main/assets/apk_version.txt")
+task generateVersionFile << {
+	if (!outputFile.isFile()) {
+		outputFile.parentFile.mkdirs()
+		outputFile.createNewFile()
+	}
+	outputFile.write "$versionNumber"
 }
