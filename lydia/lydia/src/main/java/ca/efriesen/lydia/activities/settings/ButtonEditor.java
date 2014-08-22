@@ -62,11 +62,13 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 		// we might not have a drawable...
 		try {
 			title.setText(button.getTitle());
-			int imgId = this.getResources().getIdentifier(button.getDrawable(), "drawable", this.getPackageName());
-			// get the drawable
-			Drawable img = getResources().getDrawable(imgId);
-			// set it to the top on the button
-			buttonView.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
+			if (button.getDrawable() != null) {
+				int imgId = this.getResources().getIdentifier(button.getDrawable(), "drawable", this.getPackageName());
+				// get the drawable
+				Drawable img = getResources().getDrawable(imgId);
+				// set it to the top on the button
+				buttonView.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
+			}
 		} catch (NullPointerException e) {
 		}
 
