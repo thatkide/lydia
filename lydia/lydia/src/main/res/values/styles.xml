@@ -5,41 +5,41 @@
 	</style>
 
 	<style name="ControlTextSize">
-		<item name="android:textSize">18sp</item>
+		<item name="android:textSize">18dp</item>
 	</style>
 
 	<style name="XSmallText">
-		<item name="android:textSize">18sp</item>
+		<item name="android:textSize">18dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="SmallText">
-		<item name="android:textSize">20sp</item>
+		<item name="android:textSize">20dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="MediumText">
-		<item name="android:textSize">25sp</item>
+		<item name="android:textSize">25dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="LargeText">
-		<item name="android:textSize">30sp</item>
+		<item name="android:textSize">30dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XLargeText">
-		<item name="android:textSize">35sp</item>
+		<item name="android:textSize">35dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XXLargeText">
-		<item name="android:textSize">40sp</item>
+		<item name="android:textSize">40dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
 	<style name="XXXLargeText">
-		<item name="android:textSize">80sp</item>
+		<item name="android:textSize">80dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 	</style>
