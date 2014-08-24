@@ -90,6 +90,7 @@
     <orderEntry type="module" module-name="sliderPreference" exported="" />
     <orderEntry type="module" module-name="lydia_common" exported="" />
     <orderEntry type="module" module-name="yWeatherGetter4a" exported="" />
+    <orderEntry type="module" module-name="usbSerialForAndroid" exported="" />
     <orderEntry type="module" module-name="libraryFragmentTransactionExtended" exported="" />
   </component>
 </module>

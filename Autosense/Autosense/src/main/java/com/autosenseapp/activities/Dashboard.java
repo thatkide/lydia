@@ -11,6 +11,7 @@ import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.graphics.Color;
 import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.*;
 import android.provider.ContactsContract;
@@ -39,6 +40,8 @@ import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -135,6 +138,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		registerReceiver(mUsbReceiver, filter);
 
 		// ensure our admin buttons are up to date
@@ -192,6 +196,13 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
+		HashMap<String, UsbDevice> devices = mUsbManager.getDeviceList();
+
+		Iterator<String> iterator = devices.keySet().iterator();
+		while (iterator.hasNext()) {
+
+		}
+
 		// get list of accessories
 		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
 		// get first accessory
@@ -201,6 +212,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			Log.d(TAG, "stop service");
 			stopService(new Intent(this, ArduinoService.class));
 		}
+
 
 		// if we got a valid accessory
 		if (accessory != null) {
@@ -408,6 +420,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "got usb broadcast");
 			String action = intent.getAction();
 			// check if permission intent
 			if (ACTION_USB_PERMISSION.equals(action)) {
@@ -423,7 +436,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 					mPermissionRequestPending = false;
 				}
 			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-
 			}
 		}
 	};

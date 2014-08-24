@@ -53,6 +53,7 @@ dependencies {
 	compile project(':library')
 	compile project(':libraryFragmentTransactionExtended')
 	compile project(':ambilWarna')
+	compile project(':usbSerialForAndroid')
 	compile 'com.android.support:support-v4:20.+'
 	compile 'com.google.android.gms:play-services:5.0.89'
 	compile files('libs/bugsense-3.6.jar')
