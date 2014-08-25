@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/alarm">
+		<Preference android:title="@string/rfid_tags"
+					android:summary="@string/rfid_tags_summary" >
+					<intent android:action="RFIDSetup" />
+		</Preference>
+		<EditTextPreference android:key="alarmLength"
+					android:title="@string/alarm_length"
+					android:summary="@string/alarm_length_summary"
+					android:defaultValue="60"
+					android:maxLength="3"
+					android:inputType="number" />
+		<com.autosenseapp.includes.CustomSwitchPreference android:key="autoArm"
+					android:title="@string/auto_arm"
+					android:summary="@string/auto_arm_summary"
+					android:defaultValue="true"/>
+		<EditTextPreference android:key="autoArmDelay"
+					android:title="@string/auto_arm_delay"
+					android:summary="@string/auto_arm_delay_summary"
+					android:inputType="number"
+					android:defaultValue="30"
+					android:maxLength="3"
+					android:dependency="autoArm"/>
+	</PreferenceCategory>
+</PreferenceScreen>

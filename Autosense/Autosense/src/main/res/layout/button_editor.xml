@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="250dp"
+		android:padding="0dp"
+		android:paddingTop="20dp">
+	<TextView android:id="@+id/button_title"
+			  style="@style/MediumText"
+			  android:text="Edit Button" />
+	<View android:layout_width="match_parent"
+		  android:layout_height="1dip"
+		  android:background="#33B5E5"
+		  android:layout_below="@id/button_title"
+		  android:id="@+id/button_title_hr"/>
+
+	<Button android:id="@+id/button_background"
+		style="@style/DashboardControls"
+		android:clickable="true" android:layout_alignTop="@+id/button_title_hr"
+		android:layout_centerHorizontal="true"/>
+	<com.autosenseapp.includes.EditTextExtended android:inputType="textCapWords"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:maxLength="12"
+			android:id="@+id/button_title_text" android:layout_alignBottom="@+id/button_background"
+			android:layout_alignStart="@+id/button_background" android:layout_alignEnd="@+id/button_background"/>
+
+	<View
+			android:layout_width="fill_parent"
+			android:layout_height="1dip"
+			android:background="?android:attr/dividerHorizontal" android:layout_above="@+id/linearLayout"
+			android:layout_alignParentStart="true"/>
+	<LinearLayout
+			style="?android:attr/buttonBarStyle"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:paddingTop="0dip"
+			android:paddingLeft="2dip"
+			android:paddingRight="2dip"
+			android:measureWithLargestChild="true" android:layout_alignParentBottom="true"
+			android:id="@+id/linearLayout">
+
+		<Button
+				android:id="@+id/button_edit_cancel"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@android:string/cancel"/>
+		<Button
+				android:id="@+id/button_edit_ok"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dip"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@android:string/ok"/>
+	</LinearLayout>
+	<TextView
+			android:id="@+id/button_edit_action_title"
+			style="@style/MediumText"
+			android:text="Button Action" android:layout_below="@+id/button_title_hr"
+			android:layout_alignStart="@+id/button_action_spinner"/>
+	<Spinner android:id="@+id/button_action_spinner"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@+id/button_background"
+			android:layout_below="@id/button_edit_action_title"/>
+	<Spinner android:id="@+id/button_extra_data_spinner"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/button_action_spinner"
+			android:layout_alignStart="@+id/button_action_spinner"
+			android:visibility="gone"/>
+</RelativeLayout>

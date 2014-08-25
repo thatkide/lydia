@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+		xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/artwork">
+		<com.autosenseapp.includes.CustomSwitchPreference android:key="useAlbumArtMusicBtn" android:title="@string/music_button" android:summary="@string/album_art_music_button_summary" android:defaultValue="false" />
+		<com.autosenseapp.includes.CustomSwitchPreference android:key="useAlbumArtBg" android:title="@string/background" android:summary="@string/album_art_bg_summary" android:defaultValue="false" />
+		<com.autosenseapp.includes.CustomSwitchPreference android:key="useArtistArtBg" android:title="@string/artist_art_bg" android:summary="@string/artist_art_bg_summary" android:defaultValue="false" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/lastfm">
+		<com.autosenseapp.includes.CustomSwitchPreference
+				android:key="useLastFm"
+				android:defaultValue="false"
+				android:title="@string/lastfm_use" />
+		<EditTextPreference
+				android:key="lastFmUsername"
+				android:title="@string/lastfm_username"
+				android:dependency="useLastFm"/>
+		<EditTextPreference
+				android:key="lastFmPassword"
+				android:title="@string/lastfm_password"
+				android:inputType="textPassword"
+				android:dependency="useLastFm"/>
+	</PreferenceCategory>
+</PreferenceScreen>

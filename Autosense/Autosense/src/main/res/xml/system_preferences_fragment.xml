@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/update">
+		<Preference
+			android:title="@string/check_for_update"
+			android:key="checkForUpdate">
+			<intent android:action=".activities.settings.UpdateActivity" />
+			</Preference>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/home_screen">
+		<com.autosenseapp.includes.CustomSwitchPreference android:key="useHomeScreenButtons"
+			android:title="@string/use_homescreen_buttons"
+			android:summary="@string/use_homescreen_buttons_summary"
+			android:defaultValue="true" />
+		<Preference android:title="@string/setup_home_screen" android:summary="@string/setup_home_screen_summary" android:dependency="useHomeScreenButtons">
+			<intent android:action=".activities.settings.HomeScreenEditorActivity" />
+		</Preference>
+		<Preference android:title="@string/setup_sidebars" android:summary="@string/setup_sidebars_summary">
+			<intent android:action=".activities.settings.SidebarEditorActivity" />
+		</Preference>
+		<Preference android:title="@string/background" android:summary="@string/background_summary" android:key="background" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/wifi">
+		<com.autosenseapp.includes.CustomSwitchPreference
+			android:key="systemWiFi"
+			android:title="@string/system_wifi"
+			android:summary="@string/system_wifi_summary"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/bluetooth">
+		<com.autosenseapp.includes.CustomSwitchPreference
+				android:key="systemBluetooth"
+				android:defaultValue="false"
+				android:title="@string/system_bluetooth"
+				android:summary="@string/system_bluetooth_summary"/>
+		<com.autosenseapp.includes.CustomSwitchPreference
+				android:key="useBluetooth"
+				android:defaultValue="false"
+				android:title="@string/use_bluetooth"
+				android:summary="@string/use_bluetooth_summary"
+				android:dependency="systemBluetooth"/>
+		<Preference
+				android:title="@string/paired_devices"
+				android:summary="@string/paired_devices_summary"
+				android:dependency="systemBluetooth">
+				<intent android:action=".activities.DeviceListActivity" />
+		</Preference>
+	</PreferenceCategory>
+</PreferenceScreen>
