@@ -1,7 +1,9 @@
 include ':ambilWarna'
+include ':usbSerialForAndroid'
 include ':Autosense'
 include ':libraryFragmentTransactionExtended'
 include ':sliderPreference'
 include ':yWeatherGetter4a'
 include ':library'
 include ':lydia_common'
+project(':usbSerialForAndroid').projectDir = new File('usb-serial-for-android/usbSerialForAndroid')
