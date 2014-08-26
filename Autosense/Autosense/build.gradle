@@ -17,18 +17,36 @@ android {
 		debug {
 			buildConfigField "boolean", "INCLUDE_BUGSENSE", "false"
 			buildConfigField "boolean", "INCLUDE_UPDATER", "false"
+			buildConfigField "boolean", "DONATE", "false"
+		}
+
+		gitHub {
+			buildConfigField "boolean", "INCLUDE_BUGSENSE", "true"
+			buildConfigField "boolean", "INCLUDE_UPDATER", "true"
+			buildConfigField "boolean", "DONATE", "true"
 		}
 
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
 			buildConfigField "boolean", "INCLUDE_BUGSENSE", "true"
-			buildConfigField "boolean", "INCLUDE_UPDATER", "true"
+			buildConfigField "boolean", "INCLUDE_UPDATER", "false"
+			buildConfigField "boolean", "DONATE", "false"
         }
     }
 
 	lintOptions {
 		disable "MockLocation"
+	}
+
+	productFlavors {
+		free {
+			buildConfigField "boolean", "SHOW_ADS", "true"
+		}
+
+		paid {
+			buildConfigField "boolean", "SHOW_ADS", "false"
+		}
 	}
 }
 
