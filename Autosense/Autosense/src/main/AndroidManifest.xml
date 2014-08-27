@@ -160,11 +160,11 @@
 				  android:windowSoftInputMode="stateHidden" />
 
 
-		<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.lydia.hardwareManager" />
+		<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.Autosenseapp.hardwareManager" />
 
 		<service android:name="com.autosenseapp.services.MediaService" />
 
-		<service android:name="com.autosenseapp.services.ArduinoService" android:process="com.lydia.ArduinoService" />
+		<service android:name="com.autosenseapp.services.ArduinoService" android:process="com.Autosensapp.ArduinoService" />
 
 		<meta-data android:name="com.google.android.maps.v2.API_KEY"
 		           android:value="@string/googleApiKey" />

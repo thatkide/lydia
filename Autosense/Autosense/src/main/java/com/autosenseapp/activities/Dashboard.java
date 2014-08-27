@@ -18,7 +18,6 @@ import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
-
 import com.autosenseapp.BuildConfig;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
@@ -59,7 +58,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private LastFM lastFm;
 
 	//the first part of this string have to be the package name
-	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.lydia.action.USB_PERMISSION";
+	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.action.USB_PERMISSION";
 	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
@@ -196,12 +195,8 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
-		HashMap<String, UsbDevice> devices = mUsbManager.getDeviceList();
 
-		Iterator<String> iterator = devices.keySet().iterator();
-		while (iterator.hasNext()) {
-
-		}
+		// Try to connect a USB accessory first
 
 		// get list of accessories
 		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
@@ -213,13 +208,13 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			stopService(new Intent(this, ArduinoService.class));
 		}
 
-
 		// if we got a valid accessory
 		if (accessory != null) {
 			mUsbAccessory = accessory;
 			// if we have permission
 			if (mUsbManager.hasPermission(accessory)) {
 				// start the arduino service
+				Log.d(TAG, "start accessory");
 				Intent i = new Intent(this, ArduinoService.class);
 				i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
 				startService(i);
@@ -231,6 +226,29 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 						mPermissionRequestPending = true;
 					}
 				}
+			}
+		}
+
+		// else try device
+		HashMap<String, UsbDevice> devices = mUsbManager.getDeviceList();
+
+		Iterator<String> iterator = devices.keySet().iterator();
+		while (iterator.hasNext()) {
+			String deviceName = iterator.next();
+			UsbDevice device = devices.get(deviceName);
+
+			String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
+			String PID = Integer.toHexString(device.getProductId()).toLowerCase();
+
+			Log.d(TAG, "vendor id " + VID + " product id " + PID);
+			// Valid devices
+//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
+			if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
+				Log.d(TAG, "start device");
+				// We have a valid FTDI chip
+				Intent intent = new Intent(this, ArduinoService.class);
+				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+				startService(intent);
 			}
 		}
 	}

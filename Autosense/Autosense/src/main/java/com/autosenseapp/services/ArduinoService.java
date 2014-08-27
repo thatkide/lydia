@@ -6,18 +6,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.util.SparseArray;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.devices.*;
-import java.io.*;
+import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
+import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
+import com.autosenseapp.devices.usbInterfaces.ArduinoInterface;
 import java.util.Arrays;
 
 /**
@@ -26,18 +26,15 @@ import java.util.Arrays;
 public class ArduinoService extends Service {
 
 	private static final String TAG = "accessory";
-	public static final String ACCESSORY_READY = "com.autosenseapp.lydia.AccessoryReady";
+	public static final String ACCESSORY_READY = "com.autosenseapp.AccessoryReady";
 
+	// generic interface that we talk to
+	private ArduinoInterface arduinoInterface;
 	private Arduino arduino;
 	private SparseArray<Device> devices;
 
 	//the first part of this string have to be the package name
-	private UsbManager mUsbManager;
-	private InputStream mInputStream;
-	private OutputStream mOutputStream;
-	private ParcelFileDescriptor mFileDescriptor;
 	private Thread thread;
-	private UsbAccessory mAccessory = null;
 	private boolean accessoryReadyBroadcastSent = false;
 
 	private final IBinder mBinder = new ArduinoBinder();
@@ -77,11 +74,7 @@ public class ArduinoService extends Service {
 			dataToSend[dataToSend.length-1] = (byte)getChecksum(from, Device.id, values.length+1, getIntArray(checksum));
 
 			// send the data over the wire
-			try {
-				mOutputStream.write(dataToSend);
-			} catch (IOException e) {
-			} catch (NullPointerException e) {
-			}
+			arduinoInterface.write(dataToSend);
 		}
 	};
 
@@ -92,24 +85,22 @@ public class ArduinoService extends Service {
 		if (intent == null) {
 			return START_STICKY;
 		}
-		if (!intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
-			Log.d(TAG, "no accessory passed");
-			return START_STICKY;
+
+		// test if we received an accessory or a device and start the proper mode
+		if (intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
+			arduinoInterface = new ArduinoAccessory();
+		} else if (intent.hasExtra(UsbManager.EXTRA_DEVICE)) {
+			arduinoInterface = new ArduinoDevice();
+		} else {
+			stopSelf();
 		}
 
-		if (mAccessory == null) {
-			Log.d(TAG, "get usbmanager");
-			mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-			UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-			Log.d(TAG, "got accessory " + accessory);
+		// create the new device
+		arduinoInterface.onCreate(this, intent);
 
-			if (accessory != null) {
-				// FIXME
-				// I can't get the USB_ACCESSORY_DETACHED event to fire.  So this will close the accessory before opening every time
-				//closeAccessory();
-				openAccessory(accessory);
-			}
-		}
+		thread = new Thread(null, commRunnable, TAG);
+		thread.start();
+
 		return START_STICKY;
 	}
 
@@ -145,9 +136,13 @@ public class ArduinoService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.d(TAG, "on destroy");
 		super.onDestroy();
-		closeAccessory();
+		accessoryReadyBroadcastSent = false;
+		arduinoInterface.onDestroy();
+		if (thread != null && thread.isAlive()) {
+			thread.interrupt();
+		}
+
 		// tell each sensor to cleanup
 		for (int i=0, size = devices.size(); i<size; i++) {
 			devices.valueAt(i).cleanUp();
@@ -165,58 +160,9 @@ public class ArduinoService extends Service {
 		return mBinder;
 	}
 
-	private void openAccessory(UsbAccessory accessory) {
-		Log.d(TAG, "open accessory");
-
-		if (mUsbManager.hasPermission(accessory)) {
-			mFileDescriptor = mUsbManager.openAccessory(accessory);
-			if (mFileDescriptor != null) {
-				Log.d(TAG, "accessory opened");
-				FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-				mInputStream = new FileInputStream(fd);
-				mOutputStream = new FileOutputStream(fd);
-				mAccessory = accessory;
-
-				thread = new Thread(null, commRunnable, TAG);
-				thread.start();
-			} else {
-				Log.d(TAG, "accessory open failed");
-			}
-		} else {
-			Log.d(TAG, "accessory permission denied");
-		}
-	}
-
-	private void closeAccessory() {
-		Log.d(TAG, "close accessory");
-		accessoryReadyBroadcastSent = false;
-		if (thread != null && thread.isAlive()) {
-			thread.interrupt();
-		}
-		try {
-			if (mFileDescriptor != null) {
-				mFileDescriptor.close();
-			}
-			if (mInputStream != null) {
-				mInputStream.close();
-			}
-			if (mOutputStream != null) {
-				mOutputStream.close();
-			}
-		} catch (IOException e) {
-			Log.e(TAG, e.toString());
-		} finally {
-			mFileDescriptor = null;
-			mInputStream = null;
-			mOutputStream = null;
-			mAccessory = null;
-		}
-	}
-
 	private Runnable commRunnable = new Runnable() {
 		@Override
 		public void run() {
-			Log.d(TAG, "Start new thread for accessory");
 			int ret = 0;
 			byte[] buffer = new byte[255];
 
@@ -225,19 +171,15 @@ public class ArduinoService extends Service {
 			int length;
 			int checksum;
 			while (ret >= 0) {
-//				Log.d(TAG, "start read");
 				try {
-					ret = mInputStream.read(buffer);
+					ret = arduinoInterface.read(buffer);
 				} catch (Exception e) {
-					Log.e(TAG, "read error");
-					Log.e(TAG, e.toString());
-					closeAccessory();
+					arduinoInterface.onDestroy();
 					break;
 				}
 
 				// send a braodcast once the accessory is connected
 				if (!accessoryReadyBroadcastSent) {
-					Log.d(TAG, "send broadcast accessory is ready");
 					ArduinoService.this.sendBroadcast(new Intent(ACCESSORY_READY));
 					accessoryReadyBroadcastSent = true;
 				}
