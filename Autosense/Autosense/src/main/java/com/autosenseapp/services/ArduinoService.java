@@ -25,8 +25,13 @@ import java.util.Arrays;
  */
 public class ArduinoService extends Service {
 
-	private static final String TAG = "accessory";
+	private static final String TAG = ArduinoService.class.getSimpleName();
 	public static final String ACCESSORY_READY = "com.autosenseapp.AccessoryReady";
+
+	public static final String ARDUINO_TYPE = "arduino_type";
+	public static final int ARDUINO_NONE = 1;
+	public static final int ARDUINO_ACCESSORY = 2;
+	public static final int ARDUINO_DEVICE = 3;
 
 	// generic interface that we talk to
 	private ArduinoInterface arduinoInterface;
@@ -88,10 +93,16 @@ public class ArduinoService extends Service {
 
 		// test if we received an accessory or a device and start the proper mode
 		if (intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
+			Log.d(TAG, "accessory found");
+			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_ACCESSORY).apply();
 			arduinoInterface = new ArduinoAccessory();
 		} else if (intent.hasExtra(UsbManager.EXTRA_DEVICE)) {
+			Log.d(TAG, "device found");
+			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_DEVICE).apply();
 			arduinoInterface = new ArduinoDevice();
 		} else {
+			Log.d(TAG, "nothing found");
+			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_NONE).apply();
 			stopSelf();
 		}
 
@@ -106,11 +117,11 @@ public class ArduinoService extends Service {
 
 	@Override
 	public void onCreate() {
-
+		Log.d(TAG, "service create");
 		// start it in the foreground so it doesn't get killed
 		Notification.Builder builder = new Notification.Builder(this)
 				.setSmallIcon(R.drawable.device_access_bluetooth)
-				.setContentTitle("Arduino Managerr")
+				.setContentTitle("Arduino Manager")
 				.setContentText("Arduino Manager");
 
 		// a pending intent for the notification.  this will take us to the dashboard, or main activity
@@ -175,6 +186,8 @@ public class ArduinoService extends Service {
 					ret = arduinoInterface.read(buffer);
 				} catch (Exception e) {
 					arduinoInterface.onDestroy();
+					thread.interrupt();
+					ArduinoService.this.stopSelf();
 					break;
 				}
 

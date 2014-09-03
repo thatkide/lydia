@@ -67,13 +67,8 @@ public class ArduinoAccessory implements ArduinoInterface {
 	}
 
 	@Override
-	public int read(byte[] buffer) {
-		try {
-			return mInputStream.read(buffer);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return 0;
+	public int read(byte[] buffer) throws IOException {
+		return mInputStream.read(buffer);
 	}
 
 	@Override
@@ -81,6 +76,8 @@ public class ArduinoAccessory implements ArduinoInterface {
 		try {
 			mOutputStream.write(data);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 	}

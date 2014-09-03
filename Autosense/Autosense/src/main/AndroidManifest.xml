@@ -159,12 +159,16 @@
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
 				  android:windowSoftInputMode="stateHidden" />
 
+		<activity android:name="com.autosenseapp.activities.settings.ArduinoPinEditor"
+				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+				  android:windowSoftInputMode="stateHidden" />
 
-		<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.Autosenseapp.hardwareManager" />
+		<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.autosenseapp.hardwareManager" />
 
 		<service android:name="com.autosenseapp.services.MediaService" />
 
-		<service android:name="com.autosenseapp.services.ArduinoService" android:process="com.Autosensapp.ArduinoService" />
+		<service android:name="com.autosenseapp.services.ArduinoService" />
+		<!--android:process="com.autosensapp.ArduinoService" />-->
 
 		<meta-data android:name="com.google.android.maps.v2.API_KEY"
 		           android:value="@string/googleApiKey" />

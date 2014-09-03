@@ -59,10 +59,8 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 
 	//the first part of this string have to be the package name
 	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.action.USB_PERMISSION";
-	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
-	private UsbAccessory mUsbAccessory;
 
 	private BackgroundController backgroundController;
 	private NotificationController notificationController;
@@ -133,7 +131,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		// initialize all plugins
 		lastFm = new LastFM(this);
 
-		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
@@ -150,6 +147,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.d(TAG, "on resume");
 		notificationController.onResume();
 
 		checkGooglePlayServices();
@@ -192,27 +190,23 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 //			startActivityForResult(enableBt, 1);
 //		}
 
+		// reset no no arduino.  if one is connected update the prefs so it will be available later on
+		this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE).apply();
+
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
-
 		// Try to connect a USB accessory first
-
 		// get list of accessories
-		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+		UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		UsbAccessory[] accessories = usbManager.getAccessoryList();
 		// get first accessory
 		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
-		if (mUsbAccessory != null) {
-			Log.d(TAG, "stop service");
-			stopService(new Intent(this, ArduinoService.class));
-		}
-
-		// if we got a valid accessory
 		if (accessory != null) {
-			mUsbAccessory = accessory;
+			Log.d(TAG, "got an accessory");
 			// if we have permission
-			if (mUsbManager.hasPermission(accessory)) {
+			if (usbManager.hasPermission(accessory)) {
 				// start the arduino service
 				Log.d(TAG, "start accessory");
 				Intent i = new Intent(this, ArduinoService.class);
@@ -222,33 +216,34 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			} else {
 				synchronized (mUsbReceiver) {
 					if (mPermissionRequestPending) {
-						mUsbManager.requestPermission(accessory, mPermissionIntent);
+						usbManager.requestPermission(accessory, mPermissionIntent);
 						mPermissionRequestPending = true;
 					}
 				}
 			}
-		}
+		} else {
+			Log.d(TAG, "usb device");
+			// else try device
+			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-		// else try device
-		HashMap<String, UsbDevice> devices = mUsbManager.getDeviceList();
+			Iterator<String> iterator = devices.keySet().iterator();
+			while (iterator.hasNext()) {
+				String deviceName = iterator.next();
+				UsbDevice device = devices.get(deviceName);
 
-		Iterator<String> iterator = devices.keySet().iterator();
-		while (iterator.hasNext()) {
-			String deviceName = iterator.next();
-			UsbDevice device = devices.get(deviceName);
+				String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
+				String PID = Integer.toHexString(device.getProductId()).toLowerCase();
 
-			String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
-			String PID = Integer.toHexString(device.getProductId()).toLowerCase();
-
-			Log.d(TAG, "vendor id " + VID + " product id " + PID);
-			// Valid devices
-//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
-			if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
-				Log.d(TAG, "start device");
-				// We have a valid FTDI chip
-				Intent intent = new Intent(this, ArduinoService.class);
-				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
-				startService(intent);
+				Log.d(TAG, "vendor id " + VID + " product id " + PID);
+				// Valid devices
+				//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
+				if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
+					Log.d(TAG, "start device");
+					// We have a valid FTDI chip
+					Intent intent = new Intent(this, ArduinoService.class);
+					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+					startService(intent);
+				}
 			}
 		}
 	}
@@ -439,6 +434,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "got usb broadcast");
+			Log.d(TAG, "action is " + intent.getAction());
 			String action = intent.getAction();
 			// check if permission intent
 			if (ACTION_USB_PERMISSION.equals(action)) {

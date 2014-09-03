@@ -10,6 +10,8 @@
 				android:key="autoFindSlaveDevices"
 				android:title="@string/auto_find_slaves"
 				android:defaultValue="true" />
+		<Preference android:key="setupMasterIO"
+					android:title="@string/setup_master_io" />
 		<!--<com.autosenseapp.lydia.includes.CustomSwitchPreference-->
 					<!--android:key="autoUpgradeFirmware"-->
 					<!--android:title="@string/auto_upgrade_firmware"-->
