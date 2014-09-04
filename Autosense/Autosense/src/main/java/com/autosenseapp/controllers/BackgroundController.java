@@ -50,6 +50,11 @@ public class BackgroundController extends Controller {
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
+	@Override
+	public void onDestroy() {
+		localBroadcastManager.unregisterReceiver(updateMusicReceiver);
+	}
+
 	public void applyBackground() {
 		// set background image if we have one set
 		boolean useBgImg = sharedPreferences.getBoolean(USE_BG_IMAGE, false);

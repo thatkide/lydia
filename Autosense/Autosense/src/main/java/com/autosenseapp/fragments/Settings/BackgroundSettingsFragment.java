@@ -12,6 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
 
+import com.autosenseapp.GlobalClass;
 import com.bugsense.trace.BugSenseHandler;
 
 import net.jayschwa.android.preference.SliderPreference;
@@ -62,7 +63,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		super.onActivityCreated(saved);
 
 		activity = getActivity();
-		backgroundController = (BackgroundController) ((Dashboard)activity).getController(Dashboard.BACKGROUND_CONTROLLER);
+		backgroundController = (BackgroundController) ((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.BACKGROUND_CONTROLLER);
 
 		SharedPreferences sharedPreferences = activity.getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);

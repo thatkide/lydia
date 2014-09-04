@@ -19,11 +19,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
 import com.autosenseapp.BuildConfig;
+import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.controllers.Controller;
 import com.autosenseapp.controllers.NotificationController;
+import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragment;
@@ -47,12 +49,12 @@ import java.util.Observer;
 public class Dashboard extends Activity implements GestureOverlayView.OnGesturePerformedListener {
 	private static final String TAG = Dashboard.class.getSimpleName();
 
-	public static final int BACKGROUND_CONTROLLER = 2;
-	public static final int NOTIFICATION_CONTROLLER = 1;
-
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private GestureLibrary gestureLibrary;
 	private GestureOverlayView gestureOverlayView;
+
+	private BackgroundController backgroundController;
+	private NotificationController notificationController;
 
 	// plugins
 	private LastFM lastFm;
@@ -62,9 +64,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
 
-	private BackgroundController backgroundController;
-	private NotificationController notificationController;
-
 	/**
 	 * Called when the activities is first created.
 	 */
@@ -72,8 +71,12 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 
+		// create the new controllers and save them into the global space
 		backgroundController = new BackgroundController(this);
 		notificationController = new NotificationController(this);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.BACKGROUND_CONTROLLER, backgroundController);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.NOTIFICATION_CONTROLLER, notificationController);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.PIN_TRIGGER_CONTROLLER, new PinTriggerController(this));
 
 		if (BuildConfig.INCLUDE_UPDATER) {
 			final UpdateChecker checker = new UpdateChecker(this, true);
@@ -401,10 +404,10 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 				if (prediction.name.equalsIgnoreCase("right")) {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 					// show the music bar on change
-					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+					notificationController.setNotification(MusicNotificationFragment.class);
 				} else {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+					notificationController.setNotification(MusicNotificationFragment.class);
 				}
 			}
 		}
@@ -453,16 +456,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			}
 		}
 	};
-
-	public Controller getController(int controller) {
-		switch (controller) {
-			case NOTIFICATION_CONTROLLER:
-				return notificationController;
-			case BACKGROUND_CONTROLLER:
-				return backgroundController;
-		}
-		return null;
-	}
 
 	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
 

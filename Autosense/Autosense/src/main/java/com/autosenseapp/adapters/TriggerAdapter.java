@@ -4,24 +4,40 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.autosenseapp.R;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eric on 2014-09-02.
  */
-public class TriggerAdapter extends ArrayAdapter<String> {
+public class TriggerAdapter extends BaseAdapter {
 
 	private Context context;
-	private List<String> triggers;
+	private Map<String, String> triggers;
+	private String[] keys;
 
-	public TriggerAdapter(Context context, List<String> triggers) {
-		super(context, R.layout.pin_trigger_row, triggers);
+	public TriggerAdapter(Context context, Map<String, String> triggers) {
 		this.context = context;
 		this.triggers = triggers;
+		this.keys = triggers.keySet().toArray(new String[triggers.size()]);
+	}
+
+	@Override
+	public int getCount() {
+		return triggers.size();
+	}
+
+	@Override
+	public String getItem(int position) {
+		return triggers.get(keys[position]);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
 	}
 
 	@Override
@@ -39,7 +55,10 @@ public class TriggerAdapter extends ArrayAdapter<String> {
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		viewHolder.textView.setText(triggers.get(position));
+		viewHolder.textView.setText(getItem(position));
+		try {
+			viewHolder.checkBox.setOnClickListener((View.OnClickListener) context);
+		} catch (Exception e) {}
 
 		return convertView;
 	}

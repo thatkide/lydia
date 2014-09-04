@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Array to keep home screen images-->
+	<string-array name="homescreen_images">
+		<item>android</item>
+		<item>calendar</item>
+		<item>chrome</item>
+		<item>compass</item>
+		<item>contacts</item>
+		<item>gauge</item>
+		<item>jet_engine</item>
+		<item>movie_reel</item>
+		<item>phone</item>
+		<item>settings</item>
+		<item>vinyl</item>
+		<item>weather_icon</item>
+	</string-array>
+</resources>

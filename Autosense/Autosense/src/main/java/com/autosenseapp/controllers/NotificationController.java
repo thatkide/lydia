@@ -62,6 +62,11 @@ public class NotificationController extends Controller {
 		handler.postDelayed(runnable, getDisplayTime(NotificationInterface.PRIORITY_NORMAL));
 	}
 
+	@Override
+	public void onDestroy() {
+		handler.removeCallbacks(runnable);
+	}
+
 	public void onPause() {
 		handler.removeCallbacks(runnable);
 	}

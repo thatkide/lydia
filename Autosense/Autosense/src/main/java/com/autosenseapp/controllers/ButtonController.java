@@ -501,4 +501,9 @@ public class ButtonController extends Controller implements View.OnClickListener
 		// we've handled the click.
 		return true;
 	}
+
+	@Override
+	public void onDestroy() {
+
+	}
 }

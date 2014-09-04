@@ -2,6 +2,8 @@
 
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:ignore="NestedWeights"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
@@ -19,6 +21,7 @@
 		style="@style/MediumText"/>
 	<View style="@style/HR2"
 		android:layout_below="@id/pin_edit_title" />
+
 	<LinearLayout
 		android:layout_below="@id/pin_edit_title"
 		android:layout_width="match_parent"
@@ -30,43 +33,90 @@
 			android:layout_width="0dip"
 			android:layout_weight="2"
 			android:layout_height="wrap_content"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			android:padding="5dp">
 			<TextView style="@style/SmallText"
 				android:text="@string/pin" />
 			<ListView android:id="@+id/arduino_pins_list"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" />
 		</LinearLayout>
+		<View style="@style/HR2V" android:layout_marginTop="1dp"/>
 
 		<LinearLayout
 			android:layout_width="0dip"
-			android:layout_weight="2"
+			android:layout_weight="5"
 			android:layout_height="match_parent"
+			android:baselineAligned="false"
 			android:orientation="vertical">
 
-			<TextView android:id="@+id/pin_mode_title"
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="0dip"
+				android:layout_weight="4"
+				android:orientation="horizontal"
+				android:baselineAligned="false">
+
+				<LinearLayout
+					android:layout_width="0dip"
+					android:layout_weight="1"
+					android:layout_height="match_parent"
+					android:orientation="vertical"
+					android:padding="5dp">
+
+					<TextView android:id="@+id/pin_mode_title"
+						style="@style/SmallText"
+						android:text="@string/mode" />
+
+					<Spinner android:id="@+id/pin_mode"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content" />
+
+				</LinearLayout>
+				<View style="@style/HR2V"
+					  android:layout_marginTop="1dp"
+					  android:layout_marginBottom="1dp"/>
+
+				<LinearLayout
+					android:layout_width="0dip"
+					android:layout_weight="1"
+					android:layout_height="match_parent"
+					android:orientation="vertical"
+					android:padding="5dp">
+					<TextView android:id="@+id/pin_settings_title"
+							  style="@style/SmallText" />
+
+					<ListView android:id="@+id/pin_output_trigger"
+							  android:layout_width="match_parent"
+							  android:layout_height="wrap_content" />
+
+				</LinearLayout>
+			</LinearLayout>
+			<View style="@style/HR2" />
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="0dip"
+				android:layout_weight="3"
+				android:padding="5dp"
+				android:orientation="vertical">
+				<TextView android:id="@+id/arduino_action_title"
+					style="@style/SmallText"
+					android:text="@string/actions"/>
+				<RadioGroup android:id="@+id/arduino_actions"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:visibility="gone"/>
+
+			</LinearLayout>
+			<View style="@style/HR2" />
+			<TextView android:id="@+id/arduino_action_string"
+				android:layout_width="match_parent"
 				style="@style/SmallText"
-				android:text="@string/mode" />
-
-			<Spinner android:id="@+id/pin_mode"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:entries="@array/pin_modes"/>
+				android:layout_height="0dip"
+				android:layout_weight="1"
+				android:padding="5dp" />
 
 		</LinearLayout>
-		
-		<LinearLayout
-			android:layout_width="0dip"
-			android:layout_weight="3"
-			android:layout_height="match_parent"
-			android:orientation="vertical">
-			<TextView android:id="@+id/pin_settings_title"
-				style="@style/SmallText" />
 
-			<ListView android:id="@+id/pin_output_trigger"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" />
-
-		</LinearLayout>
 	</LinearLayout>
 </RelativeLayout>

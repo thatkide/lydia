@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="accessory">Accessory</string>
+	<string name="action">Action</string>
+	<string name="actions">Actions</string>
+	<string name="button_only">Button Only</string>
+	<string name="device">Device</string>
+	<string name="high_impedance">High Impedance</string>
+	<string name="input">Input</string>
+	<string name="off">Off</string>
+	<string name="on">On</string>
+	<string name="on_boot">On Boot</string>
+	<string name="output">Output</string>
+	<string name="timer">Timer</string>
+	<string name="toggle">Toggle</string>
+</resources>

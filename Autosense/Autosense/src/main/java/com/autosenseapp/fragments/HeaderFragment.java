@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.*;
 import android.widget.*;
+
+import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.controllers.NotificationController;
@@ -88,7 +90,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 				// show the music bar on change
-				((NotificationController)((Dashboard)activity).getController(Dashboard.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+				((NotificationController)((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 
@@ -96,7 +98,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			@Override
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-				((NotificationController)((Dashboard)activity).getController(Dashboard.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+				((NotificationController)((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 	}

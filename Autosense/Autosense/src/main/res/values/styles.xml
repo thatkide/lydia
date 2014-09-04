@@ -147,4 +147,8 @@
 	<style name="HR2" parent="HR">
 		<item name="android:background">#88EEEEEE</item>
 	</style>
+	<style name="HR2V" parent="HR2">
+		<item name="android:layout_width">1dip</item>
+		<item name="android:layout_height">match_parent</item>
+	</style>
 </resources>
