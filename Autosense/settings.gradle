@@ -7,3 +7,4 @@ include ':yWeatherGetter4a'
 include ':library'
 include ':lydia_common'
 project(':usbSerialForAndroid').projectDir = new File('usb-serial-for-android/usbSerialForAndroid')
+include ':timePickerWithSeconds'

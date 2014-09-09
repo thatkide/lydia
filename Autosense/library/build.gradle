@@ -1,4 +1,4 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 19
@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.directions.api"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 15
     }
 

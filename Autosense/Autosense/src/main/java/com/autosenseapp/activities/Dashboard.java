@@ -262,9 +262,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		super.onStop();
 		try {
 			unbindService(hardwareServiceConnection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {	}
 	}
 
 	@Override

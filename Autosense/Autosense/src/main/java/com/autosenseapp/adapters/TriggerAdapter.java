@@ -1,50 +1,54 @@
 package com.autosenseapp.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.autosenseapp.R;
-import java.util.Map;
+import com.autosenseapp.devices.triggers.Trigger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by eric on 2014-09-02.
  */
-public class TriggerAdapter extends BaseAdapter {
+public class TriggerAdapter extends ArrayAdapter<Trigger> {
+
+	private static final String TAG = TriggerAdapter.class.getSimpleName();
 
 	private Context context;
-	private Map<String, String> triggers;
-	private String[] keys;
+	private LayoutInflater inflater;
+	private List<Trigger> allTriggers;
+	private List<Trigger> selectedTriggers;
 
-	public TriggerAdapter(Context context, Map<String, String> triggers) {
+	public TriggerAdapter(Context context, List<Trigger> allTriggers, List<Trigger> selectedTriggers) {
+		super(context, android.R.layout.simple_list_item_1, allTriggers);
 		this.context = context;
-		this.triggers = triggers;
-		this.keys = triggers.keySet().toArray(new String[triggers.size()]);
+		this.allTriggers = allTriggers;
+		this.selectedTriggers = selectedTriggers;
+
+		inflater = LayoutInflater.from(context);
 	}
 
 	@Override
-	public int getCount() {
-		return triggers.size();
-	}
-
-	@Override
-	public String getItem(int position) {
-		return triggers.get(keys[position]);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return position;
+	public Trigger getItem(int position) {
+		if (allTriggers.size() > 0) {
+			return allTriggers.get(position);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder viewHolder;
+		Trigger trigger = this.getItem(position);
 		if (convertView == null) {
-			LayoutInflater inflater = LayoutInflater.from(context);
 			convertView = inflater.inflate(R.layout.pin_trigger_row, parent, false);
 
 			viewHolder = new ViewHolder();
@@ -55,20 +59,30 @@ public class TriggerAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		viewHolder.textView.setText(getItem(position));
+		try {
+			viewHolder.textView.setText(getItem(position).getName(context));
+		} catch (Exception e) {}
 		try {
 			viewHolder.checkBox.setOnClickListener((View.OnClickListener) context);
 		} catch (Exception e) {}
+
+		for (Trigger t : selectedTriggers) {
+			// default checkbox to false
+			viewHolder.checkBox.setChecked(false);
+			if (trigger.getId() == t.getId()) {
+				viewHolder.checkBox.setTag(t);
+				// if we've found a matching id, check it
+				viewHolder.checkBox.setChecked(true);
+				// and break the loop
+				break;
+			}
+		}
 
 		return convertView;
 	}
 
 	public static class ViewHolder {
-		TextView textView;
-		CheckBox checkBox;
-
-		public CheckBox getCheckbox() {
-			return checkBox;
-		}
+		public TextView textView;
+		public CheckBox checkBox;
 	}
 }

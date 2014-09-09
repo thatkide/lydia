@@ -2,13 +2,13 @@ package com.autosenseapp.devices.configs;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
+
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.autosenseapp.databases.ArduinoPinsDataSource;
+import com.autosenseapp.databases.ArduinoPin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by eric on 2014-08-30.
@@ -27,60 +27,32 @@ public class ArduinoDue implements ArduinoConfig {
 
 	private Activity activity;
 
-	private HashMap<Integer, Set<String>> greenMap;
-	private HashMap<Integer, Set<String>> redMap;
-	private HashMap<Integer, Set<String>> blueMap;
-	private HashMap<Integer, Set<String>> pinkMap;
-	private HashMap<Integer, Set<String>> yellowMap;
-	private HashMap<Integer, Set<String>> orangeMap;
+	private ArrayList<ArduinoPin> greenList;
+	private ArrayList<ArduinoPin> redList;
+	private ArrayList<ArduinoPin> blueList;
+	private ArrayList<ArduinoPin> pinkList;
+	private ArrayList<ArduinoPin> yellowList;
+	private ArrayList<ArduinoPin> orangeList;
 
 	public ArduinoDue(Activity activity) {
 		this.activity = activity;
 
-		// new map for "green zone"
-		greenMap = new HashMap<Integer, Set<String>>();
-		greenMap.put(0, new HashSet<String>(Arrays.asList("RX0")));
-		greenMap.put(1, new HashSet<String>(Arrays.asList("TX0")));
-		// pins 2 - 7 don't have special purpose, just use null
-		for (int i=2; i<=7; i++) {
-			greenMap.put(i, null);
-		}
+		// open the pins database
+		ArduinoPinsDataSource dataSource = new ArduinoPinsDataSource(activity);
+		dataSource.open();
+		// get both digital and analog pins
+		List<ArduinoPin> digitalPins = dataSource.getDigitalPins();
+		List<ArduinoPin> analogPins = dataSource.getAnalogPins();
+		// close the db
+		dataSource.close();
 
-		// new map for "red zone"
-		redMap = new HashMap<Integer, Set<String>>();
-		for (int i=8; i<=13; i++) {
-			redMap.put(i, null);
-		}
-
-		blueMap = new HashMap<Integer, Set<String>>();
-		blueMap.put(14, new HashSet<String>(Arrays.asList("TX3")));
-		blueMap.put(15, new HashSet<String>(Arrays.asList("RX3")));
-		blueMap.put(16, new HashSet<String>(Arrays.asList("TX2")));
-		blueMap.put(17, new HashSet<String>(Arrays.asList("RX2")));
-		blueMap.put(18, new HashSet<String>(Arrays.asList("TX1")));
-		blueMap.put(19, new HashSet<String>(Arrays.asList("RX1")));
-		blueMap.put(20, new HashSet<String>(Arrays.asList("SDA")));
-		blueMap.put(21, new HashSet<String>(Arrays.asList("SCL")));
-
-		// new map for "pink zone"
-		pinkMap = new HashMap<Integer, Set<String>>();
-		// nothing special here, just add them
-		for (int i=22; i<=53; i++) {
-			pinkMap.put(i, null);
-		}
-
-		yellowMap = new HashMap<Integer, Set<String>>();
-
-		for (int i=7; i>=0; i--) {
-			yellowMap.put((i*-1), new HashSet<String>(Arrays.asList("A" + i)));
-		}
-
-		orangeMap = new HashMap<Integer, Set<String>>();
-
-		// Analog pins. We make them negative numbers to differentiate them
-		for (int i=11; i>=8; i--) {
-			orangeMap.put((i*-1), new HashSet<String>(Arrays.asList("A" + i)));
-		}
+		// split the pins into their respective color lists
+		greenList = new ArrayList<ArduinoPin>(digitalPins.subList(0, 8));	// 0-7
+		redList = new ArrayList<ArduinoPin>(digitalPins.subList(8, 14));	// 8-13
+		blueList = new ArrayList<ArduinoPin>(digitalPins.subList(14, 22));	// 14-21
+		pinkList = new ArrayList<ArduinoPin>(digitalPins.subList(22, 55));	// 21-54
+		yellowList = new ArrayList<ArduinoPin>(analogPins.subList(0, 8));	// A0-A7
+ 		orangeList = new ArrayList<ArduinoPin>(analogPins.subList(8, 12));	// A8-A11
 	}
 
 	@Override
@@ -93,32 +65,32 @@ public class ArduinoDue implements ArduinoConfig {
 			}
 			// 0 - 7
 			case GREEN: {
-				intent.putExtra("pins", greenMap);
+				intent.putParcelableArrayListExtra("pins", greenList);
 				break;
 			}
 			// 8 - 13, I2C 1
 			case RED: {
-				intent.putExtra("pins", redMap);
+				intent.putParcelableArrayListExtra("pins", redList);
 				break;
 			}
 			// Communication - 14 - 21
 			case BLUE: {
-				intent.putExtra("pins", blueMap);
+				intent.putParcelableArrayListExtra("pins", blueList);
 				break;
 			}
 			// 22 - 53
 			case PINK: {
-				intent.putExtra("pins", pinkMap);
+				intent.putParcelableArrayListExtra("pins", pinkList);
 				break;
 			}
 			// A0 - A7
 			case YELLOW: {
-				intent.putExtra("pins", yellowMap);
+				intent.putParcelableArrayListExtra("pins", yellowList);
 				break;
 			}
 			// A8 - A11, DAC0, DAC1, CAN
 			case ORANGE: {
-				intent.putExtra("pins", orangeMap);
+				intent.putParcelableArrayListExtra("pins", orangeList);
 				break;
 			}
 			default: {
@@ -128,6 +100,5 @@ public class ArduinoDue implements ArduinoConfig {
 		}
 
 		activity.startActivity(intent);
-
 	}
 }

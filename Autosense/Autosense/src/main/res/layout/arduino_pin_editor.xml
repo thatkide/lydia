@@ -104,8 +104,7 @@
 					android:text="@string/actions"/>
 				<RadioGroup android:id="@+id/arduino_actions"
 					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:visibility="gone"/>
+					android:layout_height="wrap_content"/>
 
 			</LinearLayout>
 			<View style="@style/HR2" />

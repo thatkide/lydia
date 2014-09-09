@@ -54,8 +54,10 @@ dependencies {
 	compile project(':libraryFragmentTransactionExtended')
 	compile project(':ambilWarna')
 	compile project(':usbSerialForAndroid')
-	compile 'com.android.support:support-v4:20.+'
+	compile project(':timePickerWithSeconds')
+	compile 'com.android.support:support-v4:20.0.0'
 	compile 'com.google.android.gms:play-services:5.0.89'
+	compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 	compile files('libs/bugsense-3.6.jar')
 	compile files('libs/lastfm-java-0.1.2.jar')
 	compile files('libs/updatechecker.jar')

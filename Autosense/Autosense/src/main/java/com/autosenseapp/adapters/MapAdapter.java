@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -16,15 +15,15 @@ import java.util.Map;
 public class MapAdapter extends BaseAdapter {
 
 	private Context context;
-	private Map<String, String> values;
-	private String[] keys;
+	private Map<Integer, String> values;
+	private Integer[] keys;
 
-	public MapAdapter(Context context, Map<String, String> values) {
+	public MapAdapter(Context context, Map<Integer, String> values) {
 		this.context = context;
 		// copy the map
 		this.values = values;
 		// get the keys
-		keys = values.keySet().toArray(new String[values.size()]);
+		keys = values.keySet().toArray(new Integer[values.size()]);
 	}
 
 	@Override

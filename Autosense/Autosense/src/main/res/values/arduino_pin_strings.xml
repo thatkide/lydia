@@ -4,7 +4,7 @@
 	<string name="accessory">Accessory</string>
 	<string name="action">Action</string>
 	<string name="actions">Actions</string>
-	<string name="button_only">Button Only</string>
+	<string name="button">Button</string>
 	<string name="device">Device</string>
 	<string name="high_impedance">High Impedance</string>
 	<string name="input">Input</string>
