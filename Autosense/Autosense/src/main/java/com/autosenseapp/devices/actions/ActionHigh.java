@@ -16,7 +16,7 @@ public class ActionHigh extends Action {
 
 	@Override
 	public String getName(Context context) {
-		return context.getString(R.string.on);
+		return context.getString(R.string.low);
 	}
 
 	@Override
@@ -35,6 +35,11 @@ public class ActionHigh extends Action {
 
 	@Override
 	public String getExtraData() {
+		return null;
+	}
+
+	@Override
+	public String getExtraString() {
 		return null;
 	}
 

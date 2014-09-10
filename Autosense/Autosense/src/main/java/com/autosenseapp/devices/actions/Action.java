@@ -28,4 +28,5 @@ public abstract class Action implements Parcelable {
 	public abstract Dialog getExtraDialog(Context context);
 	public abstract void setExtraData(String string);
 	public abstract String getExtraData();
+	public abstract String getExtraString();
 }

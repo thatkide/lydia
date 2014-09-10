@@ -49,10 +49,13 @@ public class ArduinoPinEditor extends Activity implements
 	private ListView pinTriggers;
 
 	private RadioGroup actionGroup;
-	private RadioButton selectedRadioButton;
 
 	private List<Action> allActions;
 	private List<Trigger> allTriggers;
+	// we need these in the action callbacks.
+	private Action currentAction;
+	private Trigger currentTrigger;
+
 
 	@Override
 	public void onCreate(Bundle saved) {
@@ -111,18 +114,15 @@ public class ArduinoPinEditor extends Activity implements
 				pinEditTitle.setText(getString(R.string.pin) + " " + selectedArduinoPin.toString());
 				// save the selected pin.  we use this for saving and such
 				pinModes.setSelection(selectedArduinoPin.getMode());
-				updateTriggerList();
+				// reset the action title
+				actionTitle.setText(getString(R.string.action));
+				updateTriggerList(selectedArduinoPin);
 				break;
 			}
 			// if the trigger has been changed
 			case R.id.pin_output_trigger: {
-				// get the adapter
-				// get the view and the holder
-				TriggerAdapter.ViewHolder viewHolder = (TriggerAdapter.ViewHolder) view.getTag();
-//				String currentAction = triggerAdapter.getItem(position).getName(this);
-//				actionTitle.setText(getString(R.string.action) + ": " + currentAction);
-//				updateActions(viewHolder.getCheckbox());
-				Trigger trigger = (Trigger) viewHolder.checkBox.getTag();
+				Trigger trigger = (Trigger) view.getTag(R.string.trigger);
+				// set the action title to include the trigger
 				updateActions(trigger);
 				break;
 			}
@@ -139,7 +139,7 @@ public class ArduinoPinEditor extends Activity implements
 		pinTriggerController.updatePin(selectedArduinoPin);
 		// if we selected "output", show the next spinner
 
-		updateTriggerList();
+		updateTriggerList(selectedArduinoPin);
 		updateTextString();
 	}
 
@@ -150,46 +150,51 @@ public class ArduinoPinEditor extends Activity implements
 		actionString.setText(pinTriggerController.getDescription(1));
 	}
 
-
-//	// enable/disable radio buttons
-//	private void updateActions(CheckBox checkBox) {
-//		Trigger trigger = (Trigger) checkBox.getTag();
-//		boolean isChecked = checkBox.isChecked();
-//		for (int i=0; i<actionGroup.getChildCount(); i++) {
-//			RadioButton button = (RadioButton) actionGroup.getChildAt(i);
-//			button.setEnabled(isChecked);
-//			button.setChecked(false);
-//		}
-//	}
-
 	// checkbox callback
 	@Override
 	public void onClick(View v) {
-		Log.d(TAG, "onclick");
-		Trigger trigger = (Trigger) v.getTag();
+		Log.d(TAG, "clicked " + ((CheckBox)v).isChecked());
+		Trigger trigger = (Trigger) v.getTag(R.string.trigger);
 		// update the trigger for the selected pin
 		// pass the pin, the trigger, and if we're adding (true) or removing (false)
 		if (!((CheckBox) v).isChecked()) {
-//			pinTriggerController.removePinTrigger(selectedArduinoPin, currentTrigger);
+			Log.d(TAG, "remove trigger");
+			pinTriggerController.removePinTrigger(selectedArduinoPin, trigger);
 		}
 
 //		Log.d(TAG, trigger.getAction().getName(this) + " " + trigger.getAction().getId());
-		updateActions(trigger);
-//		updateActions((CheckBox) v);
+		// update the actions.  if we are checked, pass the trigger, otherwise null.  this will remove the visual check of the radio button
+		if (((CheckBox) v).isChecked()) {
+			Log.d(TAG, "update action with trigger");
+			Log.d(TAG, trigger.getName(this));
+			updateActions(trigger);
+		} else {
+			Log.d(TAG, "update action, no trigger");
+			updateActions(null);
+		}
 		updateTextString();
 	}
 
 	// Radio button listener
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-//		selectedRadioButton = (RadioButton) group.findViewById(checkedId);
-//		currentAction = (Action) selectedRadioButton.getTag();
-//		if (currentAction.hasExtra()) {
-//			currentAction.getExtraDialog(this).show();
-//		}
-//		if (selectedRadioButton.isChecked()) {
-//			pinTriggerController.addPinTriggers(selectedArduinoPin, currentTrigger, currentAction);
-//		}
+		Log.d(TAG, "on check changes");
+		RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
+		try {
+			Action action = (Action) selectedRadioButton.getTag(R.string.action);
+			Trigger trigger = (Trigger) selectedRadioButton.getTag(R.string.trigger);
+			// get the stored action from the radio button
+			if (action.hasExtra()) {
+				action.getExtraDialog(this).show();
+				// save these for the extra data callback
+				currentAction = action;
+				currentTrigger = trigger;
+			}
+			if (selectedRadioButton.isChecked()) {
+				Log.d(TAG, "it's checked, save it");
+				pinTriggerController.addPinTriggers(selectedArduinoPin, trigger, action);
+			}
+		} catch (NullPointerException e) {}
 	}
 
 	@Override
@@ -199,22 +204,34 @@ public class ArduinoPinEditor extends Activity implements
 		totalTime += TimeUnit.MINUTES.toSeconds(minutes);
 		totalTime += seconds;
 
-//		currentAction.setExtraData(String.valueOf(totalTime));
-//		pinTriggerController.editPinTrigger(selectedArduinoPin, currentTrigger, currentAction);
+		currentAction.setExtraData(String.valueOf(totalTime));
+		pinTriggerController.editPinTrigger(selectedArduinoPin, currentTrigger, currentAction);
 	}
 
-	private void updateTriggerList() {
+	private void updateTriggerList(ArduinoPin selectedArduinoPin) {
 		if (selectedArduinoPin.getMode() == PinTriggerController.OUTPUT) {
 			pinSettingsTitle.setText(getString(R.string.trigger));
+			List<Trigger> selectedTriggers = pinTriggerController.getTriggers(selectedArduinoPin);
 			// pass the full list of triggers and the selected triggers for the selected pin
-			pinTriggers.setAdapter(new TriggerAdapter(ArduinoPinEditor.this, allTriggers, selectedArduinoPin.getTriggers()));
+			pinTriggers.setAdapter(new TriggerAdapter(ArduinoPinEditor.this, allTriggers, selectedTriggers));
+			if (selectedTriggers.size() > 0) {
+				// show the action for the top trigger
+				updateActions(selectedTriggers.get(0));
+			} else {
+				updateActions(null);
+			}
 		} else {
 			pinTriggers.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{}));
+			updateActions(null);
 		}
-		updateActions(null);
 	}
 
 	private void updateActions(Trigger trigger) {
+		if (trigger != null) {
+			actionTitle.setText(getString(R.string.action) + ": " + trigger.getName(this));
+		} else {
+			actionTitle.setText(getString(R.string.action));
+		}
 		actionGroup.removeAllViews();
 		if (selectedArduinoPin.getMode() == PinTriggerController.OUTPUT) {
 			// populate available actions
@@ -223,15 +240,24 @@ public class ArduinoPinEditor extends Activity implements
 				// create a new button
 				RadioButton button = new RadioButton(this);
 				// set the text
-				button.setText(action.getName(this));
+				button.setId(action.getId());
+				if (trigger != null && trigger.getAction() != null && trigger.getAction().hasExtra() && trigger.getAction().getId() == action.getId()) {
+					button.setText(action.getName(this) + " (" + trigger.getAction().getExtraString() + ")");
+				} else {
+					button.setText(action.getName(this));
+				}
 				// add the action as the tag
-				button.setTag(action);
-				if (trigger != null && trigger.getAction().getId() == action.getId()) {
+				// The reason we use R.string.action is we need a guaranteed unique id that is precompiled.  using already defined strings is easier than making new ids
+				button.setTag(R.string.action, action);
+				if (trigger != null && trigger.getAction() != null && trigger.getAction().getId() == action.getId()) {
 					button.setChecked(true);
 				}
 				if (trigger == null) {
+					Log.d(TAG, "disable radio button " + button.getId());
 					// disable it
 					button.setEnabled(false);
+				} else {
+					button.setTag(R.string.trigger, trigger);
 				}
 				// add it to the view
 				actionGroup.addView(button);

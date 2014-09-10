@@ -40,6 +40,11 @@ public class ActionToggle extends Action {
 	}
 
 	@Override
+	public String getExtraString() {
+		return null;
+	}
+
+	@Override
 	public int describeContents() {
 		return 0;
 	}

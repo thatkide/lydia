@@ -5,7 +5,7 @@ import android.app.Activity;
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.databases.PinTriggersDataSource;
+import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 
@@ -25,14 +25,13 @@ public class PinTriggerController extends Controller {
 	public static final int OUTPUT = 2;
 
 	private final ArduinoPinsDataSource arduinoPinsDataSource;
-	private final PinTriggersDataSource pinTriggersDataSource;
 	private List<String> pinModes;
 
 	public PinTriggerController(Activity activity) {
 		super(activity);
 
 		arduinoPinsDataSource = new ArduinoPinsDataSource(activity);
-		pinTriggersDataSource = new PinTriggersDataSource(activity);
+		arduinoPinsDataSource.open();
 
 		pinModes = new ArrayList<String>();
 		pinModes.add(HIGH_IMPEDANCE, activity.getString(R.string.high_impedance));
@@ -43,7 +42,6 @@ public class PinTriggerController extends Controller {
 	@Override
 	public void onDestroy() {
 		arduinoPinsDataSource.close();
-		pinTriggersDataSource.close();
 	}
 
 	public String getDescription(int pin) {
@@ -56,11 +54,15 @@ public class PinTriggerController extends Controller {
 	}
 
 	public List<Action> getActions() {
-		return Collections.unmodifiableList(arduinoPinsDataSource.getActions());
+		return arduinoPinsDataSource.getActions();
+	}
+
+	public List<Trigger> getTriggers(ArduinoPin pin) {
+		return arduinoPinsDataSource.getTriggers(pin);
 	}
 
 	public List<Trigger> getTriggers() {
-		return Collections.unmodifiableList(arduinoPinsDataSource.getTriggers());
+		return arduinoPinsDataSource.getTriggers();
 	}
 
 	public void updatePin(ArduinoPin arduinoPin) {
@@ -68,14 +70,14 @@ public class PinTriggerController extends Controller {
 	}
 
 	public void addPinTriggers(ArduinoPin arduinoPin, Trigger trigger, Action action) {
-		pinTriggersDataSource.addPinTrigger(arduinoPin, trigger, action);
+		arduinoPinsDataSource.addPinTrigger(arduinoPin, trigger, action);
 	}
 
 	public void editPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
-		pinTriggersDataSource.editPinTrigger(arduinoPin, trigger, action);
+		arduinoPinsDataSource.editPinTrigger(arduinoPin, trigger, action);
 	}
 
 	public void removePinTrigger(ArduinoPin arduinoPin, Trigger trigger) {
-		pinTriggersDataSource.removePinTrigger(arduinoPin, trigger);
+		arduinoPinsDataSource.removePinTrigger(arduinoPin, trigger);
 	}
 }

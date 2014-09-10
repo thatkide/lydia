@@ -55,9 +55,9 @@ public class TriggerAdapter extends ArrayAdapter<Trigger> {
 			viewHolder.textView = (TextView) convertView.findViewById(R.id.TextView);
 			viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.CheckBox);
 
-			convertView.setTag(viewHolder);
+			convertView.setTag(R.string.view_holder ,viewHolder);
 		} else {
-			viewHolder = (ViewHolder) convertView.getTag();
+			viewHolder = (ViewHolder) convertView.getTag(R.string.view_holder);
 		}
 		try {
 			viewHolder.textView.setText(getItem(position).getName(context));
@@ -66,11 +66,13 @@ public class TriggerAdapter extends ArrayAdapter<Trigger> {
 			viewHolder.checkBox.setOnClickListener((View.OnClickListener) context);
 		} catch (Exception e) {}
 
+		viewHolder.checkBox.setTag(R.string.trigger, getItem(position));
+
 		for (Trigger t : selectedTriggers) {
 			// default checkbox to false
 			viewHolder.checkBox.setChecked(false);
 			if (trigger.getId() == t.getId()) {
-				viewHolder.checkBox.setTag(t);
+				convertView.setTag(R.string.trigger, t);
 				// if we've found a matching id, check it
 				viewHolder.checkBox.setChecked(true);
 				// and break the loop
@@ -81,7 +83,7 @@ public class TriggerAdapter extends ArrayAdapter<Trigger> {
 		return convertView;
 	}
 
-	public static class ViewHolder {
+	private static class ViewHolder {
 		public TextView textView;
 		public CheckBox checkBox;
 	}

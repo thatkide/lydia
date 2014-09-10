@@ -11,6 +11,7 @@ import com.autosenseapp.devices.triggers.Trigger;
 import com.autosenseapp.services.ArduinoService;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,6 +50,37 @@ public class ArduinoPinsDataSource {
 		dbHelper.close();
 	}
 
+	public void addPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
+		removePinTrigger(arduinoPin, trigger);
+		open();
+		ContentValues values = new ContentValues();
+		values.put(ArduinoPinsOpenHelper.PIN_ID, arduinoPin.getId());
+		values.put(ArduinoPinsOpenHelper.ACTION_ID, action.getId());
+		values.put(ArduinoPinsOpenHelper.TRIGGER_ID, trigger.getId());
+		values.put(ArduinoPinsOpenHelper.EXTRA_DATA, "");
+
+//		store it in the db
+		database.insert(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, null, values);
+
+		close();
+	}
+
+	public void editPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
+		open();
+		ContentValues values = new ContentValues();
+		values.put(ArduinoPinsOpenHelper.PIN_ID, arduinoPin.getId());
+		values.put(ArduinoPinsOpenHelper.ACTION_ID, action.getId());
+		values.put(ArduinoPinsOpenHelper.TRIGGER_ID, trigger.getId());
+		values.put(ArduinoPinsOpenHelper.EXTRA_DATA, action.getExtraData());
+
+		database.update(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, values,
+				ArduinoPinsOpenHelper.PIN_ID + "=? AND " +
+				ArduinoPinsOpenHelper.TRIGGER_ID + " =?",
+				new String[]{String.valueOf(arduinoPin.getId()), String.valueOf(trigger.getId())});
+		close();
+	}
+
+
 	public List<ArduinoPin> getAnalogPins() {
 		return getPins(ArduinoPin.ANALOG);
 	}
@@ -58,6 +90,7 @@ public class ArduinoPinsDataSource {
 	}
 
 	public List<ArduinoPin> getPins(int pinType) {
+		open();
 		List<ArduinoPin> arduinoPins = new ArrayList<ArduinoPin>();
 		Cursor cursor = database.query(
 				DEVICE_TABLE,
@@ -71,11 +104,12 @@ public class ArduinoPinsDataSource {
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			ArduinoPin pin = cursorToPin(cursor);
-			pin.setTriggers(getTriggers(pin));
+//			pin.setTriggers(getTriggers(pin));
 			arduinoPins.add(pin);
 			cursor.moveToNext();
 		}
 		cursor.close();
+		close();
 		return arduinoPins;
 	}
 
@@ -103,7 +137,7 @@ public class ArduinoPinsDataSource {
 		}
 		cursor.close();
 		close();
-		return actions;
+		return Collections.unmodifiableList(actions);
 	}
 
 	public List<Trigger> getTriggers() {
@@ -130,15 +164,17 @@ public class ArduinoPinsDataSource {
 		}
 		cursor.close();
 		close();
-		return triggers;
+		return Collections.unmodifiableList(triggers);
 	}
 
-	private List<Trigger> getTriggers(ArduinoPin pin) {
+	public List<Trigger> getTriggers(ArduinoPin pin) {
+		open();
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		String query = "SELECT " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + ".*, " +
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.ACTION_ID + ", " +
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + " as " + ArduinoPinsOpenHelper.ACTION_CLASS + ", " +
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.NAME + " as " + ArduinoPinsOpenHelper.ACTION_NAME + ", " +
+				ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.EXTRA_DATA + " as " + ArduinoPinsOpenHelper.ACTION_EXTRA_DATA + ", " +
 				ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.TRIGGER_ID + ", " +
 				ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + " as " + ArduinoPinsOpenHelper.TRIGGER_CLASS + ", " +
 				ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.NAME + " as " + ArduinoPinsOpenHelper.TRIGGER_NAME +
@@ -147,17 +183,18 @@ public class ArduinoPinsDataSource {
 					ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " = " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.ACTION_ID +
 				" LEFT JOIN " + ArduinoPinsOpenHelper.TRIGGERS_TABLE + " ON " +
 					ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " = " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.TRIGGER_ID +
-				" WHERE " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.PIN_ID + "=?";
+				" WHERE " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.PIN_ID + "=?" +
+				" ORDER BY " + ArduinoPinsOpenHelper.TRIGGER_NAME;
 
 		Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(pin.getId())});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			String actionName = cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_NAME));
 			String actionClass = cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_CLASS));
 			if (actionClass != null) {
 				Action action = (Action) createClass(ArduinoPinsOpenHelper.ACTIONS_TABLE, actionClass);
 				action.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_ID)));
-				action.setName(actionName);
+				action.setExtraData(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_EXTRA_DATA)));
+				action.setName(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_NAME)));
 
 				Trigger trigger = cursorToTrigger(cursor);
 				trigger.setAction(action);
@@ -165,8 +202,22 @@ public class ArduinoPinsDataSource {
 			}
 			cursor.moveToNext();
 		}
+		close();
 		return triggers;
 	}
+
+	public void removePinTrigger(ArduinoPin arduinoPin, Trigger trigger) {
+		if (arduinoPin == null || trigger == null) {
+			return;
+		}
+		open();
+		database.delete(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE,
+				ArduinoPinsOpenHelper.PIN_ID + "=? AND " +
+				ArduinoPinsOpenHelper.TRIGGER_ID + " =?",
+				new String[]{String.valueOf(arduinoPin.getId()), String.valueOf(trigger.getId())});
+		close();
+	}
+
 
 	public void updatePin(ArduinoPin arduinoPin) {
 		open();
@@ -198,7 +249,7 @@ public class ArduinoPinsDataSource {
 		if (actionClass != null) {
 			Action action = (Action) createClass(ArduinoPinsOpenHelper.ACTIONS_TABLE, actionClass);
 			action.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_ID)));
-			action.setName(actionName);
+ 			action.setName(actionName);
 			return action;
 		}
 		return null;

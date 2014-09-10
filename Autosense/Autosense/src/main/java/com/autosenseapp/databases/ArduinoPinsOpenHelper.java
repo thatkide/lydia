@@ -24,6 +24,7 @@ public class ArduinoPinsOpenHelper extends SQLiteAssetHelper {
 	public static final String EXTRA_DATA = "extra_data";
 	public static final String TRIGGER_ID = "trigger_id";
 	public static final String ACTION_ID = "action_id";
+	public static final String ACTION_EXTRA_DATA = "action_extra";
 	public static final String CLASS = "class";
 	public static final String PIN_ID = "pin_id";
 	public static final String ACTION_CLASS = "action_class";
