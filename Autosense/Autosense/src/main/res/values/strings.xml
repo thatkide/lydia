@@ -229,8 +229,8 @@
 
 	<string name="title_activity_display_message">New Message</string>
 
-	<string name="update_apk_url">https://github.com/ericfri/lydia/raw/master/lydia/lydia/lydia-release.apk</string>
-	<string name="update_url">https://raw.githubusercontent.com/ericfri/lydia/master/lydia/lydia/src/main/assets/apk_version.txt</string>
+	<string name="update_apk_url">https://github.com/ericfri/lydia/raw/master/Autosense/Autosense/Autosense-paid-gitHub.apk</string>
+	<string name="update_url">https://raw.githubusercontent.com/ericfri/lydia/master/Autosense/Autosense/src/main/assets/apk_version.txt</string>
 
 
 </resources>
