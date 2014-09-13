@@ -1,14 +1,13 @@
 package com.autosenseapp.controllers;
 
 import android.app.Activity;
-
+import android.content.Context;
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
-
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +36,8 @@ public class PinTriggerController extends Controller {
 		pinModes.add(HIGH_IMPEDANCE, activity.getString(R.string.high_impedance));
 		pinModes.add(INPUT, activity.getString(R.string.input));
 		pinModes.add(OUTPUT, activity.getString(R.string.output));
+
+		setupTriggers();
 	}
 
 	@Override
@@ -44,9 +45,29 @@ public class PinTriggerController extends Controller {
 		arduinoPinsDataSource.close();
 	}
 
-	public String getDescription(int pin) {
-		return "";
-//		return ("Set " + selectedPin + " to " + selectedMode + ".  On "  + " perform action ");
+	private void setupTriggers() {
+		// get the list of triggers
+		List<Trigger> triggers = getTriggers();
+		// loop over them
+		for (Trigger trigger : triggers) {
+			// get the class name
+			String className = trigger.getClassName();
+			// if it's not null
+			if (className != null) {
+				try {
+					// create a new classname for the object
+					Class<?> clazz = Class.forName(activity.getPackageName() + ".devices.triggers." + className);
+					// get the constructor
+					Constructor<?> constructor = clazz.getConstructor(Context.class);
+					// create the object
+					constructor.newInstance(activity);
+				} catch (Exception e) {}
+			}
+		}
+	}
+
+	public List<ArduinoPin> getAllTriggersByClassName(String name) {
+		return arduinoPinsDataSource.getAllTriggersByClassName(name);
 	}
 
 	public List<String> getPinModes() {

@@ -27,13 +27,14 @@ public class ArduinoPinsOpenHelper extends SQLiteAssetHelper {
 	public static final String ACTION_EXTRA_DATA = "action_extra";
 	public static final String CLASS = "class";
 	public static final String PIN_ID = "pin_id";
+	public static final String PIN_NAME = "pin_name";
 	public static final String ACTION_CLASS = "action_class";
 	public static final String ACTION_NAME = "action_name";
 	public static final String TRIGGER_CLASS = "trigger_class";
 	public static final String TRIGGER_NAME = "trigger_name";
 
 
-	private static final int VERSION = 3;
+	private static final int VERSION = 4;
 	private static String DB_NAME = "arduinoPins.db";
 
 	public ArduinoPinsOpenHelper(Context context) {

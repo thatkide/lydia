@@ -15,6 +15,7 @@ import android.util.SparseArray;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.devices.*;
+import com.autosenseapp.devices.triggers.OnBootTrigger;
 import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
 import com.autosenseapp.devices.usbInterfaces.ArduinoInterface;
@@ -105,6 +106,9 @@ public class ArduinoService extends Service {
 			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_NONE).apply();
 			stopSelf();
 		}
+
+		// send the broadcast that we are starting up.  do what needs doing
+		this.sendBroadcast(new Intent(OnBootTrigger.receiverString));
 
 		// create the new device
 		arduinoInterface.onCreate(this, intent);

@@ -10,8 +10,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import com.autosenseapp.R;
 import com.autosenseapp.devices.triggers.Trigger;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**

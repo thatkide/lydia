@@ -14,10 +14,8 @@ public class ButtonTrigger extends Trigger {
 		super();
 	}
 
-	@Override
-	public String getName(Context context) {
-		int resId = context.getResources().getIdentifier(name, "string", context.getPackageName());
-		return context.getString(resId);
+	public ButtonTrigger(Context context) {
+		super(context);
 	}
 
 	@Override
@@ -30,12 +28,14 @@ public class ButtonTrigger extends Trigger {
 		dest.writeParcelable(action, flags);
 		dest.writeInt(id);
 		dest.writeString(name);
+		dest.writeString(className);
 	}
 
 	public ButtonTrigger(Parcel in) {
 		this.action = in.readParcelable(Action.class.getClassLoader());
 		this.id = in.readInt();
 		this.name = in.readString();
+		this.className = in.readString();
 	}
 
 	public static final Creator CREATOR = new Creator() {

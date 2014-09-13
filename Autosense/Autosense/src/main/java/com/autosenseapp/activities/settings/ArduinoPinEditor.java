@@ -1,6 +1,7 @@
 package com.autosenseapp.activities.settings;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.autosenseapp.R;
 import com.autosenseapp.adapters.TriggerAdapter;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.databases.Button;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 import com.ikovac.timepickerwithseconds.view.MyTimePickerDialog;
@@ -42,7 +44,6 @@ public class ArduinoPinEditor extends Activity implements
 	private TextView pinEditTitle;
 	private TextView pinSettingsTitle;
 	private TextView actionTitle;
-	private TextView actionString;
 
 	private ArduinoPin selectedArduinoPin;
 	private Spinner pinModes;
@@ -74,7 +75,6 @@ public class ArduinoPinEditor extends Activity implements
 		pinEditTitle = (TextView) findViewById(R.id.pin_edit_title);
 		pinSettingsTitle = (TextView) findViewById(R.id.pin_settings_title);
 		actionTitle = (TextView) findViewById(R.id.arduino_action_title);
-		actionString = (TextView) findViewById(R.id.arduino_action_string);
 
 		pinModes = (Spinner) findViewById(R.id.pin_mode);
 		pinModes.setOnItemSelectedListener(this);
@@ -127,7 +127,6 @@ public class ArduinoPinEditor extends Activity implements
 				break;
 			}
 		}
-		updateTextString();
 	}
 
 	// called when pin mode is selected from the spinner
@@ -140,15 +139,10 @@ public class ArduinoPinEditor extends Activity implements
 		// if we selected "output", show the next spinner
 
 		updateTriggerList(selectedArduinoPin);
-		updateTextString();
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {	}
-
-	private void updateTextString() {
-		actionString.setText(pinTriggerController.getDescription(1));
-	}
 
 	// checkbox callback
 	@Override
@@ -172,16 +166,17 @@ public class ArduinoPinEditor extends Activity implements
 			Log.d(TAG, "update action, no trigger");
 			updateActions(null);
 		}
-		updateTextString();
 	}
 
 	// Radio button listener
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		Log.d(TAG, "on check changes");
+		Log.d(TAG, "on check changed");
 		RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
 		try {
 			Action action = (Action) selectedRadioButton.getTag(R.string.action);
+			Log.d(TAG, "checked id " + checkedId);
+			Log.d(TAG, "aciton id " + action.getId());
 			Trigger trigger = (Trigger) selectedRadioButton.getTag(R.string.trigger);
 			// get the stored action from the radio button
 			if (action.hasExtra()) {
@@ -253,7 +248,6 @@ public class ArduinoPinEditor extends Activity implements
 					button.setChecked(true);
 				}
 				if (trigger == null) {
-					Log.d(TAG, "disable radio button " + button.getId());
 					// disable it
 					button.setEnabled(false);
 				} else {

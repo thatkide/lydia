@@ -16,11 +16,6 @@ public class ActionToggle extends Action {
 	}
 
 	@Override
-	public String getName(Context context) {
-		return context.getString(R.string.toggle);
-	}
-
-	@Override
 	public boolean hasExtra() {
 		return false;
 	}
@@ -53,11 +48,13 @@ public class ActionToggle extends Action {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(id);
 		dest.writeString(name);
+		dest.writeString(className);
 	}
 
 	public ActionToggle(Parcel in) {
 		this.id = in.readInt();
 		this.name = in.readString();
+		this.className = in.readString();
 	}
 
 	public static final Creator CREATOR = new Creator() {

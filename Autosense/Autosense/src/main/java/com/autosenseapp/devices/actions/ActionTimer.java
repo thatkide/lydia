@@ -27,11 +27,6 @@ public class ActionTimer extends Action {
 	}
 
 	@Override
-	public String getName(Context context) {
-		return context.getString(R.string.timer);
-	}
-
-	@Override
 	public boolean hasExtra() {
 		return true;
 	}
@@ -84,12 +79,14 @@ public class ActionTimer extends Action {
 		dest.writeInt(id);
 		dest.writeString(name);
 		dest.writeString(extraData);
+		dest.writeString(className);
 	}
 
 	public ActionTimer(Parcel in) {
 		this.id = in.readInt();
 		this.name = in.readString();
 		this.extraData = in.readString();
+		this.className = in.readString();
 	}
 
 	public static final Creator CREATOR = new Creator() {

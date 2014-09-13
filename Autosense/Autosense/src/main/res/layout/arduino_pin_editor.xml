@@ -72,7 +72,7 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content" />
 
-				</LinearLayout>
+\				</LinearLayout>
 				<View style="@style/HR2V"
 					  android:layout_marginTop="1dp"
 					  android:layout_marginBottom="1dp"/>
@@ -107,14 +107,6 @@
 					android:layout_height="wrap_content"/>
 
 			</LinearLayout>
-			<View style="@style/HR2" />
-			<TextView android:id="@+id/arduino_action_string"
-				android:layout_width="match_parent"
-				style="@style/SmallText"
-				android:layout_height="0dip"
-				android:layout_weight="1"
-				android:padding="5dp" />
-
 		</LinearLayout>
 
 	</LinearLayout>

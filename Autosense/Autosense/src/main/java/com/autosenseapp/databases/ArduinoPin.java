@@ -2,6 +2,8 @@ package com.autosenseapp.databases;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class ArduinoPin implements Parcelable {
 	private int mode;
 	private int pinType;
 	private List<Trigger> triggerList;
+	private Action action;
 
 	public ArduinoPin() { }
 
@@ -71,6 +74,14 @@ public class ArduinoPin implements Parcelable {
 		return triggerList;
 	}
 
+	public void setAction(Action action) {
+		this.action = action;
+	}
+
+	public Action getAction() {
+		return action;
+	}
+
 	@Override
 	public String toString() {
 		return pinNumber + (name == null || name.isEmpty() ? "" : " (" + name + ")");
@@ -87,6 +98,7 @@ public class ArduinoPin implements Parcelable {
 		this.name = in.readString();
 		this.mode = in.readInt();
 		this.pinType = in.readInt();
+		this.action = in.readParcelable(Action.class.getClassLoader());
 		triggerList = new ArrayList<Trigger>();
 		in.readList(triggerList, Trigger.class.getClassLoader());
 	}
@@ -98,6 +110,7 @@ public class ArduinoPin implements Parcelable {
 		dest.writeString(name);
 		dest.writeInt(mode);
 		dest.writeInt(pinType);
+		dest.writeParcelable(action, flags);
 		dest.writeList(triggerList);
 	}
 

@@ -12,8 +12,14 @@ public abstract class Trigger implements Parcelable{
 	private static final String TAG = Trigger.class.getSimpleName();
 
 	protected int id;
+	protected Context context;
 	protected Action action;
+	protected String className;
 	protected String name;
+
+	public Trigger(Context context) {
+		this.context = context;
+	}
 
 	public Trigger() {}
 
@@ -29,7 +35,9 @@ public abstract class Trigger implements Parcelable{
 		this.name = name;
 	}
 
-	public abstract String getName(Context context);
+	public String getName(Context context) {
+		return context.getResources().getString((context.getResources().getIdentifier(name, "string", context.getPackageName())));
+	}
 
 	public void setAction(Action action) {
 		this.action = action;
@@ -37,6 +45,14 @@ public abstract class Trigger implements Parcelable{
 
 	public Action getAction() {
 		return action;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getClassName() {
+		return className;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.autosenseapp.databases;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -35,19 +36,26 @@ public class ArduinoPinsDataSource {
 		if (database == null || !database.isOpen()) {
 			database = dbHelper.getWritableDatabase();
 		}
-
 		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
 		if (deviceType == ArduinoService.ARDUINO_ACCESSORY) {
 			this.DEVICE_TABLE = ArduinoPinsOpenHelper.ACCESSORY_TABLE;
 		} else if (deviceType == ArduinoService.ARDUINO_DEVICE) {
 			this.DEVICE_TABLE = ArduinoPinsOpenHelper.DEVICE_TABLE;
+		}
+
+	}
+
+	private boolean hasValidDevice() {
+		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
+		if (deviceType != ArduinoService.ARDUINO_NONE) {
+			return true;
 		} else {
-			close();
+			return false;
 		}
 	}
 
 	public void close() {
-		dbHelper.close();
+//		dbHelper.close();
 	}
 
 	public void addPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
@@ -61,8 +69,6 @@ public class ArduinoPinsDataSource {
 
 //		store it in the db
 		database.insert(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, null, values);
-
-		close();
 	}
 
 	public void editPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
@@ -77,9 +83,47 @@ public class ArduinoPinsDataSource {
 				ArduinoPinsOpenHelper.PIN_ID + "=? AND " +
 				ArduinoPinsOpenHelper.TRIGGER_ID + " =?",
 				new String[]{String.valueOf(arduinoPin.getId()), String.valueOf(trigger.getId())});
-		close();
 	}
 
+	public List<ArduinoPin> getAllTriggersByClassName(String name) {
+		if (!hasValidDevice()) {
+			return new ArrayList<ArduinoPin>();
+		}
+		List<ArduinoPin> pins = new ArrayList<ArduinoPin>();
+		open();
+		String query = "SELECT " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.ACTION_ID + ", " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + " as " + ArduinoPinsOpenHelper.ACTION_CLASS + ", " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.NAME + " as " + ArduinoPinsOpenHelper.ACTION_NAME + ", " +
+				"* FROM " + ArduinoPinsOpenHelper.TRIGGERS_TABLE +
+				" INNER JOIN " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE +
+					" ON " + ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+					" = " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.TRIGGER_ID +
+				" INNER JOIN " + DEVICE_TABLE +
+					" ON " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.PIN_ID +
+					" = " + DEVICE_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+				" INNER JOIN " + ArduinoPinsOpenHelper.ACTIONS_TABLE +
+					" ON " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.ACTION_ID +
+					" = " + ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+				" WHERE " + ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + "=" + DatabaseUtils.sqlEscapeString(name);
+
+		Cursor cursor = database.rawQuery(query, null);
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+			ArduinoPin pin = cursorToPin(cursor);
+			// need to overwrite id, name,
+			// overwrite the id with the correct column
+			pin.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.PIN_ID)));
+			pin.setAction(cursorToAction(cursor));
+			pins.add(pin);
+
+			cursor.moveToNext();
+		}
+
+		cursor.close();
+		return pins;
+	}
 
 	public List<ArduinoPin> getAnalogPins() {
 		return getPins(ArduinoPin.ANALOG);
@@ -109,7 +153,6 @@ public class ArduinoPinsDataSource {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		close();
 		return arduinoPins;
 	}
 
@@ -136,7 +179,6 @@ public class ArduinoPinsDataSource {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		close();
 		return Collections.unmodifiableList(actions);
 	}
 
@@ -163,7 +205,6 @@ public class ArduinoPinsDataSource {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		close();
 		return Collections.unmodifiableList(triggers);
 	}
 
@@ -202,7 +243,6 @@ public class ArduinoPinsDataSource {
 			}
 			cursor.moveToNext();
 		}
-		close();
 		return triggers;
 	}
 
@@ -215,9 +255,7 @@ public class ArduinoPinsDataSource {
 				ArduinoPinsOpenHelper.PIN_ID + "=? AND " +
 				ArduinoPinsOpenHelper.TRIGGER_ID + " =?",
 				new String[]{String.valueOf(arduinoPin.getId()), String.valueOf(trigger.getId())});
-		close();
 	}
-
 
 	public void updatePin(ArduinoPin arduinoPin) {
 		open();
@@ -229,7 +267,6 @@ public class ArduinoPinsDataSource {
 
 		// store it in the db
 		database.update(DEVICE_TABLE, values, ArduinoPinsOpenHelper.COLUMN_ID + " = " + arduinoPin.getId(), null);
-		close();
 	}
 
 	private ArduinoPin cursorToPin(Cursor cursor) {
@@ -250,6 +287,7 @@ public class ArduinoPinsDataSource {
 			Action action = (Action) createClass(ArduinoPinsOpenHelper.ACTIONS_TABLE, actionClass);
 			action.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.ACTION_ID)));
  			action.setName(actionName);
+			action.setClassName(actionClass);
 			return action;
 		}
 		return null;
@@ -262,6 +300,7 @@ public class ArduinoPinsDataSource {
 			Trigger trigger = (Trigger) createClass(ArduinoPinsOpenHelper.TRIGGERS_TABLE, triggerClass);
 			trigger.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.TRIGGER_ID)));
 			trigger.setName(triggerName);
+			trigger.setClassName(triggerClass);
 			return trigger;
 		}
 		return null;

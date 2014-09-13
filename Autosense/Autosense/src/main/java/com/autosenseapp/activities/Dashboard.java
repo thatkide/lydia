@@ -23,7 +23,6 @@ import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
-import com.autosenseapp.controllers.Controller;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
