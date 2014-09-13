@@ -11,19 +11,20 @@ import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.graphics.Color;
 import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.*;
 import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
-
 import com.autosenseapp.BuildConfig;
+import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
-import com.autosenseapp.controllers.Controller;
 import com.autosenseapp.controllers.NotificationController;
+import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragment;
@@ -39,31 +40,28 @@ import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Dashboard extends Activity implements GestureOverlayView.OnGesturePerformedListener {
 	private static final String TAG = Dashboard.class.getSimpleName();
 
-	public static final int BACKGROUND_CONTROLLER = 2;
-	public static final int NOTIFICATION_CONTROLLER = 1;
-
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private GestureLibrary gestureLibrary;
 	private GestureOverlayView gestureOverlayView;
+
+	private BackgroundController backgroundController;
+	private NotificationController notificationController;
 
 	// plugins
 	private LastFM lastFm;
 
 	//the first part of this string have to be the package name
-	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.lydia.action.USB_PERMISSION";
-	private UsbManager mUsbManager;
+	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.action.USB_PERMISSION";
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
-	private UsbAccessory mUsbAccessory;
-
-	private BackgroundController backgroundController;
-	private NotificationController notificationController;
 
 	/**
 	 * Called when the activities is first created.
@@ -72,8 +70,12 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 
+		// create the new controllers and save them into the global space
 		backgroundController = new BackgroundController(this);
 		notificationController = new NotificationController(this);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.BACKGROUND_CONTROLLER, backgroundController);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.NOTIFICATION_CONTROLLER, notificationController);
+		((GlobalClass)getApplicationContext()).setController(GlobalClass.PIN_TRIGGER_CONTROLLER, new PinTriggerController(this));
 
 		if (BuildConfig.INCLUDE_UPDATER) {
 			final UpdateChecker checker = new UpdateChecker(this, true);
@@ -131,10 +133,10 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		// initialize all plugins
 		lastFm = new LastFM(this);
 
-		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		registerReceiver(mUsbReceiver, filter);
 
 		// ensure our admin buttons are up to date
@@ -147,6 +149,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.d(TAG, "on resume");
 		notificationController.onResume();
 
 		checkGooglePlayServices();
@@ -189,25 +192,25 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 //			startActivityForResult(enableBt, 1);
 //		}
 
+		// reset no no arduino.  if one is connected update the prefs so it will be available later on
+		this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE).apply();
+
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
+		// Try to connect a USB accessory first
 		// get list of accessories
-		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+		UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		UsbAccessory[] accessories = usbManager.getAccessoryList();
 		// get first accessory
 		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
-		if (mUsbAccessory != null) {
-			Log.d(TAG, "stop service");
-			stopService(new Intent(this, ArduinoService.class));
-		}
-
-		// if we got a valid accessory
 		if (accessory != null) {
-			mUsbAccessory = accessory;
+			Log.d(TAG, "got an accessory");
 			// if we have permission
-			if (mUsbManager.hasPermission(accessory)) {
+			if (usbManager.hasPermission(accessory)) {
 				// start the arduino service
+				Log.d(TAG, "start accessory");
 				Intent i = new Intent(this, ArduinoService.class);
 				i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
 				startService(i);
@@ -215,9 +218,33 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			} else {
 				synchronized (mUsbReceiver) {
 					if (mPermissionRequestPending) {
-						mUsbManager.requestPermission(accessory, mPermissionIntent);
+						usbManager.requestPermission(accessory, mPermissionIntent);
 						mPermissionRequestPending = true;
 					}
+				}
+			}
+		} else {
+			Log.d(TAG, "usb device");
+			// else try device
+			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
+
+			Iterator<String> iterator = devices.keySet().iterator();
+			while (iterator.hasNext()) {
+				String deviceName = iterator.next();
+				UsbDevice device = devices.get(deviceName);
+
+				String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
+				String PID = Integer.toHexString(device.getProductId()).toLowerCase();
+
+				Log.d(TAG, "vendor id " + VID + " product id " + PID);
+				// Valid devices
+				//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
+				if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
+					Log.d(TAG, "start device");
+					// We have a valid FTDI chip
+					Intent intent = new Intent(this, ArduinoService.class);
+					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+					startService(intent);
 				}
 			}
 		}
@@ -234,9 +261,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		super.onStop();
 		try {
 			unbindService(hardwareServiceConnection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {	}
 	}
 
 	@Override
@@ -376,10 +401,10 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 				if (prediction.name.equalsIgnoreCase("right")) {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 					// show the music bar on change
-					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+					notificationController.setNotification(MusicNotificationFragment.class);
 				} else {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-					((NotificationController) getController(NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+					notificationController.setNotification(MusicNotificationFragment.class);
 				}
 			}
 		}
@@ -408,6 +433,8 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "got usb broadcast");
+			Log.d(TAG, "action is " + intent.getAction());
 			String action = intent.getAction();
 			// check if permission intent
 			if (ACTION_USB_PERMISSION.equals(action)) {
@@ -423,20 +450,9 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 					mPermissionRequestPending = false;
 				}
 			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-
 			}
 		}
 	};
-
-	public Controller getController(int controller) {
-		switch (controller) {
-			case NOTIFICATION_CONTROLLER:
-				return notificationController;
-			case BACKGROUND_CONTROLLER:
-				return backgroundController;
-		}
-		return null;
-	}
 
 	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
 

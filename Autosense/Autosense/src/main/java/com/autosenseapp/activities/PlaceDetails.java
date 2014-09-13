@@ -15,7 +15,7 @@ import com.autosenseapp.R;
  */
 public class PlaceDetails extends Activity {
 
-	private static final String TAG = "lydia place details";
+	private static final String TAG = PlaceDetails.class.getSimpleName();
 	private Address address;
 
 	public void onCreate(Bundle savedInstanceState) {

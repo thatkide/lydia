@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.*;
 import android.os.Bundle;
 import android.preference.*;
-
 import com.autosenseapp.R;
 import com.autosenseapp.devices.Master;
 
@@ -12,7 +11,7 @@ import com.autosenseapp.devices.Master;
  * Created by eric on 2013-08-01.
  */
 public class ArduinoSettingsFragment extends PreferenceFragment {
-	public static final String TAG = "lydia arduino Settings Preference";
+	public static final String TAG = ArduinoSettingsFragment.class.getSimpleName();
 
 	public SharedPreferences sharedPreferences;
 
@@ -35,6 +34,12 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 				getFragmentManager().beginTransaction()
 						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
 						.replace(R.id.home_screen_fragment, new GaugesSettingsFragment())
+						.addToBackStack(null)
+						.commit();
+			} else if (key.equalsIgnoreCase("setupMasterIO")) {
+				getFragmentManager().beginTransaction()
+						.setCustomAnimations(R.anim.container_slide_out_up, R.anim.container_slide_in_up, R.anim.container_slide_in_down, R.anim.container_slide_out_down)
+						.replace(R.id.home_screen_fragment, new MasterIoFragment())
 						.addToBackStack(null)
 						.commit();
 			}
@@ -67,13 +72,14 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 
 		// set our internal preference for the bluetooth state
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).commit();
+		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).apply();
 
 		PreferenceManager manager = getPreferenceManager();
 
 //		manager.findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
 		manager.findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
 		manager.findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
+		manager.findPreference("setupMasterIO").setOnPreferenceClickListener(clickListener);
 
 		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Master.LIGHTVALUE));
 	}

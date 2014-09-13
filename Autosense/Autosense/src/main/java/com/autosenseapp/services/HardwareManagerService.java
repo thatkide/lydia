@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * Time: 3:02 PM
  */
 public class HardwareManagerService extends Service {
-	public static final String TAG = "lydia Hardware Manager";
+	public static final String TAG = HardwareManagerService.class.getSimpleName();
 	private final IBinder mBinder = new HardwareManagerBinder();
 
 	// Bluetooth settings

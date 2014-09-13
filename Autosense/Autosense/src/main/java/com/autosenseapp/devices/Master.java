@@ -67,7 +67,7 @@ public class Master extends Device {
 			case INSIDETEMP: {
 				int insideTemp = Helpers.word(data[1], data[2]);
 				context.sendBroadcast(new Intent(INSIDETEMPERATURE).putExtra(INSIDETEMPERATURE, insideTemp));
-				Log.d(TAG, "got inside temp: " + insideTemp);
+//				Log.d(TAG, "got inside temp: " + insideTemp);
 				break;
 			}
 			case LIGHTLEVEL: {

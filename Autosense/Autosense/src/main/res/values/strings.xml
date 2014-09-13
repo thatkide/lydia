@@ -69,6 +69,8 @@
 	<string name="distance">Distance</string>
 	<string name="duration">Duration</string>
 	<string name="edit">Edit</string>
+	<string name="edit_button">Edit Button</string>
+	<string name="edit_pins">Edit Pins</string>
 	<string name="engine">Engine</string>
 	<string name="external_light_sensor">External Light Sensor</string>
 	<string name="external_temperature_sensor">External Temperature Sensor</string>
@@ -101,6 +103,7 @@
 	<string name="media">Media</string>
 	<string name="media_service">Media Service</string>
 	<string name="min_light">Light level before switching low</string>
+	<string name="mode">Mode</string>
 	<string name="monday">Monday</string>
 	<string name="monday_abbr">Mon</string>
 	<string name="more">More</string>
@@ -125,6 +128,7 @@
 	<string name="pause">Pause</string>
 	<string name="paused">Paused</string>
 	<string name="phone">Phone</string>
+	<string name="pin">Pin</string>
 	<string name="play">Play</string>
 	<string name="playlist">Playlist</string>
 	<string name="playlists">Playlists</string>
@@ -155,6 +159,7 @@
 	<string name="select_device">select a device to connect</string>
 	<string name="settings">Settings</string>
 	<string name="setup_alarm">Setup alarm</string>
+	<string name="setup_master_io">Setup Master IO</string>
 	<string name="setup_home_screen">Setup Home Screen</string>
 	<string name="setup_home_screen_summary">Organize home screen icons to your liking</string>
 	<string name="setup_sidebars">Setup Sidebars</string>
@@ -196,6 +201,7 @@
 	<string name="toggle_traffic">Toggle Traffic</string>
 	<string name="tuesday">Tuesday</string>
 	<string name="tuesday_abbr">Tue</string>
+	<string name="trigger">Trigger</string>
 	<string name="type_phone">Phone Numbers</string>
 	<string name="type_email">E-Mail</string>
 	<string name="unpairing_device">Unpairing device</string>
@@ -209,6 +215,7 @@
 	<string name="use_phone">Use this phone in app</string>
 	<string name="quick_call">Who would you like to call?</string>
 	<string name="videos">Videos</string>
+	<string name="view_holder">View Holder</string>
 	<string name="volume_control">Volume Control</string>
 	<string name="weather">Weather</string>
 	<string name="weather_use_celsius">Use Celsius</string>
@@ -225,54 +232,5 @@
 	<string name="update_apk_url">https://github.com/ericfri/lydia/raw/master/lydia/lydia/lydia-release.apk</string>
 	<string name="update_url">https://raw.githubusercontent.com/ericfri/lydia/master/lydia/lydia/src/main/assets/apk_version.txt</string>
 
-	<!-- Array to keep home screen images-->
-	<string-array name="homescreen_images">
-		<item>android</item>
-		<item>calendar</item>
-		<item>chrome</item>
-		<item>compass</item>
-		<item>contacts</item>
-		<item>gauge</item>
-		<item>jet_engine</item>
-		<item>movie_reel</item>
-		<item>phone</item>
-		<item>settings</item>
-		<item>vinyl</item>
-		<item>weather_icon</item>
-	</string-array>
-
-	<!--Button Names-->
-
-	<string name="AirRideButton">Air Ride</string>
-	<string name="AndroidButton">Apps</string>
-	<string name="AppLaunchButton">Launch App Specified</string>
-	<string name="CalendarButton">Calendar</string>
-	<string name="ChromeButton">Web</string>
-	<string name="ContactsButton">Contacts</string>
-	<string name="EngineStatusButton">Engine Status</string>
-	<string name="MusicButton">Music</string>
-	<string name="NavigationButton">Navigation</string>
-	<string name="PhoneButton">Phone</string>
-	<string name="SeatHeatButton">Seat Heater</string>
-	<string name="SettingsButton">Settings</string>
-	<string name="VideosButton">Videos</string>
-	<string name="WeatherButton">Weather</string>
-
-	<!--Button Descriptions-->
-
-	<string name="AirRideButtonDesc">Open Air Ride</string>
-	<string name="AndroidButtonDesc">Open App Launcher</string>
-	<string name="AppLaunchButtonDesc">Launch App Specified</string>
-	<string name="CalendarButtonDesc">Open Calendar</string>
-	<string name="ChromeButtonDesc">Open Web Activity</string>
-	<string name="ContactsButtonDesc">Open Contacts</string>
-	<string name="EngineStatusButtonDesc">Open Engine Status</string>
-	<string name="MusicButtonDesc">Open Music</string>
-	<string name="NavigationButtonDesc">Open Navigation</string>
-	<string name="PhoneButtonDesc">Open Phone Controls</string>
-	<string name="SeatHeatButtonDesc">Enable Seat Heater</string>
-	<string name="SettingsButtonDesc">Open Program Settings</string>
-	<string name="VideosButtonDesc">Open Videos - Currently not working</string>
-	<string name="WeatherButtonDesc">Open Weather</string>
 
 </resources>
