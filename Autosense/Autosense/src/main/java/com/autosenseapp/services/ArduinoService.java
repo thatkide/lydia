@@ -107,9 +107,6 @@ public class ArduinoService extends Service {
 			stopSelf();
 		}
 
-		// send the broadcast that we are starting up.  do what needs doing
-		this.sendBroadcast(new Intent(OnBootTrigger.receiverString));
-
 		// create the new device
 		arduinoInterface.onCreate(this, intent);
 
@@ -152,6 +149,7 @@ public class ArduinoService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.d(TAG, "on destroy");
 		accessoryReadyBroadcastSent = false;
 		arduinoInterface.onDestroy();
 		if (thread != null && thread.isAlive()) {
@@ -178,6 +176,9 @@ public class ArduinoService extends Service {
 	private Runnable commRunnable = new Runnable() {
 		@Override
 		public void run() {
+			// send the broadcast that we are starting up.  do what needs doing
+			ArduinoService.this.sendBroadcast(new Intent(OnBootTrigger.receiverString));
+
 			int ret = 0;
 			byte[] buffer = new byte[255];
 
@@ -189,6 +190,8 @@ public class ArduinoService extends Service {
 				try {
 					ret = arduinoInterface.read(buffer);
 				} catch (Exception e) {
+					Log.d(TAG, "stopping");
+					e.printStackTrace();
 					arduinoInterface.onDestroy();
 					thread.interrupt();
 					ArduinoService.this.stopSelf();

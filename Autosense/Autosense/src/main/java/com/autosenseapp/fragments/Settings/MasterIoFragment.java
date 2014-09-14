@@ -39,6 +39,12 @@ public class MasterIoFragment extends Fragment implements View.OnTouchListener {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		arduinoConfig.onResume();
+	}
+
+	@Override
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 		Activity activity = getActivity();

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 import java.lang.reflect.Constructor;
@@ -100,5 +101,9 @@ public class PinTriggerController extends Controller {
 
 	public void removePinTrigger(ArduinoPin arduinoPin, Trigger trigger) {
 		arduinoPinsDataSource.removePinTrigger(arduinoPin, trigger);
+	}
+
+	public List<ArduinoPin> getPins(int type) {
+		return arduinoPinsDataSource.getPins(type);
 	}
 }

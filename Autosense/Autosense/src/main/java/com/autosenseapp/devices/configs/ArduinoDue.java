@@ -3,9 +3,12 @@ package com.autosenseapp.devices.configs;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.autosenseapp.GlobalClass;
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
+import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.devices.Arduino;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.List;
 public class ArduinoDue implements ArduinoConfig {
 
 	private static final String TAG = ArduinoDue.class.getSimpleName();
+
+	private PinTriggerController pinTriggerController;
 
 	private static final int BLACK = -13226195;
 	private static final int RED = -65536;
@@ -36,23 +41,8 @@ public class ArduinoDue implements ArduinoConfig {
 
 	public ArduinoDue(Activity activity) {
 		this.activity = activity;
-
-		// open the pins database
-		ArduinoPinsDataSource dataSource = new ArduinoPinsDataSource(activity);
-		dataSource.open();
-		// get both digital and analog pins
-		List<ArduinoPin> digitalPins = dataSource.getDigitalPins();
-		List<ArduinoPin> analogPins = dataSource.getAnalogPins();
-		// close the db
-		dataSource.close();
-
-		// split the pins into their respective color lists
-		greenList = new ArrayList<ArduinoPin>(digitalPins.subList(0, 8));	// 0-7
-		redList = new ArrayList<ArduinoPin>(digitalPins.subList(8, 14));	// 8-13
-		blueList = new ArrayList<ArduinoPin>(digitalPins.subList(14, 22));	// 14-21
-		pinkList = new ArrayList<ArduinoPin>(digitalPins.subList(22, 55));	// 21-54
-		yellowList = new ArrayList<ArduinoPin>(analogPins.subList(0, 8));	// A0-A7
- 		orangeList = new ArrayList<ArduinoPin>(analogPins.subList(8, 12));	// A8-A11
+		pinTriggerController = (PinTriggerController) ((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.PIN_TRIGGER_CONTROLLER);
+		getPins();
 	}
 
 	@Override
@@ -100,5 +90,24 @@ public class ArduinoDue implements ArduinoConfig {
 		}
 
 		activity.startActivity(intent);
+	}
+
+	@Override
+	public void onResume() {
+		getPins();
+	}
+
+	private void getPins() {
+		// get both digital and analog pins
+		List<ArduinoPin> digitalPins = pinTriggerController.getPins(ArduinoPin.DIGITAL);
+		List<ArduinoPin> analogPins = pinTriggerController.getPins(ArduinoPin.ANALOG);
+
+		// split the pins into their respective color lists
+		greenList = new ArrayList<ArduinoPin>(digitalPins.subList(0, 8));	// 0-7
+		redList = new ArrayList<ArduinoPin>(digitalPins.subList(8, 14));	// 8-13
+		blueList = new ArrayList<ArduinoPin>(digitalPins.subList(14, 22));	// 14-21
+		pinkList = new ArrayList<ArduinoPin>(digitalPins.subList(22, 55));	// 21-54
+		yellowList = new ArrayList<ArduinoPin>(analogPins.subList(0, 8));	// A0-A7
+		orangeList = new ArrayList<ArduinoPin>(analogPins.subList(8, 12));	// A8-A11
 	}
 }

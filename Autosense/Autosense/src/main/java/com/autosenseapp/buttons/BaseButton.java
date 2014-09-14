@@ -24,7 +24,6 @@ import com.autosenseapp.buttons.navButtons.ToggleTrafficButton;
 import com.autosenseapp.buttons.settingsButtons.ArduinoSettingsButton;
 import com.autosenseapp.buttons.settingsButtons.MediaSettingsButton;
 import com.autosenseapp.buttons.settingsButtons.WeatherSettingsButton;
-import com.autosenseapp.buttons.widgetButtons.SeatHeatButton;
 import com.autosenseapp.databases.Button;
 
 import java.util.HashMap;
@@ -140,7 +139,6 @@ public abstract class BaseButton extends android.widget.Button {
 		buttons.put(MusicButton.class.getSimpleName(), new MusicButton(activity));
 		buttons.put(NavigationButton.class.getSimpleName(), new NavigationButton(activity));
 		buttons.put(PhoneButton.class.getSimpleName(), new PhoneButton(activity));
-		buttons.put(SeatHeatButton.class.getSimpleName(), new SeatHeatButton(activity));
 		buttons.put(SettingsButton.class.getSimpleName(), new SettingsButton(activity));
 		buttons.put(VideosButton.class.getSimpleName(), new VideosButton(activity));
 		buttons.put(WeatherButton.class.getSimpleName(), new WeatherButton(activity));

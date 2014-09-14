@@ -2,7 +2,6 @@ package com.autosenseapp.devices.triggers;
 
 import android.content.Context;
 import android.os.Parcel;
-
 import com.autosenseapp.devices.actions.Action;
 
 /**

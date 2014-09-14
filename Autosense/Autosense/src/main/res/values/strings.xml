@@ -129,6 +129,7 @@
 	<string name="paused">Paused</string>
 	<string name="phone">Phone</string>
 	<string name="pin">Pin</string>
+	<string name="pin_comment">Comment for this pin</string>
 	<string name="play">Play</string>
 	<string name="playlist">Playlist</string>
 	<string name="playlists">Playlists</string>

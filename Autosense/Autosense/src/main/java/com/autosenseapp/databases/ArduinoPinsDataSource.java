@@ -42,7 +42,6 @@ public class ArduinoPinsDataSource {
 		} else if (deviceType == ArduinoService.ARDUINO_DEVICE) {
 			this.DEVICE_TABLE = ArduinoPinsOpenHelper.DEVICE_TABLE;
 		}
-
 	}
 
 	private boolean hasValidDevice() {
@@ -55,7 +54,7 @@ public class ArduinoPinsDataSource {
 	}
 
 	public void close() {
-//		dbHelper.close();
+		dbHelper.close();
 	}
 
 	public void addPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
@@ -125,22 +124,14 @@ public class ArduinoPinsDataSource {
 		return pins;
 	}
 
-	public List<ArduinoPin> getAnalogPins() {
-		return getPins(ArduinoPin.ANALOG);
-	}
-
-	public List<ArduinoPin> getDigitalPins() {
-		return getPins(ArduinoPin.DIGITAL);
-	}
-
 	public List<ArduinoPin> getPins(int pinType) {
 		open();
 		List<ArduinoPin> arduinoPins = new ArrayList<ArduinoPin>();
 		Cursor cursor = database.query(
 				DEVICE_TABLE,
 				null, // all columns
-				ArduinoPinsOpenHelper.TYPE + " = " + pinType, // selection
-				null, // selectionArgs
+				ArduinoPinsOpenHelper.TYPE + " =? ", // selection
+				new String[] {String.valueOf(pinType)}, // selectionArgs
 				null, // groupBy
 				null, // having
 				ArduinoPinsOpenHelper.NUMBER  // orderBy
@@ -264,9 +255,16 @@ public class ArduinoPinsDataSource {
 		values.put(ArduinoPinsOpenHelper.NAME, arduinoPin.getPinName());
 		values.put(ArduinoPinsOpenHelper.NUMBER, arduinoPin.getPinNumber());
 		values.put(ArduinoPinsOpenHelper.TYPE, arduinoPin.getPinType());
+		values.put(ArduinoPinsOpenHelper.COMMENT, arduinoPin.getComment());
 
 		// store it in the db
-		database.update(DEVICE_TABLE, values, ArduinoPinsOpenHelper.COLUMN_ID + " = " + arduinoPin.getId(), null);
+		database.beginTransaction();
+		try {
+			database.update(DEVICE_TABLE, values, ArduinoPinsOpenHelper.COLUMN_ID + " =? ", new String[]{String.valueOf(arduinoPin.getId())});
+			database.setTransactionSuccessful();
+		} finally {
+			database.endTransaction();
+		}
 	}
 
 	private ArduinoPin cursorToPin(Cursor cursor) {
@@ -276,6 +274,7 @@ public class ArduinoPinsDataSource {
 		arduinoPin.setPinName(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.NAME)));
 		arduinoPin.setPinNumber(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.NUMBER)));
 		arduinoPin.setPinType(cursor.getInt(cursor.getColumnIndexOrThrow(ArduinoPinsOpenHelper.TYPE)));
+		arduinoPin.setComment(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.COMMENT)));
 
 		return arduinoPin;
 	}

@@ -19,6 +19,12 @@
 	<TextView android:id="@+id/pin_edit_title"
 		android:layout_below="@id/pins_title_hr"
 		style="@style/MediumText"/>
+	<EditText android:id="@+id/pin_comment"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/pin_comment"
+		android:layout_below="@id/pins_title_hr"
+		android:layout_toRightOf="@id/pin_edit_title"/>
 	<View style="@style/HR2"
 		android:layout_below="@id/pin_edit_title" />
 

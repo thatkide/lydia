@@ -108,18 +108,18 @@ public class ButtonEditor extends Activity implements View.OnClickListener {
 						@Override
 						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 							Object selectedItem = extraDataSpinner.getSelectedItem();
-							if (selectedItem instanceof AppInfo) {
-								Drawable drawable = ((AppInfo) selectedItem).getIcon();
-								Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-								buttonView.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getApplicationContext().getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true)), null, null);
+								if (selectedItem instanceof AppInfo) {
+									if (buttonType == BaseButton.TYPE_HOMESCREEN) {
+										Drawable drawable = ((AppInfo) selectedItem).getIcon();
+										Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+										buttonView.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getApplicationContext().getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true)), null, null);
+									}
 								title.setText(((AppInfo) selectedItem).getAppName());
 							}
 						}
 
 						@Override
-						public void onNothingSelected(AdapterView<?> parent) {
-
-						}
+						public void onNothingSelected(AdapterView<?> parent) { }
 					});
 				} else {
 					extraDataSpinner.setVisibility(View.GONE);

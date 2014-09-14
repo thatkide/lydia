@@ -22,6 +22,7 @@ public class OnBootTrigger extends Trigger {
 
 	private static final String TAG = OnBootTrigger.class.getSimpleName();
 	public static final String receiverString = OnBootTrigger.class.getSimpleName() + "Receiver";
+	private boolean triggerDone = false;
 
 	public OnBootTrigger(){}
 
@@ -65,6 +66,10 @@ public class OnBootTrigger extends Trigger {
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			// only do this once
+			if (triggerDone) {
+				return;
+			}
 			// get the controller
 			PinTriggerController controller = (PinTriggerController) ((GlobalClass)context.getApplicationContext()).getController(GlobalClass.PIN_TRIGGER_CONTROLLER);
 			// get the list of pins that we need to deal with
@@ -75,6 +80,7 @@ public class OnBootTrigger extends Trigger {
 			for (ArduinoPin pin : pins) {
 				Log.d(TAG, "set pin " + pin.getPinNumber() + " to " + pin.getAction().getName(context));
 			}
+			triggerDone = true;
 		}
 	};
 }

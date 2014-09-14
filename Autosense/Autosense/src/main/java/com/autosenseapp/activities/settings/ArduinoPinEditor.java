@@ -1,13 +1,15 @@
 package com.autosenseapp.activities.settings;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -15,10 +17,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
+import com.autosenseapp.adapters.PinsAdapter;
 import com.autosenseapp.adapters.TriggerAdapter;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.databases.Button;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 import com.ikovac.timepickerwithseconds.view.MyTimePickerDialog;
@@ -44,6 +46,7 @@ public class ArduinoPinEditor extends Activity implements
 	private TextView pinEditTitle;
 	private TextView pinSettingsTitle;
 	private TextView actionTitle;
+	private EditText pinComment;
 
 	private ArduinoPin selectedArduinoPin;
 	private Spinner pinModes;
@@ -75,6 +78,21 @@ public class ArduinoPinEditor extends Activity implements
 		pinEditTitle = (TextView) findViewById(R.id.pin_edit_title);
 		pinSettingsTitle = (TextView) findViewById(R.id.pin_settings_title);
 		actionTitle = (TextView) findViewById(R.id.arduino_action_title);
+		pinComment = (EditText) findViewById(R.id.pin_comment);
+		pinComment.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// get the text and save it
+				selectedArduinoPin.setComment(pinComment.getText().toString());
+				pinTriggerController.updatePin(selectedArduinoPin);
+			}
+		});
 
 		pinModes = (Spinner) findViewById(R.id.pin_mode);
 		pinModes.setOnItemSelectedListener(this);
@@ -91,7 +109,7 @@ public class ArduinoPinEditor extends Activity implements
 			ArrayList<ArduinoPin> arduinoPins = getIntent().getParcelableArrayListExtra("pins");
 			// get the listview and pass the map adapter
 			ListView pinList = (ListView) findViewById(R.id.arduino_pins_list);
-			pinList.setAdapter(new ArrayAdapter<ArduinoPin>(this, android.R.layout.simple_list_item_1, arduinoPins));
+			pinList.setAdapter(new PinsAdapter(this, arduinoPins));
 			pinList.setOnItemClickListener(this);
 
 			pinModes.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pinTriggerController.getPinModes()));
@@ -112,6 +130,8 @@ public class ArduinoPinEditor extends Activity implements
 				selectedArduinoPin = (ArduinoPin) adapter.getItemAtPosition(position);
 				// update the title
 				pinEditTitle.setText(getString(R.string.pin) + " " + selectedArduinoPin.toString());
+				// set the text for the pin comment
+				pinComment.setText(selectedArduinoPin.getComment());
 				// save the selected pin.  we use this for saving and such
 				pinModes.setSelection(selectedArduinoPin.getMode());
 				// reset the action title
@@ -147,23 +167,17 @@ public class ArduinoPinEditor extends Activity implements
 	// checkbox callback
 	@Override
 	public void onClick(View v) {
-		Log.d(TAG, "clicked " + ((CheckBox)v).isChecked());
 		Trigger trigger = (Trigger) v.getTag(R.string.trigger);
 		// update the trigger for the selected pin
 		// pass the pin, the trigger, and if we're adding (true) or removing (false)
 		if (!((CheckBox) v).isChecked()) {
-			Log.d(TAG, "remove trigger");
 			pinTriggerController.removePinTrigger(selectedArduinoPin, trigger);
 		}
 
-//		Log.d(TAG, trigger.getAction().getName(this) + " " + trigger.getAction().getId());
 		// update the actions.  if we are checked, pass the trigger, otherwise null.  this will remove the visual check of the radio button
 		if (((CheckBox) v).isChecked()) {
-			Log.d(TAG, "update action with trigger");
-			Log.d(TAG, trigger.getName(this));
 			updateActions(trigger);
 		} else {
-			Log.d(TAG, "update action, no trigger");
 			updateActions(null);
 		}
 	}
@@ -171,12 +185,9 @@ public class ArduinoPinEditor extends Activity implements
 	// Radio button listener
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		Log.d(TAG, "on check changed");
 		RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
 		try {
 			Action action = (Action) selectedRadioButton.getTag(R.string.action);
-			Log.d(TAG, "checked id " + checkedId);
-			Log.d(TAG, "aciton id " + action.getId());
 			Trigger trigger = (Trigger) selectedRadioButton.getTag(R.string.trigger);
 			// get the stored action from the radio button
 			if (action.hasExtra()) {
@@ -186,7 +197,6 @@ public class ArduinoPinEditor extends Activity implements
 				currentTrigger = trigger;
 			}
 			if (selectedRadioButton.isChecked()) {
-				Log.d(TAG, "it's checked, save it");
 				pinTriggerController.addPinTriggers(selectedArduinoPin, trigger, action);
 			}
 		} catch (NullPointerException e) {}

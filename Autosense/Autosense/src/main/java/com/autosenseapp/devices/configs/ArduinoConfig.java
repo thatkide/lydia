@@ -5,4 +5,5 @@ package com.autosenseapp.devices.configs;
  */
 public interface ArduinoConfig {
 	public void handleClick(int color);
+	public void onResume();
 }
