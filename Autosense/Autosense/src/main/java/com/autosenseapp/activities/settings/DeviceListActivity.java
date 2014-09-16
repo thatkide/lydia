@@ -126,7 +126,7 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 	 */
 	private void doDiscovery() {
 		if (D)
-			Log.d(TAG, "doDiscovery()");
+	//		Log.d(TAG, "doDiscovery()");
 
 		// Indicate scanning in the title
 		setProgressBarIndeterminateVisibility(true);
@@ -179,7 +179,7 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 			m.invoke(device, (Object[]) null);
 
 		} catch (Exception e) {
-			Log.e("pairDevice()", e.getMessage());
+		//	Log.e("pairDevice()", e.getMessage());
 		}
 	}
 
@@ -188,7 +188,7 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 			Method m = device.getClass().getMethod("removeBond", (Class[]) null);
 			m.invoke(device, (Object[]) null);
 		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
+		//	Log.e(TAG, e.getMessage());
 		}
 		// ensure it's no longer in the db
 		dataSource.removeDevice(device);
@@ -247,7 +247,7 @@ public class DeviceListActivity extends Activity implements OnClickListener{
 	public void onClick(View view) {
 		CheckBox checkBox = (CheckBox) view;
 		BluetoothDevice device = pairedDevices.get((Integer)view.getTag());
-		Log.d(TAG, device.getName());
+//		Log.d(TAG, device.getName());
 		if (checkBox.isChecked()) {
 			dataSource.addDevice(device);
 		} else {

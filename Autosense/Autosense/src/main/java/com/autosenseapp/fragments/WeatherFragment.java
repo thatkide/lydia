@@ -133,11 +133,11 @@ public class WeatherFragment extends Fragment implements
 					}
 
 					// get the text/image based on the resource id and method from above
-					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_title", "id", "com.autosenseapp.lydia"))).setText((String)getDay.invoke(weatherInfo));
-					((ImageView) activity.findViewById(getResources().getIdentifier("weather_day" + i + "_icon", "id", "com.autosenseapp.lydia"))).setImageBitmap(weatherInfo.getConditionsIcon(activity, (Integer) getCode.invoke(weatherInfo)));
-					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_conditions", "id", "com.autosenseapp.lydia"))).setText((String) getText.invoke(weatherInfo));
-					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_high", "id", "com.autosenseapp.lydia"))).setText(high);
-					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_low", "id", "com.autosenseapp.lydia"))).setText(low);
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_title", "id", "com.autosenseapp"))).setText((String)getDay.invoke(weatherInfo));
+					((ImageView) activity.findViewById(getResources().getIdentifier("weather_day" + i + "_icon", "id", "com.autosenseapp"))).setImageBitmap(weatherInfo.getConditionsIcon(activity, (Integer) getCode.invoke(weatherInfo)));
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_conditions", "id", "com.autosenseapp"))).setText((String) getText.invoke(weatherInfo));
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_high", "id", "com.autosenseapp"))).setText(high);
+					((TextView)activity.findViewById(getResources().getIdentifier("weather_day" + i + "_low", "id", "com.autosenseapp"))).setText(low);
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
