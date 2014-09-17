@@ -27,16 +27,16 @@ public class PinTriggerController extends Controller {
 	private final ArduinoPinsDataSource arduinoPinsDataSource;
 	private List<String> pinModes;
 
-	public PinTriggerController(Activity activity) {
-		super(activity);
+	public PinTriggerController(Activity context) {
+		super(context);
 
-		arduinoPinsDataSource = new ArduinoPinsDataSource(activity);
+		arduinoPinsDataSource = new ArduinoPinsDataSource(context);
 		arduinoPinsDataSource.open();
 
 		pinModes = new ArrayList<String>();
-		pinModes.add(HIGH_IMPEDANCE, activity.getString(R.string.high_impedance));
-		pinModes.add(INPUT, activity.getString(R.string.input));
-		pinModes.add(OUTPUT, activity.getString(R.string.output));
+		pinModes.add(HIGH_IMPEDANCE, context.getString(R.string.high_impedance));
+		pinModes.add(INPUT, context.getString(R.string.input));
+		pinModes.add(OUTPUT, context.getString(R.string.output));
 
 		setupTriggers();
 	}

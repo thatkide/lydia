@@ -9,9 +9,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.*;
 import android.widget.*;
 
-import com.autosenseapp.GlobalClass;
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.R;
-import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.services.MediaService;
@@ -90,7 +89,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 				// show the music bar on change
-				((NotificationController)((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+				((NotificationController)((AutosenseApplication)activity.getApplicationContext()).getController(AutosenseApplication.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 
@@ -98,7 +97,7 @@ public class HeaderFragment extends Fragment { //implements View.OnTouchListener
 			@Override
 			public void onClick(View v) {
 				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
-				((NotificationController)((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
+				((NotificationController)((AutosenseApplication)activity.getApplicationContext()).getController(AutosenseApplication.NOTIFICATION_CONTROLLER)).setNotification(MusicNotificationFragment.class);
 			}
 		});
 	}

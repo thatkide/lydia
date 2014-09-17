@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.autosenseapp.GlobalClass;
+
 import com.autosenseapp.R;
 import com.autosenseapp.adapters.PinsAdapter;
 import com.autosenseapp.adapters.TriggerAdapter;
@@ -68,7 +67,7 @@ public class ArduinoPinEditor extends Activity implements
 		setContentView(R.layout.arduino_pin_editor);
 
 		// get the controller that manages the whole system
-		pinTriggerController = (PinTriggerController) ((GlobalClass)getApplicationContext()).getController(GlobalClass.PIN_TRIGGER_CONTROLLER);
+//		pinTriggerController = (PinTriggerController) ((App)getApplicationContext()).getController(App.PIN_TRIGGER_CONTROLLER);
 
 		// get these lists once
 		allActions = pinTriggerController.getActions();

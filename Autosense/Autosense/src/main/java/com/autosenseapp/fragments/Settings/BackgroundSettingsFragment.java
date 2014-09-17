@@ -2,35 +2,30 @@ package com.autosenseapp.fragments.Settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.widget.Toast;
-
-import com.autosenseapp.GlobalClass;
+import com.autosenseapp.controllers.BackgroundController;
 import com.bugsense.trace.BugSenseHandler;
-
 import net.jayschwa.android.preference.SliderPreference;
 import com.autosenseapp.R;
-import com.autosenseapp.activities.Dashboard;
-import com.autosenseapp.controllers.BackgroundController;
+import javax.inject.Inject;
 import yuku.ambilwarna.widget.AmbilWarnaPreference;
 
 /**
  * Created by eric on 2014-08-01.
  */
-public class BackgroundSettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class BackgroundSettingsFragment extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 
 	private static final String TAG = BackgroundSettingsFragment.class.getSimpleName();
 
 	private Activity activity;
 
-	private BackgroundController backgroundController;
+	@Inject BackgroundController backgroundController;
 
 	private static final int ACTIVITY_SELECT_IMAGE = 100;
 
@@ -63,9 +58,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 		super.onActivityCreated(saved);
 
 		activity = getActivity();
-		backgroundController = (BackgroundController) ((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.BACKGROUND_CONTROLLER);
 
-		SharedPreferences sharedPreferences = activity.getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		// auto update the background brightness on slider change
@@ -100,7 +93,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 				if (resultCode == Activity.RESULT_OK) {
 					try {
 						// pass the uri and get the bitmap back
-						final Bitmap bitmap = backgroundController.setBackgroundImage(imageReturned.getData());
+						final Bitmap bitmap = backgroundController.setBackgroundImage(activity, imageReturned.getData());
 
 						// create a new alert asking to save or cancel
 						AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -109,7 +102,7 @@ public class BackgroundSettingsFragment extends PreferenceFragment implements Pr
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								// if the user clicked yes, save the image
-								backgroundController.saveImage(bitmap);
+								backgroundController.saveImage(activity, bitmap);
 							}
 						})
 								.setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {

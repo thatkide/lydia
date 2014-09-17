@@ -103,11 +103,16 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="sqliteassethelper-2.0.1" level="project" />
     <orderEntry type="library" exported="" name="bugsense-3.6" level="project" />
+    <orderEntry type="library" exported="" name="guava-15.0" level="project" />
+    <orderEntry type="library" exported="" name="dagger-1.2.2" level="project" />
     <orderEntry type="library" exported="" name="updatechecker" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="lastfm-java-0.1.2" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-5.0.89" level="project" />
     <orderEntry type="library" exported="" name="support-v4-20.0.0" level="project" />
+    <orderEntry type="library" exported="" name="dagger-compiler-1.2.2" level="project" />
+    <orderEntry type="library" exported="" name="javawriter-2.5.0" level="project" />
     <orderEntry type="module" module-name="ambilWarna" exported="" />
     <orderEntry type="module" module-name="library" exported="" />
     <orderEntry type="module" module-name="sliderPreference" exported="" />

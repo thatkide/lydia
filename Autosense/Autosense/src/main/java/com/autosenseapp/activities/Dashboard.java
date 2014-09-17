@@ -18,8 +18,8 @@ import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.BuildConfig;
-import com.autosenseapp.GlobalClass;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
@@ -45,14 +45,16 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Dashboard extends Activity implements GestureOverlayView.OnGesturePerformedListener {
+import javax.inject.Inject;
+
+public class Dashboard extends BaseActivity implements GestureOverlayView.OnGesturePerformedListener {
 	private static final String TAG = Dashboard.class.getSimpleName();
 
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private GestureLibrary gestureLibrary;
 	private GestureOverlayView gestureOverlayView;
 
-	private BackgroundController backgroundController;
+	@Inject BackgroundController backgroundController;
 	private NotificationController notificationController;
 
 	// plugins
@@ -63,6 +65,9 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
 
+	@Inject UsbManager usbManager;
+	@Inject LocalBroadcastManager localBroadcastManager;
+
 	/**
 	 * Called when the activities is first created.
 	 */
@@ -71,11 +76,9 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		super.onCreate(savedInstance);
 
 		// create the new controllers and save them into the global space
-		backgroundController = new BackgroundController(this);
 		notificationController = new NotificationController(this);
-		((GlobalClass)getApplicationContext()).setController(GlobalClass.BACKGROUND_CONTROLLER, backgroundController);
-		((GlobalClass)getApplicationContext()).setController(GlobalClass.NOTIFICATION_CONTROLLER, notificationController);
-		((GlobalClass)getApplicationContext()).setController(GlobalClass.PIN_TRIGGER_CONTROLLER, new PinTriggerController(this));
+		((AutosenseApplication)getApplicationContext()).setController(AutosenseApplication.NOTIFICATION_CONTROLLER, notificationController);
+		((AutosenseApplication)getApplicationContext()).setController(AutosenseApplication.PIN_TRIGGER_CONTROLLER, new PinTriggerController(this));
 
 		if (BuildConfig.INCLUDE_UPDATER) {
 			final UpdateChecker checker = new UpdateChecker(this, true);
@@ -176,7 +179,7 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 			});
 		}
 
-		backgroundController.applyBackground();
+		backgroundController.applyBackground(this);
 
 		// get bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -200,7 +203,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 
 		// Try to connect a USB accessory first
 		// get list of accessories
-		UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		UsbAccessory[] accessories = usbManager.getAccessoryList();
 		// get first accessory
 		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
@@ -396,8 +398,6 @@ public class Dashboard extends Activity implements GestureOverlayView.OnGestureP
 		ArrayList<Prediction> predictions = gestureLibrary.recognize(gesture);
 		for (Prediction prediction : predictions) {
 			if (prediction.score > 1.0) {
-				LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-
 				if (prediction.name.equalsIgnoreCase("right")) {
 					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
 					// show the music bar on change

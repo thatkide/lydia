@@ -23,45 +23,44 @@ import java.io.IOException;
 import com.autosenseapp.R;
 import com.autosenseapp.includes.Helpers;
 import com.autosenseapp.services.MediaService;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import ca.efriesen.lydia_common.media.Song;
 
 /**
  * Created by eric on 2014-08-05.
  */
-public class BackgroundController extends Controller {
+@Singleton
+public class BackgroundController {
 
 	public static final String USE_BG_IMAGE = "use_bg_image";
 	public static final String BG_BRIGHTNESS = "bg_brightness";
 	public static final String BG_IMG_PATH = "bg_img_path";
 
-	private SharedPreferences sharedPreferences;
 	private RelativeLayout layout;
 	private RelativeLayout colorMask;
+
 	private LocalBroadcastManager localBroadcastManager;
+	@Inject SharedPreferences sharedPreferences;
 
-	public BackgroundController(Activity activity) {
-		super(activity);
-		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
+	@Inject
+	public BackgroundController(LocalBroadcastManager localBroadcastManager) {
+		this.localBroadcastManager = localBroadcastManager;
 
-		// get the two layouts. dashboard container is the lowest, we set the image there and the mask is to darken the image up
-		setLayouts();
-
-		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
 		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
 	}
 
-	@Override
 	public void onDestroy() {
 		localBroadcastManager.unregisterReceiver(updateMusicReceiver);
 	}
 
-	public void applyBackground() {
+	public void applyBackground(Activity activity) {
+		setLayouts(activity);
 		// set background image if we have one set
 		boolean useBgImg = sharedPreferences.getBoolean(USE_BG_IMAGE, false);
 		// if we have opted to use a background image, set it
 		if (useBgImg) {
 			String imagePath = sharedPreferences.getString(BG_IMG_PATH, "");
-			RelativeLayout layout = (RelativeLayout) activity.findViewById(R.id.dashboard_container);
 			layout.setBackground(new BitmapDrawable(activity.getResources(), BitmapFactory.decodeFile(imagePath)));
 			// else if we have a non default top or bottom color, use those
 		} else if (sharedPreferences.getInt("topBgColor", 0) != 0 || sharedPreferences.getInt("bottomBgColor", 0) != 0) {
@@ -76,40 +75,39 @@ public class BackgroundController extends Controller {
 		colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
 	}
 
-	public void saveImage(Bitmap bitmap) {
+	public void saveImage(Context context, Bitmap bitmap) {
 		// save image
 		sharedPreferences.edit().putBoolean(USE_BG_IMAGE, true).apply();
-		new SaveImage(activity).execute(bitmap);
-
+		new SaveImage(context).execute(bitmap);
 	}
 
 	public void setBackgroundColor(int topColor, int bottomColor) {
-		setLayouts();
+//		setLayouts();
 		GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {topColor, bottomColor});
 		gradientDrawable.setCornerRadius(0f);
 		layout.setBackground(gradientDrawable);
 	}
 
-	public void setBackgroundImage(Bitmap image) {
-		setLayouts();
+	public void setBackgroundImage(Context context, Bitmap image) {
+//		setLayouts();
 		// set the background
-		layout.setBackground(new BitmapDrawable(activity.getResources(), image));
+		layout.setBackground(new BitmapDrawable(context.getResources(), image));
 		// set the color mask
 		colorMask.setBackgroundColor(Color.argb(0, 0x00, 0x00, 0x00));
 		// reset the brightness
 		sharedPreferences.edit().putFloat(BG_BRIGHTNESS, 1).apply();
 	}
 
-	public Bitmap setBackgroundImage(Uri uri) {
+	public Bitmap setBackgroundImage(Context context, Uri uri) {
 		// decode the image passed.  this will resize for us
-		Bitmap bitmap = decodeUri(activity, uri);
-		setBackgroundImage(bitmap);
+		Bitmap bitmap = decodeUri(context, uri);
+		setBackgroundImage(context, bitmap);
 		return bitmap;
 	}
 
 	// range of 0.0 - 1.0
 	public void setBrightness(float brightness) {
-		setLayouts();
+//		setLayouts();
 		if (brightness > 1) brightness = 1;
 		if (brightness < 0) brightness = 0;
 
@@ -126,13 +124,13 @@ public class BackgroundController extends Controller {
 		colorMask.setBackground(null);
 	}
 
-	private static Bitmap decodeUri(Activity activity, Uri selectedImage) {
+	private static Bitmap decodeUri(Context context, Uri selectedImage) {
 		// Decode image size
 		BitmapFactory.Options o = new BitmapFactory.Options();
 		o.inJustDecodeBounds = true;
 
 		try {
-			BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(selectedImage), null, o);
+			BitmapFactory.decodeStream(context.getContentResolver().openInputStream(selectedImage), null, o);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -156,14 +154,14 @@ public class BackgroundController extends Controller {
 		BitmapFactory.Options o2 = new BitmapFactory.Options();
 		o2.inSampleSize = scale;
 		try {
-			return BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(selectedImage), null, o2);
+			return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(selectedImage), null, o2);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private void setLayouts() {
+	private void setLayouts(Activity activity) {
 		if (layout == null) {
 			layout = (RelativeLayout) activity.findViewById(R.id.dashboard_container);
 		}
@@ -174,10 +172,10 @@ public class BackgroundController extends Controller {
 
 	private class SaveImage extends AsyncTask<Bitmap,Void,Void> {
 
-		private Activity activity;
+		private Context context;
 
-		public SaveImage(Activity activity) {
-			this.activity = activity;
+		public SaveImage(Context context) {
+			this.context = context;
 		}
 
 		@Override
@@ -185,7 +183,7 @@ public class BackgroundController extends Controller {
 			Bitmap bitmap = params[0];
 			FileOutputStream out = null;
 			try {
-				ContextWrapper wrapper = new ContextWrapper(activity);
+				ContextWrapper wrapper = new ContextWrapper(context);
 				File directory = wrapper.getDir("images", Context.MODE_MULTI_PROCESS);
 				File imagePath = new File(directory, "background");
 
@@ -205,18 +203,17 @@ public class BackgroundController extends Controller {
 		}
 	}
 
-
 	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// if we want to use the album art as the background
 			if (sharedPreferences.getBoolean("useAlbumArtBg", false)) {
 				// get the bitmap from the song
-				Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
+				Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(context);
 				// if it's valid
 				if (bitmap != null) {
 					// set the background
-					setBackgroundImage(bitmap);
+					setBackgroundImage(context, bitmap);
 				}
 			}
 		}

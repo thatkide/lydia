@@ -3,12 +3,9 @@ package com.autosenseapp.devices.configs;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.autosenseapp.GlobalClass;
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
 import com.autosenseapp.controllers.PinTriggerController;
-import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.devices.Arduino;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +38,7 @@ public class ArduinoDue implements ArduinoConfig {
 
 	public ArduinoDue(Activity activity) {
 		this.activity = activity;
-		pinTriggerController = (PinTriggerController) ((GlobalClass)activity.getApplicationContext()).getController(GlobalClass.PIN_TRIGGER_CONTROLLER);
+//		pinTriggerController = (PinTriggerController) ((App)activity.getApplicationContext()).getController(App.PIN_TRIGGER_CONTROLLER);
 		getPins();
 	}
 
