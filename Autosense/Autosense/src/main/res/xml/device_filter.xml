@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <usb-accessory manufacturer="Eric" model="Lydia" version="1.0" />
+	   <usb-accessory manufacturer="Eric" model="Lydia" version="1.0" />
 	<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
 	<usb-device vendor-id="1027" product-id="24577" />
+	<!-- 0x0403 / 0x6015: FTDI FT231x UART -->
+	<usb-device vendor-id="1027" product-id="24597" />
 	<!-- 0x2341 / Arduino -->
 	<usb-device vendor-id="9025" />
 	<!-- 0x16C0 / 0x0483: Teensyduino  -->
