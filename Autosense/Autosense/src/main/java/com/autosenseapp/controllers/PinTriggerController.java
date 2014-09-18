@@ -1,25 +1,27 @@
 package com.autosenseapp.controllers;
 
-import android.app.Activity;
 import android.content.Context;
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by eric on 2014-09-02.
  */
-public class PinTriggerController extends Controller {
+@Singleton
+public class PinTriggerController {
 
 	private static final String TAG = PinTriggerController.class.getSimpleName();
 
+	private Context context;
 	public static final int HIGH_IMPEDANCE = 0;
 	public static final int INPUT= 1;
 	public static final int OUTPUT = 2;
@@ -27,21 +29,21 @@ public class PinTriggerController extends Controller {
 	private final ArduinoPinsDataSource arduinoPinsDataSource;
 	private List<String> pinModes;
 
-	public PinTriggerController(Activity context) {
-		super(context);
+	@Inject
+	public PinTriggerController(Context context) {
+		this.context = context;
 
 		arduinoPinsDataSource = new ArduinoPinsDataSource(context);
 		arduinoPinsDataSource.open();
 
 		pinModes = new ArrayList<String>();
-		pinModes.add(HIGH_IMPEDANCE, context.getString(R.string.high_impedance));
-		pinModes.add(INPUT, context.getString(R.string.input));
-		pinModes.add(OUTPUT, context.getString(R.string.output));
+		pinModes.add(HIGH_IMPEDANCE, this.context.getString(R.string.high_impedance));
+		pinModes.add(INPUT, this.context.getString(R.string.input));
+		pinModes.add(OUTPUT, this.context.getString(R.string.output));
 
 		setupTriggers();
 	}
 
-	@Override
 	public void onDestroy() {
 		arduinoPinsDataSource.close();
 	}
@@ -57,11 +59,11 @@ public class PinTriggerController extends Controller {
 			if (className != null) {
 				try {
 					// create a new classname for the object
-					Class<?> clazz = Class.forName(activity.getPackageName() + ".devices.triggers." + className);
+					Class<?> clazz = Class.forName(context.getPackageName() + ".devices.triggers." + className);
 					// get the constructor
 					Constructor<?> constructor = clazz.getConstructor(Context.class);
 					// create the object
-					constructor.newInstance(activity);
+					constructor.newInstance(context);
 				} catch (Exception e) {}
 			}
 		}

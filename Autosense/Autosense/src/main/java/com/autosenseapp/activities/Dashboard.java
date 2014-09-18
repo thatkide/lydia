@@ -24,7 +24,6 @@ import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.controllers.NotificationController;
-import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragment;
@@ -78,7 +77,6 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		// create the new controllers and save them into the global space
 		notificationController = new NotificationController(this);
 		((AutosenseApplication)getApplicationContext()).setController(AutosenseApplication.NOTIFICATION_CONTROLLER, notificationController);
-		((AutosenseApplication)getApplicationContext()).setController(AutosenseApplication.PIN_TRIGGER_CONTROLLER, new PinTriggerController(this));
 
 		if (BuildConfig.INCLUDE_UPDATER) {
 			final UpdateChecker checker = new UpdateChecker(this, true);

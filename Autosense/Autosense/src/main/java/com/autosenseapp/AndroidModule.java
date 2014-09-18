@@ -8,9 +8,11 @@ import android.location.LocationManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import com.autosenseapp.activities.Dashboard;
+import com.autosenseapp.activities.settings.ArduinoPinEditor;
 import com.autosenseapp.controllers.BackgroundController;
+import com.autosenseapp.devices.configs.ArduinoDue;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
-
+import com.autosenseapp.fragments.Settings.MasterIoFragment;
 import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
@@ -20,9 +22,12 @@ import dagger.Provides;
  */
 @Module(
 		injects = {
-				Dashboard.class,
+				ArduinoDue.class,
+				ArduinoPinEditor.class,
 				BackgroundController.class,
-				BackgroundSettingsFragment.class
+				BackgroundSettingsFragment.class,
+				Dashboard.class,
+				MasterIoFragment.class,
 		},
 		library = true,
 		complete =  false

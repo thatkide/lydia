@@ -1,9 +1,6 @@
 package com.autosenseapp.activities.settings;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,8 +11,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.autosenseapp.R;
+import com.autosenseapp.activities.BaseActivity;
 import com.autosenseapp.adapters.PinsAdapter;
 import com.autosenseapp.adapters.TriggerAdapter;
 import com.autosenseapp.controllers.PinTriggerController;
@@ -27,11 +24,16 @@ import com.ikovac.timepickerwithseconds.view.TimePicker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnItemSelected;
+import butterknife.OnTextChanged;
 
 /**
  * Created by eric on 2014-08-30.
  */
-public class ArduinoPinEditor extends Activity implements
+public class ArduinoPinEditor extends BaseActivity implements
 		AdapterView.OnItemClickListener,
 		AdapterView.OnItemSelectedListener,
 		View.OnClickListener,
@@ -40,18 +42,18 @@ public class ArduinoPinEditor extends Activity implements
 
 	private static final String TAG = ArduinoPinEditor.class.getSimpleName();
 
-	private PinTriggerController pinTriggerController;
+	@Inject PinTriggerController pinTriggerController;
 
-	private TextView pinEditTitle;
-	private TextView pinSettingsTitle;
-	private TextView actionTitle;
-	private EditText pinComment;
+	@InjectView(R.id.pin_edit_title) TextView pinEditTitle;
+	@InjectView(R.id.pin_settings_title) TextView pinSettingsTitle;
+	@InjectView(R.id.arduino_action_title) TextView actionTitle;
+	@InjectView(R.id.pin_comment) EditText pinComment;
+	@InjectView(R.id.pin_mode) Spinner pinModes;
+	@InjectView(R.id.pin_output_trigger) ListView pinTriggers;
+	@InjectView(R.id.arduino_actions) RadioGroup actionGroup;
+	@InjectView(R.id.arduino_pins_list) ListView pinList;
 
 	private ArduinoPin selectedArduinoPin;
-	private Spinner pinModes;
-	private ListView pinTriggers;
-
-	private RadioGroup actionGroup;
 
 	private List<Action> allActions;
 	private List<Trigger> allTriggers;
@@ -59,55 +61,32 @@ public class ArduinoPinEditor extends Activity implements
 	private Action currentAction;
 	private Trigger currentTrigger;
 
+	@OnTextChanged(R.id.pin_comment) void onTextChanged(CharSequence text) {
+		// get the text and save it
+		selectedArduinoPin.setComment(text.toString());
+		pinTriggerController.updatePin(selectedArduinoPin);
+	}
 
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
 
 		setContentView(R.layout.arduino_pin_editor);
-
-		// get the controller that manages the whole system
-//		pinTriggerController = (PinTriggerController) ((App)getApplicationContext()).getController(App.PIN_TRIGGER_CONTROLLER);
-
+		// inject all the views
+		ButterKnife.inject(this);
 		// get these lists once
 		allActions = pinTriggerController.getActions();
 		allTriggers = pinTriggerController.getTriggers();
 
-		// find the views we're interested in
-		pinEditTitle = (TextView) findViewById(R.id.pin_edit_title);
-		pinSettingsTitle = (TextView) findViewById(R.id.pin_settings_title);
-		actionTitle = (TextView) findViewById(R.id.arduino_action_title);
-		pinComment = (EditText) findViewById(R.id.pin_comment);
-		pinComment.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				// get the text and save it
-				selectedArduinoPin.setComment(pinComment.getText().toString());
-				pinTriggerController.updatePin(selectedArduinoPin);
-			}
-		});
-
-		pinModes = (Spinner) findViewById(R.id.pin_mode);
-		pinModes.setOnItemSelectedListener(this);
-
-		pinTriggers = (ListView) findViewById(R.id.pin_output_trigger);
 		pinTriggers.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		pinTriggers.setOnItemClickListener(this);
 
-		actionGroup = (RadioGroup) findViewById(R.id.arduino_actions);
 		actionGroup.setOnCheckedChangeListener(this);
 
 		// get the map of pins that has been passed
 		if (getIntent().hasExtra("pins")) {
 			ArrayList<ArduinoPin> arduinoPins = getIntent().getParcelableArrayListExtra("pins");
 			// get the listview and pass the map adapter
-			ListView pinList = (ListView) findViewById(R.id.arduino_pins_list);
 			pinList.setAdapter(new PinsAdapter(this, arduinoPins));
 			pinList.setOnItemClickListener(this);
 
@@ -149,8 +128,7 @@ public class ArduinoPinEditor extends Activity implements
 	}
 
 	// called when pin mode is selected from the spinner
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+	@OnItemSelected(R.id.pin_mode) public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		// save the pin mode, input, output, high impedance...
 		selectedArduinoPin.setMode(((Long) id).intValue());
 		// save the selected pin mode
@@ -184,7 +162,7 @@ public class ArduinoPinEditor extends Activity implements
 	// Radio button listener
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
+		RadioButton selectedRadioButton = ButterKnife.findById(group, checkedId);
 		try {
 			Action action = (Action) selectedRadioButton.getTag(R.string.action);
 			Trigger trigger = (Trigger) selectedRadioButton.getTag(R.string.trigger);
