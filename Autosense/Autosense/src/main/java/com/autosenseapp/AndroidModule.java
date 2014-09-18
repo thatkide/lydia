@@ -5,12 +5,14 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.hardware.usb.UsbManager;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.devices.configs.ArduinoDue;
+import com.autosenseapp.fragments.HeaderFragment;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
 import com.autosenseapp.fragments.Settings.MasterIoFragment;
 import javax.inject.Singleton;
@@ -27,6 +29,7 @@ import dagger.Provides;
 				BackgroundController.class,
 				BackgroundSettingsFragment.class,
 				Dashboard.class,
+				HeaderFragment.class,
 				MasterIoFragment.class,
 		},
 		library = true,
@@ -38,6 +41,12 @@ public class AndroidModule {
 
 	public AndroidModule(@ForApplication AutosenseApplication application) {
 		this.application = application;
+	}
+
+	@Provides @Singleton
+	AudioManager proivideAudioManager() {
+		// setup the audio manager from the main activity
+		return (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
 	}
 
 	@Provides @Singleton

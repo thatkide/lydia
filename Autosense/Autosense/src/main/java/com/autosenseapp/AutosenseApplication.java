@@ -1,8 +1,6 @@
 package com.autosenseapp;
 
 import android.app.Application;
-import com.autosenseapp.controllers.Controller;
-import com.autosenseapp.controllers.NotificationController;
 import java.util.Arrays;
 import java.util.List;
 import dagger.ObjectGraph;
@@ -13,11 +11,6 @@ import dagger.ObjectGraph;
 public class AutosenseApplication extends Application {
 
 	private ObjectGraph applicationGraph;
-
-	public static final int NOTIFICATION_CONTROLLER = 1;
-	public static final int PIN_TRIGGER_CONTROLLER = 3;
-
-	private NotificationController notificationController;
 
 	@Override
 	public void onCreate() {
@@ -42,23 +35,5 @@ public class AutosenseApplication extends Application {
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
-		notificationController.onDestroy();
-	}
-
-	public void setController(int type, Controller controller) {
-		switch (type) {
-			case NOTIFICATION_CONTROLLER: {
-				this.notificationController = (NotificationController) controller;
-				break;
-			}
-		}
-	}
-
-	public Controller getController(int controller) {
-		switch (controller) {
-			case NOTIFICATION_CONTROLLER:
-				return notificationController;
-		}
-		return null;
 	}
 }

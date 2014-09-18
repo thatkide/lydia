@@ -10,13 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import com.autosenseapp.R;
 import com.autosenseapp.interfaces.NotificationInterface;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by eric on 2014-07-14.
  */
-public class NotificationController extends Controller {
+@Singleton
+public class NotificationController {
 	private static final String TAG = NotificationController.class.getSimpleName();
 
+	private Activity activity;
 	private FragmentManager fragmentManager;
 	private final Handler handler = new Handler();
 	private Runnable runnable;
@@ -27,8 +31,12 @@ public class NotificationController extends Controller {
 	private List<Bundle> states = new ArrayList<Bundle>();
 	private int currentNote = 0;
 
-	public NotificationController(final Activity activity) {
-		super(activity);
+	@Inject
+	public NotificationController() {
+	}
+
+	public void onCreate(Activity activity) {
+		this.activity = activity;
 		this.fragmentManager = activity.getFragmentManager();
 		// create the new runnable.  this does the job of rotating the notes
 		runnable = new Runnable() {
@@ -60,11 +68,6 @@ public class NotificationController extends Controller {
 		};
 		// initial screen, it's normal priority
 		handler.postDelayed(runnable, getDisplayTime(NotificationInterface.PRIORITY_NORMAL));
-	}
-
-	@Override
-	public void onDestroy() {
-		handler.removeCallbacks(runnable);
 	}
 
 	public void onPause() {

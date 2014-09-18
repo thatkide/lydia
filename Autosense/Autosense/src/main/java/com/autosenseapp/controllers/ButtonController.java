@@ -28,9 +28,10 @@ import java.util.*;
 /**
  * Created by eric on 2014-06-14.
  */
-public class ButtonController extends Controller implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener {
+public class ButtonController implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener {
 
 	private final static String TAG = ButtonController.class.getSimpleName();
+	private Activity activity;
 	private Fragment fragment;
 	private ButtonConfigDataSource dataSource;
 
@@ -61,7 +62,6 @@ public class ButtonController extends Controller implements View.OnClickListener
 	}
 
 	public ButtonController(Activity activity, final String baseName, final int buttonType, final int adminNumButtons, boolean adminMode, int group) {
-		super(activity);
 		this.activity = activity;
 		this.baseName = baseName;
 		this.admin = adminMode;
@@ -500,10 +500,5 @@ public class ButtonController extends Controller implements View.OnClickListener
 		} catch (Exception e) {}
 		// we've handled the click.
 		return true;
-	}
-
-	@Override
-	public void onDestroy() {
-
 	}
 }

@@ -54,7 +54,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 	private GestureOverlayView gestureOverlayView;
 
 	@Inject BackgroundController backgroundController;
-	private NotificationController notificationController;
+	@Inject NotificationController notificationController;
 
 	// plugins
 	private LastFM lastFm;
@@ -74,9 +74,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 
-		// create the new controllers and save them into the global space
-		notificationController = new NotificationController(this);
-		((AutosenseApplication)getApplicationContext()).setController(AutosenseApplication.NOTIFICATION_CONTROLLER, notificationController);
+		notificationController.onCreate(this);
 
 		if (BuildConfig.INCLUDE_UPDATER) {
 			final UpdateChecker checker = new UpdateChecker(this, true);
