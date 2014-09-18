@@ -44,7 +44,7 @@ public class ArduinoPin implements Parcelable {
 	}
 
 	public void setPinName(String name) {
-		this.name = name;
+		this.name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 	}
 
 	public String getPinName() {

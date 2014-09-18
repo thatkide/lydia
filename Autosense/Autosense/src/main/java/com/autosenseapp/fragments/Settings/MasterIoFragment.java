@@ -45,13 +45,6 @@ public class MasterIoFragment extends BaseFragment implements View.OnTouchListen
 	}
 
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		// clear the views
-		ButterKnife.reset(this);
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 		arduinoConfig.onResume();

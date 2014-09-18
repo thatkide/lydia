@@ -1,6 +1,5 @@
 package com.autosenseapp.buttons.appButtons;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,38 +9,37 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ArrayAdapter;
-
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.Button;
 import com.autosenseapp.includes.AppInfo;
-
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by eric on 2014-06-22.
  */
 public class AppLaunchButton extends BaseButton {
 
-	private static final String TAG = "App Launcher button";
+	private static final String TAG = AppLaunchButton.class.getSimpleName();
 
 	private ArrayAdapter<AppInfo> adapter;
+	private Context context;
 
-	private Activity activity;
-
-	public AppLaunchButton(Activity activity) {
-		super(activity);
-		this.activity = activity;
+	public AppLaunchButton(Context context) {
+		super(context);
+		this.context = context;
 	}
 
 	@Override
 	public void onClick(View view, Button button) {
 		try {
 			Intent launch = Intent.parseUri(button.getExtraData(), Intent.URI_INTENT_SCHEME);
-			activity.startActivity(launch);
+			context.startActivity(launch);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
@@ -54,20 +52,18 @@ public class AppLaunchButton extends BaseButton {
 
 	@Override
 	public ArrayAdapter<AppInfo> getAdapterData() {
-		List<AppInfo> apps = getInstalledPackages(activity);
-		adapter = new ArrayAdapter<AppInfo>(activity, android.R.layout.simple_spinner_dropdown_item, apps);
+		List<AppInfo> apps = getInstalledPackages();
+		adapter = new ArrayAdapter<AppInfo>(context, android.R.layout.simple_spinner_dropdown_item, apps);
 		return adapter;
 	}
 
 	public Drawable getIcon(String data) {
 		try {
+			PackageManager packageManager = context.getPackageManager();
 			Intent intent = Intent.parseUri(data, Intent.URI_INTENT_SCHEME);
 			intent.setType("image/png");
-			final List<ResolveInfo> matches = activity.getPackageManager().queryIntentActivities(intent, 0);
-			for (ResolveInfo match : matches) {
-				Drawable icon = match.loadIcon(activity.getPackageManager());
-				return icon;
-			}
+			List<ResolveInfo> matches = packageManager.queryIntentActivities(intent, 0);
+			return matches.get(0).loadIcon(packageManager);
 		} catch (URISyntaxException e) {}
 		return null;
 	}
@@ -79,7 +75,7 @@ public class AppLaunchButton extends BaseButton {
 	}
 
 	// returns an array of appinfos of the installed packages we can launch
-	private static List<AppInfo> getInstalledPackages(Context context) {
+	private List<AppInfo> getInstalledPackages() {
 		// rare time when the package manager dies the app will crash.  this should fix it, at least stop the crash.
 		try {
 			PackageManager packageManager = context.getPackageManager();

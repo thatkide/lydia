@@ -90,7 +90,8 @@
 		</activity>
 
 		<activity android:name="com.autosenseapp.activities.settings.HomeScreenEditorActivity"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+			android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name=".activities.settings.HomeScreenEditorActivity" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -98,7 +99,8 @@
 		</activity>
 
 		<activity android:name="com.autosenseapp.activities.settings.ButtonEditor"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+			android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name=".activities.settings.ButtonEditor" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -106,7 +108,8 @@
 		</activity>
 
 		<activity android:name="com.autosenseapp.activities.settings.IconSelector"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+			android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name=".activities.settings.IconSelector" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -114,7 +117,8 @@
 		</activity>
 
 		<activity android:name="com.autosenseapp.activities.settings.SidebarEditorActivity"
-				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
+			android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
+			android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name=".activities.settings.SidebarEditorActivity" />
 				<category android:name="android.intent.category.DEFAULT" />

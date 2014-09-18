@@ -10,6 +10,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
+import com.autosenseapp.activities.settings.ButtonEditor;
+import com.autosenseapp.buttons.BaseButton;
+import com.autosenseapp.buttons.appButtons.AppLaunchButton;
+import com.autosenseapp.buttons.widgetButtons.ArduinoButton;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.devices.configs.ArduinoDue;
 import com.autosenseapp.fragments.HeaderFragment;
@@ -24,10 +28,14 @@ import dagger.Provides;
  */
 @Module(
 		injects = {
+				AppLaunchButton.class,
+				ArduinoButton.class,
 				ArduinoDue.class,
 				ArduinoPinEditor.class,
 				BackgroundController.class,
 				BackgroundSettingsFragment.class,
+				BaseButton.class,
+				ButtonEditor.class,
 				Dashboard.class,
 				HeaderFragment.class,
 				MasterIoFragment.class,

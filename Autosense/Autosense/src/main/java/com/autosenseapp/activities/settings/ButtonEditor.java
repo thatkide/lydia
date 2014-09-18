@@ -1,6 +1,5 @@
 package com.autosenseapp.activities.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,17 +12,17 @@ import android.view.WindowManager;
 import android.widget.*;
 import android.widget.Button;
 import com.autosenseapp.R;
+import com.autosenseapp.activities.BaseActivity;
 import com.autosenseapp.controllers.ButtonController;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.*;
 import com.autosenseapp.includes.AppInfo;
-
 import java.util.ArrayList;
 
 /**
  * Created by eric on 2014-06-14.
  */
-public class ButtonEditor extends Activity implements View.OnClickListener {
+public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 
 	private static final String TAG = ButtonEditor.class.getSimpleName();
 

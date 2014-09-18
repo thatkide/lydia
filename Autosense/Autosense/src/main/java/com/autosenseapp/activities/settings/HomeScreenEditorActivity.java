@@ -13,6 +13,9 @@ import com.autosenseapp.controllers.ButtonController;
 import com.autosenseapp.buttons.BaseButton;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by eric on 2014-06-14.
  */
@@ -24,11 +27,12 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 
 	public static final String BASENAME = "home_";
 
-	private Button prev;
-	private Button delete;
-	private Button addNew;
-	private Button next;
-	private RadioGroup radioGroup;
+	// get all the view objects needed
+	@InjectView(R.id.button_delete_screen) Button delete;
+	@InjectView(R.id.button_prev_screen) Button prev;
+	@InjectView(R.id.button_add_screen) Button addNew;
+	@InjectView(R.id.button_next_screen) Button next;
+	@InjectView(R.id.radio_button_container) RadioGroup radioGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +40,9 @@ public class HomeScreenEditorActivity extends Activity implements View.OnClickLi
 		// Setup the window
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.home_screen_layout_editor);
+		ButterKnife.inject(this);
 
 		buttonController = new ButtonController(this, BASENAME, BaseButton.TYPE_HOMESCREEN, BaseButton.BUTTONS_PER_HOMESCREEN, true, BaseButton.GROUP_USER);
-
-		// get all the view objects needed
-		prev = (Button) findViewById(R.id.button_prev_screen);
-		delete = (Button) findViewById(R.id.button_delete_screen);
-		addNew = (Button) findViewById(R.id.button_add_screen);
-		next = (Button) findViewById(R.id.button_next_screen);
-		radioGroup = (RadioGroup) findViewById(R.id.radio_button_container);
 
 		// draw radio buttons
 		for (int i=0; i<buttonController.getNumScreens(); i++) {

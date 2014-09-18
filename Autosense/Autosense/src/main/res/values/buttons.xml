@@ -5,6 +5,7 @@
 	<string name="AirRideButton">Air Ride</string>
 	<string name="AndroidButton">Apps</string>
 	<string name="AppLaunchButton">Launch App Specified</string>
+	<string name="ArduinoButton">Arduino Controls</string>
 	<string name="CalendarButton">Calendar</string>
 	<string name="ChromeButton">Web</string>
 	<string name="ContactsButton">Contacts</string>
@@ -22,6 +23,7 @@
 	<string name="AirRideButtonDesc">Open Air Ride</string>
 	<string name="AndroidButtonDesc">Open App Launcher</string>
 	<string name="AppLaunchButtonDesc">Launch App Specified</string>
+	<string name="ArduinoButtonDesc">Arduino</string>
 	<string name="CalendarButtonDesc">Open Calendar</string>
 	<string name="ChromeButtonDesc">Open Web Activity</string>
 	<string name="ContactsButtonDesc">Open Contacts</string>
