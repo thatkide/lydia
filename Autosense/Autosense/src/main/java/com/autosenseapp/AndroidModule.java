@@ -16,6 +16,7 @@ import com.autosenseapp.buttons.appButtons.AppLaunchButton;
 import com.autosenseapp.buttons.widgetButtons.ArduinoButton;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.devices.configs.ArduinoDue;
+import com.autosenseapp.devices.configs.ArduinoUno;
 import com.autosenseapp.fragments.HeaderFragment;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
 import com.autosenseapp.fragments.Settings.MasterIoFragment;
@@ -31,6 +32,7 @@ import dagger.Provides;
 				AppLaunchButton.class,
 				ArduinoButton.class,
 				ArduinoDue.class,
+				ArduinoUno.class,
 				ArduinoPinEditor.class,
 				BackgroundController.class,
 				BackgroundSettingsFragment.class,
