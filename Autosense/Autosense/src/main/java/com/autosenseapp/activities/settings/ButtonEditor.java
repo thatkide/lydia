@@ -19,6 +19,8 @@ import com.autosenseapp.databases.*;
 import com.autosenseapp.includes.AppInfo;
 import java.util.ArrayList;
 
+import butterknife.InjectView;
+
 /**
  * Created by eric on 2014-06-14.
  */
@@ -28,7 +30,12 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 
 	public static final int ICON_SELECTOR = 1;
 	private com.autosenseapp.databases.Button button;
-	private Button buttonView;
+	@InjectView(R.id.button_background)	Button buttonView;
+	@InjectView(R.id.button_title_text) EditText buttonTitleText;
+	@InjectView(R.id.button_edit_ok) Button ok;
+	@InjectView(R.id.button_edit_cancel) Button cancel;
+	@InjectView(R.id.button_action_spinner) Spinner actionSpinner;
+	@InjectView(R.id.button_extra_data_spinner) Spinner extraDataSpinner;
 	private int buttonType;
 
 	@Override
@@ -44,9 +51,6 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 		button = getIntent().getParcelableExtra("button");
 		buttonType = getIntent().getIntExtra("buttonType", BaseButton.TYPE_HOMESCREEN);
 
-		final TextView title = (TextView) findViewById(R.id.button_title_text);
-		buttonView = (Button) findViewById(R.id.button_background);
-
 		if (buttonType != BaseButton.TYPE_HOMESCREEN) {
 			// disable the click for all but homescreen buttons
 			buttonView.setEnabled(false);
@@ -60,7 +64,7 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 
 		// we might not have a drawable...
 		try {
-			title.setText(button.getTitle());
+			buttonTitleText.setText(button.getTitle());
 			if (button.getDrawable() != null) {
 				int imgId = this.getResources().getIdentifier(button.getDrawable(), "drawable", this.getPackageName());
 				// get the drawable
@@ -71,10 +75,7 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 		} catch (NullPointerException e) {
 		}
 
-		Button ok = (Button) findViewById(R.id.button_edit_ok);
 		ok.setOnClickListener(this);
-
-		Button cancel = (Button) findViewById(R.id.button_edit_cancel);
 		cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -87,9 +88,6 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 		ButtonController buttonController = new ButtonController(this, "", buttonType);
 		// get an array list of all buttons available
 		ArrayList<BaseButton> buttonActions = buttonController.getButtonActions();
-		// find the spinner
-		final Spinner actionSpinner = (Spinner) findViewById(R.id.button_action_spinner);
-		final Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
 		// create a new adapter using the button descriptions (using toString() in classes)
 		ArrayAdapter<BaseButton> adapter = new ArrayAdapter<BaseButton>(this, android.R.layout.simple_spinner_dropdown_item, buttonActions);
 		// set the adapter
@@ -107,13 +105,19 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 						@Override
 						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 							Object selectedItem = extraDataSpinner.getSelectedItem();
-								if (selectedItem instanceof AppInfo) {
-									if (buttonType == BaseButton.TYPE_HOMESCREEN) {
-										Drawable drawable = ((AppInfo) selectedItem).getIcon();
-										Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-										buttonView.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getApplicationContext().getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true)), null, null);
-									}
-								title.setText(((AppInfo) selectedItem).getAppName());
+							if (selectedItem instanceof AppInfo) {
+								if (buttonType == BaseButton.TYPE_HOMESCREEN) {
+									Drawable drawable = ((AppInfo) selectedItem).getIcon();
+									Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+									buttonView.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getApplicationContext().getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true)), null, null);
+								}
+								buttonTitleText.setText(((AppInfo) selectedItem).getAppName());
+							} else if (selectedItem instanceof ArduinoPin) {
+								if (((ArduinoPin) selectedItem).getComment().equalsIgnoreCase("")) {
+									buttonTitleText.setText(String.valueOf(((ArduinoPin) selectedItem).getPinNumber()));
+								} else {
+									buttonTitleText.setText(((ArduinoPin) selectedItem).getComment());
+								}
 							}
 						}
 
@@ -125,9 +129,8 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 				}
 				// only set the text if the button doesn't have any
 				if (button.getTitle() == null || button.getTitle().isEmpty()) {
-					// set the title to the default string
-					TextView title = (TextView) findViewById(R.id.button_title_text);
-					title.setText(baseButton.getDefaultName());
+					// set the buttonTitleText to the default string
+					buttonTitleText.setText(baseButton.getDefaultName());
 				}
 			}
 
@@ -153,19 +156,15 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 				startActivityForResult(new Intent(getApplicationContext(), IconSelector.class), ICON_SELECTOR);
 			}
 		});
-
 	}
 
 	// This is for the OK button click.
 	@Override
 	public void onClick(View view) {
-		Spinner actionSpinner = (Spinner) findViewById(R.id.button_action_spinner);
-		Spinner extraDataSpinner = (Spinner) findViewById(R.id.button_extra_data_spinner);
-		EditText editText = (EditText) findViewById(R.id.button_title_text);
 		BaseButton baseButton = (BaseButton) actionSpinner.getSelectedItem();
 
 		// save button stuff
-		button.setTitle(editText.getText().toString());
+		button.setTitle(buttonTitleText.getText().toString());
 		button.setAction(baseButton.getAction());
 		button.setExtraData(baseButton.getExtraData(extraDataSpinner.getSelectedItemPosition()));
 		if (buttonType == BaseButton.TYPE_HOMESCREEN) {

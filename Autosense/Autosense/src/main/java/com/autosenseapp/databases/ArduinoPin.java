@@ -24,6 +24,7 @@ public class ArduinoPin implements Parcelable {
 	private List<Trigger> triggerList;
 	private Action action;
 	private String comment;
+	private int pinTriggerId;
 
 	public ArduinoPin() { }
 
@@ -43,8 +44,7 @@ public class ArduinoPin implements Parcelable {
 		return pinNumber;
 	}
 
-	public void setPinName(String name) {
-		if (name != null && name.length() > 2) {
+	public void setPinName(String name) {		if (name != null && name.length() > 2) {
 			this.name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		} else {
 			this.name = "";
@@ -92,7 +92,18 @@ public class ArduinoPin implements Parcelable {
 	}
 
 	public String getComment() {
+		if (comment == null) {
+			return "";
+		}
 		return comment;
+	}
+
+	public void setPinTriggerId(int pinTriggerId) {
+		this.pinTriggerId = pinTriggerId;
+	}
+
+	public int getPinTriggerId() {
+		return pinTriggerId;
 	}
 
 	@Override
@@ -112,6 +123,7 @@ public class ArduinoPin implements Parcelable {
 		this.mode = in.readInt();
 		this.pinType = in.readInt();
 		this.comment = in.readString();
+		this.pinTriggerId = in.readInt();
 		this.action = in.readParcelable(Action.class.getClassLoader());
 		triggerList = new ArrayList<Trigger>();
 		in.readList(triggerList, Trigger.class.getClassLoader());
@@ -125,6 +137,7 @@ public class ArduinoPin implements Parcelable {
 		dest.writeInt(mode);
 		dest.writeInt(pinType);
 		dest.writeString(comment);
+		dest.writeInt(pinTriggerId);
 		dest.writeParcelable(action, flags);
 		dest.writeList(triggerList);
 	}

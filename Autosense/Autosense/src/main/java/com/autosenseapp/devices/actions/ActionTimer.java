@@ -6,6 +6,8 @@ import android.os.Parcel;
 import android.util.Log;
 
 import com.autosenseapp.R;
+import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.devices.Master;
 import com.ikovac.timepickerwithseconds.view.MyTimePickerDialog;
 import com.ikovac.timepickerwithseconds.view.TimePicker;
 
@@ -67,6 +69,11 @@ public class ActionTimer extends Action {
 			} catch (Exception e) {	}
 		}
 		return "";
+	}
+
+	@Override
+	public void doAction(Context context, ArduinoPin pin) {
+//		super.doAction(context, pin, Master.TIMER);
 	}
 
 	@Override

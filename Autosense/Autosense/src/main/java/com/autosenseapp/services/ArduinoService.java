@@ -3,9 +3,8 @@ package com.autosenseapp.services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.Bundle;
@@ -20,13 +19,18 @@ import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
 import com.autosenseapp.devices.usbInterfaces.ArduinoInterface;
 import java.util.Arrays;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 2/8/2014.
  */
-public class ArduinoService extends Service {
+public class ArduinoService extends BaseService {
 
 	private static final String TAG = ArduinoService.class.getSimpleName();
+
+	@Inject	SharedPreferences sharedPreferences;
+	@Inject NotificationManager notificationManager;
+
 	public static final String ACCESSORY_READY = "com.autosenseapp.AccessoryReady";
 
 	public static final String ARDUINO_TYPE = "arduino_type";
@@ -95,15 +99,15 @@ public class ArduinoService extends Service {
 		// test if we received an accessory or a device and start the proper mode
 		if (intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
 			Log.d(TAG, "accessory found");
-			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_ACCESSORY).apply();
+			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_ACCESSORY).apply();
 			arduinoInterface = new ArduinoAccessory();
 		} else if (intent.hasExtra(UsbManager.EXTRA_DEVICE)) {
 			Log.d(TAG, "device found");
-			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_DEVICE).apply();
+			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_DEVICE).apply();
 			arduinoInterface = new ArduinoDevice();
 		} else {
 			Log.d(TAG, "nothing found");
-			this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ARDUINO_TYPE, ARDUINO_NONE).apply();
+			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_NONE).apply();
 			stopSelf();
 		}
 
@@ -118,6 +122,7 @@ public class ArduinoService extends Service {
 
 	@Override
 	public void onCreate() {
+		super.onCreate();
 		Log.d(TAG, "service create");
 		// start it in the foreground so it doesn't get killed
 		Notification.Builder builder = new Notification.Builder(this)
@@ -130,7 +135,6 @@ public class ArduinoService extends Service {
 		builder.setContentIntent(pendingIntent);
 
 		// Add a notification
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(4, builder.build());
 
 		arduino = new Arduino();

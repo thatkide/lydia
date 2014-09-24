@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.controllers.PinTriggerController;
@@ -15,7 +14,6 @@ import com.autosenseapp.databases.Button;
 import com.autosenseapp.devices.triggers.ButtonTrigger;
 import java.util.List;
 import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -35,23 +33,33 @@ public class ArduinoButton extends BaseButton {
 	}
 
 	@Override
+	// here we actually do our magic
 	public void onClick(View view, Button passed) {
-
+		pinTriggerController.doAction(Integer.parseInt(passed.getExtraData()));
 	}
 
 	@Override
+	// return true to signal we want the secondary spinner
 	public boolean hasExtraData() {
 		return true;
 	}
 
 	@Override
+	// the editor will ask what our data we want saved based on the passed item
+	public String getExtraData(int position) {
+		ArduinoPin pin = adapter.getItem(position);
+		return String.valueOf(pin.getPinTriggerId());
+	}
+
+	@Override
+	// we need to pass an adapter back for the spinner to be populated
 	public ArrayAdapter<ArduinoPin> getAdapterData() {
 		List<ArduinoPin> pinTriggers = pinTriggerController.getAllTriggersByClassName(ButtonTrigger.class.getSimpleName());
 		adapter = new ArduinoPinAdapter(context, pinTriggers);
 		return adapter;
 	}
 
-
+	// custom array adapter for the spinner display
 	private class ArduinoPinAdapter extends ArrayAdapter<ArduinoPin> {
 
 		public ArduinoPinAdapter(Context context, List<ArduinoPin> pins) {
@@ -76,7 +84,7 @@ public class ArduinoButton extends BaseButton {
 			}
 
 			ArduinoPin pin = getItem(position);
-			viewHolder.textView.setText(pin.toString() + (pin.getComment() != null ? " - " + pin.getComment() : ""));
+			viewHolder.textView.setText(pin.toString() + (!pin.getComment().equalsIgnoreCase("") ? " - " + pin.getComment() : ""));
 
 			return convertView;
 		}

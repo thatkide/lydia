@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Parcel;
 import com.autosenseapp.R;
+import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.devices.Master;
 
 /**
  * Created by eric on 2014-09-04.
@@ -36,6 +38,11 @@ public class ActionHigh extends Action {
 	@Override
 	public String getExtraString() {
 		return null;
+	}
+
+	@Override
+	public void doAction(Context context, ArduinoPin pin) {
+		super.doAction(context, pin, Master.HIGH);
 	}
 
 	@Override

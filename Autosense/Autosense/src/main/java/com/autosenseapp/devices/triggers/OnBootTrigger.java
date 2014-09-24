@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcel;
 import android.util.Log;
-
+import com.autosenseapp.controllers.PinTriggerController;
+import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.actions.Action;
-import com.autosenseapp.services.ArduinoService;
+import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 2014-09-05.
@@ -18,12 +20,14 @@ public class OnBootTrigger extends Trigger {
 	private static final String TAG = OnBootTrigger.class.getSimpleName();
 	public static final String receiverString = OnBootTrigger.class.getSimpleName() + "Receiver";
 	private boolean triggerDone = false;
+	@Inject PinTriggerController pinTriggerController;
 
 	public OnBootTrigger(){}
 
 	public OnBootTrigger(Context context) {
 		super(context);
 		context.registerReceiver(receiver, new IntentFilter(receiverString));
+
 	}
 
 	@Override
@@ -65,16 +69,11 @@ public class OnBootTrigger extends Trigger {
 			if (triggerDone) {
 				return;
 			}
-			// get the controller
-//			PinTriggerController controller = (PinTriggerController) ((App)context.getApplicationContext()).getController(App.PIN_TRIGGER_CONTROLLER);
 			// get the list of pins that we need to deal with
-//			List<ArduinoPin> pins = controller.getAllTriggersByClassName(OnBootTrigger.class.getSimpleName());
-			// loop over them
-			int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
-			Log.d(TAG, "device type " + deviceType);
-//			for (ArduinoPin pin : pins) {
-//				Log.d(TAG, "set pin " + pin.getPinNumber() + " to " + pin.getAction().getName(context));
-//			}
+			List<ArduinoPin> pinTriggers = pinTriggerController.getAllTriggersByClassName(ButtonTrigger.class.getSimpleName());
+			for (ArduinoPin pin : pinTriggers) {
+				pinTriggerController.doAction(pin.getPinTriggerId());
+			}
 			triggerDone = true;
 		}
 	};

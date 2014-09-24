@@ -2,6 +2,8 @@ package com.autosenseapp.devices.triggers;
 
 import android.content.Context;
 import android.os.Parcelable;
+
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.devices.actions.Action;
 
 /**
@@ -19,6 +21,8 @@ public abstract class Trigger implements Parcelable{
 
 	public Trigger(Context context) {
 		this.context = context;
+		// add the trigger to the inject list
+		((AutosenseApplication)context.getApplicationContext()).inject(this);
 	}
 
 	public Trigger() {}

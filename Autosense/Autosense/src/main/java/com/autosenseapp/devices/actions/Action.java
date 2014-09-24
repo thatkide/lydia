@@ -4,6 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Parcelable;
 
+import com.autosenseapp.databases.ArduinoPin;
+import com.autosenseapp.devices.Master;
+
 /**
  * Created by eric on 2014-09-04.
  */
@@ -35,8 +38,14 @@ public abstract class Action implements Parcelable {
 	public void setClassName(String className) {
 		this.className = className;
 	}
-
 	public String getClassName() {
 		return className;
+	}
+
+
+	public abstract void doAction(Context context, ArduinoPin pin);
+	protected void doAction(Context context, ArduinoPin pin, int command) {
+		byte[] data = {(byte)pin.getPinNumber()};
+		Master.writeData(context, command, data);
 	}
 }

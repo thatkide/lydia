@@ -1,6 +1,5 @@
 package com.autosenseapp.devices;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,6 @@ public class Master extends Device {
 	public static final String LIGHTVALUE = "com.autosenseapp.lydia.LIGHTVALUE";
 	public static final String OUTSIDETEMPERATURE = "com.autosenseapp.lydia.OUTSIDETEMPERATURE";
 
-
 	public static final int RADIOSEEKDOWN = 116;
 	public static final int RADIOSEEKUP = 117;
 	public static final int RADIOVOLDOWN = 118;
@@ -38,6 +36,11 @@ public class Master extends Device {
 	public static final int GETTEMP = 162;
 
 	public static final int SEATHEAT = 121;
+
+	public static final int HIGH = 140;
+	public static final int LOW = 141;
+	public static final int TOGGLE = 142;
+	public static final int TIMER = 143;
 
 	private Context context;
 	private ArduinoService.ArduinoListener listener;
@@ -94,12 +97,12 @@ public class Master extends Device {
 	};
 
 	// take the activity, command, and values to send, and broadcast them back up to our self (static vs non-static).  Then it will be sent up to the listener and sent over the wire
-	public static void writeData(Activity activity, int COMMAND, byte[] values) {
+	public static void writeData(Context context, int COMMAND, byte[] values) {
 		// create a new bundle
 		Bundle bundle = new Bundle();
 		bundle.putByte("command", (byte) COMMAND);
 		bundle.putByteArray("values", values);
 		// send a broadcast with the data
-		activity.sendBroadcast(new Intent(Master.WRITE).putExtras(bundle));
+		context.sendBroadcast(new Intent(Master.WRITE).putExtras(bundle));
 	}
 }

@@ -94,6 +94,7 @@ public class ArduinoPinsDataSource {
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.ACTION_ID + ", " +
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + " as " + ArduinoPinsOpenHelper.ACTION_CLASS + ", " +
 				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.NAME + " as " + ArduinoPinsOpenHelper.ACTION_NAME + ", " +
+				ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.PIN_TRIGGER_ID + ", " +
 				"* FROM " + ArduinoPinsOpenHelper.TRIGGERS_TABLE +
 				" INNER JOIN " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE +
 					" ON " + ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
@@ -145,6 +146,37 @@ public class ArduinoPinsDataSource {
 		}
 		cursor.close();
 		return arduinoPins;
+	}
+
+	public ArduinoPin getPinTriggerById(int id) {
+		open();
+		String query = "SELECT " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.ACTION_ID + ", " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.CLASS + " as " + ArduinoPinsOpenHelper.ACTION_CLASS + ", " +
+				ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.NAME + " as " + ArduinoPinsOpenHelper.ACTION_NAME + ", " +
+				ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + " as " + ArduinoPinsOpenHelper.PIN_TRIGGER_ID + ", " +
+				"* FROM " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE +
+				" INNER JOIN " + ArduinoPinsOpenHelper.TRIGGERS_TABLE +
+				" ON " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.TRIGGER_ID +
+				" = " + ArduinoPinsOpenHelper.TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+				" INNER JOIN " + DEVICE_TABLE +
+				" ON " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.PIN_ID +
+				" = " + DEVICE_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+				" INNER JOIN " + ArduinoPinsOpenHelper.ACTIONS_TABLE +
+				" ON " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.ACTION_ID +
+				" = " + ArduinoPinsOpenHelper.ACTIONS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID +
+				" WHERE " + ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE + "." + ArduinoPinsOpenHelper.COLUMN_ID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(id));
+
+		Cursor cursor = database.rawQuery(query, null);
+		cursor.moveToFirst();
+
+		ArduinoPin pin = cursorToPin(cursor);
+		// need to overwrite id, name,
+		// overwrite the id with the correct column
+		pin.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.PIN_ID)));
+		pin.setAction(cursorToAction(cursor));
+		cursor.close();
+		return pin;
 	}
 
 	public List<Action> getActions() {
@@ -275,6 +307,10 @@ public class ArduinoPinsDataSource {
 		arduinoPin.setPinNumber(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.NUMBER)));
 		arduinoPin.setPinType(cursor.getInt(cursor.getColumnIndexOrThrow(ArduinoPinsOpenHelper.TYPE)));
 		arduinoPin.setComment(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.COMMENT)));
+
+		if (cursor.getColumnIndex(ArduinoPinsOpenHelper.PIN_TRIGGER_ID) != -1) {
+			arduinoPin.setPinTriggerId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.PIN_TRIGGER_ID)));
+		}
 
 		return arduinoPin;
 	}
