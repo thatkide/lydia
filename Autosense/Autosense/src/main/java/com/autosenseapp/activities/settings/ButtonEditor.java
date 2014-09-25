@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -17,8 +19,11 @@ import com.autosenseapp.controllers.ButtonController;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.*;
 import com.autosenseapp.includes.AppInfo;
+import com.autosenseapp.interfaces.ExtraDataSpinner;
+
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
@@ -44,6 +49,7 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 		// Setup the window
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.button_editor);
+		ButterKnife.inject(this);
 
 		// stop keyboard from auto popping up
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -100,6 +106,14 @@ public class ButtonEditor extends BaseActivity implements View.OnClickListener {
 				if (baseButton.hasExtraData()) {
 					extraDataSpinner.setVisibility(View.VISIBLE);
 					extraDataSpinner.setAdapter(baseButton.getAdapterData());
+
+					for (int j=0; j<extraDataSpinner.getCount(); j++) {
+						String info = ((ExtraDataSpinner) extraDataSpinner.getItemAtPosition(j)).getDataInfo();
+						if (info.equalsIgnoreCase(button.getExtraData())) {
+							extraDataSpinner.setSelection(j);
+							break;
+						}
+					}
 
 					extraDataSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 						@Override

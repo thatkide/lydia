@@ -74,7 +74,7 @@ public class AppLaunchButton extends BaseButton {
 	@Override
 	public String getExtraData(int position) {
 		AppInfo appInfo = adapter.getItem(position);
-		return appInfo.getLaunchIntent().toUri(Intent.URI_INTENT_SCHEME);
+		return appInfo.getLaunchIntentUri();
 	}
 
 	// returns an array of appinfos of the installed packages we can launch

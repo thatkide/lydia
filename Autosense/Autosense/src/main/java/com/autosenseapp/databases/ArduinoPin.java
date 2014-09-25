@@ -5,13 +5,15 @@ import android.os.Parcelable;
 
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.interfaces.ExtraDataSpinner;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by eric on 2014-09-05.
  */
-public class ArduinoPin implements Parcelable {
+public class ArduinoPin implements Parcelable, ExtraDataSpinner {
 
 	public static final int ANALOG = 0;
 	public static final int DIGITAL = 1;
@@ -44,7 +46,8 @@ public class ArduinoPin implements Parcelable {
 		return pinNumber;
 	}
 
-	public void setPinName(String name) {		if (name != null && name.length() > 2) {
+	public void setPinName(String name) {
+		if (name != null && name.length() > 2) {
 			this.name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		} else {
 			this.name = "";
@@ -153,4 +156,9 @@ public class ArduinoPin implements Parcelable {
 			return new ArduinoPin[size];
 		}
 	};
+
+	@Override
+	public String getDataInfo() {
+		return String.valueOf(pinTriggerId);
+	}
 }

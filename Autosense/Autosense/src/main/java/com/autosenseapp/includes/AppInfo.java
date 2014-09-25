@@ -3,10 +3,12 @@ package com.autosenseapp.includes;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
+import com.autosenseapp.interfaces.ExtraDataSpinner;
+
 /**
 * Created by eric on 2013-07-16.
 */
-public class AppInfo {
+public class AppInfo implements ExtraDataSpinner {
 	private String appName = "";
 	private String packageName = "";
 	private String className = "";
@@ -67,6 +69,10 @@ public class AppInfo {
 		return launchIntent;
 	}
 
+	public String getLaunchIntentUri() {
+		return launchIntent.toUri(Intent.URI_INTENT_SCHEME);
+	}
+
 	public void setLaunchIntent(Intent launchIntent) {
 		this.launchIntent = launchIntent;
 	}
@@ -74,5 +80,10 @@ public class AppInfo {
 	@Override
 	public String toString() {
 		return appName;
+	}
+
+	@Override
+	public String getDataInfo() {
+		return getLaunchIntentUri();
 	}
 }
