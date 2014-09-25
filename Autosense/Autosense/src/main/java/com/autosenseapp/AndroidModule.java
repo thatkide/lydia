@@ -20,6 +20,8 @@ import com.autosenseapp.devices.configs.ArduinoUno;
 import com.autosenseapp.fragments.HeaderFragment;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
 import com.autosenseapp.fragments.Settings.MasterIoFragment;
+import com.autosenseapp.services.ArduinoService;
+
 import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
@@ -33,6 +35,7 @@ import dagger.Provides;
 				ArduinoButton.class,
 				ArduinoDue.class,
 				ArduinoUno.class,
+				ArduinoService.class,
 				ArduinoPinEditor.class,
 				BackgroundController.class,
 				BackgroundSettingsFragment.class,

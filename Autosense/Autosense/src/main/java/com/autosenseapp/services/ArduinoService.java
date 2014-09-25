@@ -3,6 +3,7 @@ package com.autosenseapp.services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.usb.UsbManager;
@@ -29,7 +30,6 @@ public class ArduinoService extends BaseService {
 	private static final String TAG = ArduinoService.class.getSimpleName();
 
 	@Inject	SharedPreferences sharedPreferences;
-	@Inject NotificationManager notificationManager;
 
 	public static final String ACCESSORY_READY = "com.autosenseapp.AccessoryReady";
 
@@ -134,6 +134,7 @@ public class ArduinoService extends BaseService {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, Dashboard.class), PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pendingIntent);
 
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// Add a notification
 		notificationManager.notify(4, builder.build());
 
