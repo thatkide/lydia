@@ -64,7 +64,10 @@ public class AppLaunchButton extends BaseButton {
 			intent.setType("image/png");
 			List<ResolveInfo> matches = packageManager.queryIntentActivities(intent, 0);
 			return matches.get(0).loadIcon(packageManager);
-		} catch (URISyntaxException e) {}
+		} catch (URISyntaxException e) {
+		} catch (IndexOutOfBoundsException e) {
+			// No icons available
+		}
 		return null;
 	}
 

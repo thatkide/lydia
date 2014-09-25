@@ -47,7 +47,10 @@ public class MasterIoFragment extends BaseFragment implements View.OnTouchListen
 	@Override
 	public void onResume() {
 		super.onResume();
-		arduinoConfig.onResume();
+		// if we don't have a valid device, onresume will fail
+		try {
+			arduinoConfig.onResume();
+		} catch (NullPointerException e) {}
 	}
 
 	@Override

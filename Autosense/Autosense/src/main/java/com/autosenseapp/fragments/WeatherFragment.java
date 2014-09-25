@@ -10,15 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import com.autosenseapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import dagger.Provides;
 import zh.wang.android.utils.YahooWeather4a.WeatherInfo;
 import zh.wang.android.utils.YahooWeather4a.YahooWeatherInfoListener;
 import zh.wang.android.utils.YahooWeather4a.YahooWeatherUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -33,9 +38,26 @@ public class WeatherFragment extends Fragment implements
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private LocationClient locationClient;
 
+	@InjectView(R.id.weather_conditions_icon) ImageView iconView;
+	@InjectView(R.id.loading_spinner) ProgressBar loadingSpinner;
+	@InjectView(R.id.weather_container) RelativeLayout weatherContainer;
+
+	@InjectView(R.id.weather_title) TextView weatherTitle;
+	@InjectView(R.id.weather_current_temp) TextView weatherCurrentTemp;
+	@InjectView(R.id.weather_conditions_desc) TextView weatherConditionDesc;
+	@InjectView(R.id.weather_wind) TextView weatherWind;
+	@InjectView(R.id.weather_windchill) TextView weatherWindChill;
+	@InjectView(R.id.weather_humidity) TextView weatherHumidity;
+	@InjectView(R.id.weather_sunrise) TextView weatherSunrise;
+	@InjectView(R.id.weather_sunset) TextView weatherSunset;
+	@InjectView(R.id.weather_degrees) TextView weatherDegrees;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-		return inflater.inflate(R.layout.weather_fragment, container, false);
+		super.onCreateView(inflater, container, savedInstance);
+		View view = inflater.inflate(R.layout.weather_fragment, container, false);
+		ButterKnife.inject(this, view);
+		return view;
 	}
 
 	@Override
@@ -67,7 +89,6 @@ public class WeatherFragment extends Fragment implements
 		final Activity activity = getActivity();
 		if (weatherInfo != null) {
 
-			ImageView iconView = (ImageView) activity.findViewById(R.id.weather_conditions_icon);
 			int currentCode = weatherInfo.getCurrentCode();
 			if (currentCode == WeatherInfo.NOT_AVAILABLE) {
 				currentCode = weatherInfo.getForecast1Code();
@@ -75,8 +96,8 @@ public class WeatherFragment extends Fragment implements
 			iconView.setImageBitmap(weatherInfo.getConditionsIcon(activity, currentCode));
 
 			// hide the loading spinner
-			activity.findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-			activity.findViewById(R.id.weather_container).setVisibility(View.VISIBLE);
+			loadingSpinner.setVisibility(View.GONE);
+			weatherContainer.setVisibility(View.VISIBLE);
 
 			// get whether we use c or f from preferences
 			boolean celsius = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("weatherUseMetric", true);
@@ -86,12 +107,12 @@ public class WeatherFragment extends Fragment implements
 			String windSpeed, windchill;
 			if (celsius) {
 				currentTemp = weatherInfo.getCurrentTempC();
-				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "C");
+				weatherDegrees.setText((char) 0x00B0 + "C");
 				windSpeed = weatherInfo.getWindSpeedK() + " km/h";
 				windchill = weatherInfo.getWindChillC() + (char)0x00B0 + "C";
 			} else {
 				currentTemp = weatherInfo.getCurrentTempF();
-				((TextView)activity.findViewById(R.id.weather_degrees)).setText((char)0x00B0 + "F");
+				weatherDegrees.setText((char) 0x00B0 + "F");
 				windSpeed = weatherInfo.getWindSpeedM() + " mph";
 				windchill = weatherInfo.getWindChillF() + (char)0x00B0 + "F";
 			}
@@ -101,14 +122,14 @@ public class WeatherFragment extends Fragment implements
 				currentText = weatherInfo.getForecast1Text();
 			}
 			// current info
-			((TextView)activity.findViewById(R.id.weather_title)).setText(weatherInfo.getLocationCity() + ", " + weatherInfo.getLocationRegion());
-			((TextView)activity.findViewById(R.id.weather_current_temp)).setText(String.valueOf(currentTemp));
-			((TextView)activity.findViewById(R.id.weather_conditions_desc)).setText(currentText);
-			((TextView)activity.findViewById(R.id.weather_wind)).setText(windSpeed + " from "+ weatherInfo.getmWindDirectionText());
-			((TextView)activity.findViewById(R.id.weather_windchill)).setText(windchill);
-			((TextView)activity.findViewById(R.id.weather_humidity)).setText(weatherInfo.getAtmosphereHumidity() + "%");
-			((TextView)activity.findViewById(R.id.weather_sunrise)).setText(weatherInfo.getAstronomySunrise());
-			((TextView)activity.findViewById(R.id.weather_sunset)).setText(weatherInfo.getAstronomySunset());
+			weatherTitle.setText(weatherInfo.getLocationCity() + ", " + weatherInfo.getLocationRegion());
+			weatherCurrentTemp.setText(String.valueOf(currentTemp));
+			weatherConditionDesc.setText(currentText);
+			weatherWind.setText(windSpeed + " from " + weatherInfo.getmWindDirectionText());
+			weatherWindChill.setText(windchill);
+			weatherHumidity.setText(weatherInfo.getAtmosphereHumidity() + "%");
+			weatherSunrise.setText(weatherInfo.getAstronomySunrise());
+			weatherSunset.setText(weatherInfo.getAstronomySunset());
 
 			// 5 day forecast
 			for (int i=0; i<5; i++) {

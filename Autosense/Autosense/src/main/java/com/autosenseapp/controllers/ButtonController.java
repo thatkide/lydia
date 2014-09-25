@@ -22,6 +22,7 @@ import com.autosenseapp.buttons.appButtons.AppLaunchButton;
 import com.autosenseapp.callbacks.DrawScreenCallback;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.ButtonConfigDataSource;
+import com.bugsense.trace.BugSenseHandler;
 
 import java.util.*;
 
@@ -314,49 +315,54 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 		}
 
 		// loop over all buttons and populate accordingly
-		for (int i=0; i<buttonsInDb.size(); i++) {
+		for (com.autosenseapp.databases.Button myButton : buttonsInDb) {
+//		for (int i=0; i<buttonsInDb.size(); i++) {
 			// get the button
-			com.autosenseapp.databases.Button myButton = buttonsInDb.get(i);
+//			com.autosenseapp.databases.Button myButton = buttonsInDb.get(i);
 			// run the onstart method of the base button
-			// get the resource id for the button
-			int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());
-			// set the res id for the buttons
-			(buttons.get(myButton.getAction())).setResourceName(baseName + myButton.getPosition());
-			// this must be after the setresource command above
-			BaseButton baseButton = buttons.get(myButton.getAction());
-			baseButton.onStart();
-			// get the button
-			Button button = (Button) activity.findViewById(resId);
-			// set the text to the proper title
 			try {
-				String title = myButton.getTitle();
-				if (title.length() > 12 ) {
-					// if the length of the title is too long, truncate it
-					title = title.substring(0, 12);
-				}
-				button.setText(title);
-			} catch (Exception e) {}
-			// try the background image if set
-			if (myButton.getUsesDrawable()) {
-				Drawable img;
-				if (!myButton.getDrawable().equalsIgnoreCase("blank")) {
-					// get the image resource id
-					int imgId = activity.getResources().getIdentifier(myButton.getDrawable(), "drawable", activity.getPackageName());
-					// get the drawable
-					img = activity.getResources().getDrawable(imgId);
-				} else {
-					if (baseButton instanceof AppLaunchButton) {
-						Drawable drawable = ((AppLaunchButton)baseButton).getIcon(myButton.getExtraData());
-						Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-						img = new BitmapDrawable(activity.getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
-					} else {
-						img = activity.getResources().getDrawable(R.drawable.blank);
+				// get the resource id for the button
+				int resId = activity.getResources().getIdentifier(baseName + myButton.getPosition(), "id", activity.getPackageName());
+				// set the res id for the buttons
+				(buttons.get(myButton.getAction())).setResourceName(baseName + myButton.getPosition());
+				// this must be after the setresource command above
+				BaseButton baseButton = buttons.get(myButton.getAction());
+				baseButton.onStart();
+				// get the button
+				Button button = (Button) activity.findViewById(resId);
+				// set the text to the proper title
+				try {
+					String title = myButton.getTitle();
+					if (title.length() > 12) {
+						// if the length of the title is too long, truncate it
+						title = title.substring(0, 12);
 					}
+					button.setText(title);
+				} catch (Exception e) {	}
+				// try the background image if set
+				if (myButton.getUsesDrawable()) {
+					Drawable img;
+					if (!myButton.getDrawable().equalsIgnoreCase("blank")) {
+						// get the image resource id
+						int imgId = activity.getResources().getIdentifier(myButton.getDrawable(), "drawable", activity.getPackageName());
+						// get the drawable
+						img = activity.getResources().getDrawable(imgId);
+					} else {
+						if (baseButton instanceof AppLaunchButton) {
+							Drawable drawable = ((AppLaunchButton) baseButton).getIcon(myButton.getExtraData());
+							Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+							img = new BitmapDrawable(activity.getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
+						} else {
+							img = activity.getResources().getDrawable(R.drawable.blank);
+						}
+					}
+					// set it to the top on the button
+					button.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
 				}
-				// set it to the top on the button
-				button.setCompoundDrawablesWithIntrinsicBounds(null, img, null, null);
+				button.setTag(myButton);
+			} catch (NullPointerException e) {
+				BugSenseHandler.sendException(e);
 			}
-			button.setTag(myButton);
 		}
 	}
 
