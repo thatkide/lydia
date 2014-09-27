@@ -47,8 +47,12 @@ public class ArduinoButton extends BaseButton {
 	@Override
 	// the editor will ask what our data we want saved based on the passed item
 	public String getExtraData(int position) {
-		ArduinoPin pin = adapter.getItem(position);
-		return String.valueOf(pin.getPinTriggerId());
+		if (adapter.getCount() > 0) {
+			ArduinoPin pin = adapter.getItem(position);
+			return String.valueOf(pin.getPinTriggerId());
+		} else {
+			return "";
+		}
 	}
 
 	@Override
