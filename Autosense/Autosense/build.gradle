@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-versionNumber = 42
+versionNumber = 43
 
 android {
 	signingConfigs {
