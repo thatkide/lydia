@@ -1,11 +1,11 @@
-package com.autosenseapp.devices.triggers;
+package com.autosenseapp.devices.outputTriggers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcel;
-import android.util.Log;
+
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.actions.Action;

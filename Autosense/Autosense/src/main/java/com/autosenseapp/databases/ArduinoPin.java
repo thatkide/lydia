@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.autosenseapp.devices.actions.Action;
-import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.devices.outputTriggers.Trigger;
 import com.autosenseapp.interfaces.ExtraDataSpinner;
 
 import java.util.ArrayList;

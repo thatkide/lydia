@@ -1,13 +1,11 @@
 package com.autosenseapp.controllers;
 
 import android.content.Context;
-import android.util.Log;
-
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.actions.Action;
-import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.devices.outputTriggers.Trigger;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +50,7 @@ public class PinTriggerController {
 
 	private void setupTriggers() {
 		// get the list of triggers
-		List<Trigger> triggers = getTriggers();
+		List<Trigger> triggers = getOutputTriggers();
 		// loop over them
 		for (Trigger trigger : triggers) {
 			// get the class name
@@ -61,7 +59,7 @@ public class PinTriggerController {
 			if (className != null) {
 				try {
 					// create a new classname for the object
-					Class<?> clazz = Class.forName(context.getPackageName() + ".devices.triggers." + className);
+					Class<?> clazz = Class.forName(context.getPackageName() + ".devices.outputTriggers." + className);
 					// get the constructor
 					Constructor<?> constructor = clazz.getConstructor(Context.class);
 					// create the object
@@ -92,7 +90,7 @@ public class PinTriggerController {
 		return Collections.unmodifiableList(pinModes);
 	}
 
-	public List<Action> getActions() {
+	public List<Action> getOutputActions() {
 		return arduinoPinsDataSource.getActions();
 	}
 
@@ -100,7 +98,7 @@ public class PinTriggerController {
 		return arduinoPinsDataSource.getTriggers(pin);
 	}
 
-	public List<Trigger> getTriggers() {
+	public List<Trigger> getOutputTriggers() {
 		return arduinoPinsDataSource.getTriggers();
 	}
 

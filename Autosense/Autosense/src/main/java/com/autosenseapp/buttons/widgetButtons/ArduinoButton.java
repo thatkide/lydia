@@ -11,7 +11,7 @@ import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.databases.Button;
-import com.autosenseapp.devices.triggers.ButtonTrigger;
+import com.autosenseapp.devices.outputTriggers.ButtonTrigger;
 import java.util.List;
 import javax.inject.Inject;
 import butterknife.ButterKnife;

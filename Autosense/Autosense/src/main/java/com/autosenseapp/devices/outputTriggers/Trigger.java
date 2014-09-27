@@ -1,8 +1,7 @@
-package com.autosenseapp.devices.triggers;
+package com.autosenseapp.devices.outputTriggers;
 
 import android.content.Context;
 import android.os.Parcelable;
-
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.devices.actions.Action;
 

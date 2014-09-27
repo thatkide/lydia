@@ -1,4 +1,4 @@
-package com.autosenseapp.devices.triggers;
+package com.autosenseapp.devices.outputTriggers;
 
 import android.content.Context;
 import android.os.Parcel;

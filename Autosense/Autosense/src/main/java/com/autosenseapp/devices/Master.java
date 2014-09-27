@@ -42,6 +42,8 @@ public class Master extends Device {
 	public static final int TOGGLE = 142;
 	public static final int TIMER = 143;
 
+	public static final int PINMODE = 144;
+
 	private Context context;
 	private ArduinoService.ArduinoListener listener;
 

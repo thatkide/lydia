@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
+import com.autosenseapp.devices.Master;
 import com.autosenseapp.devices.actions.Action;
-import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.devices.outputTriggers.Trigger;
 import com.autosenseapp.services.ArduinoService;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class ArduinoPinsDataSource {
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			ArduinoPin pin = cursorToPin(cursor);
-//			pin.setTriggers(getTriggers(pin));
+//			pin.setTriggers(getOutputTriggers(pin));
 			arduinoPins.add(pin);
 			cursor.moveToNext();
 		}
@@ -294,6 +294,9 @@ public class ArduinoPinsDataSource {
 		try {
 			database.update(DEVICE_TABLE, values, ArduinoPinsOpenHelper.COLUMN_ID + " =? ", new String[]{String.valueOf(arduinoPin.getId())});
 			database.setTransactionSuccessful();
+			// write it out to the arduino if successful
+			byte data[] = {(byte) arduinoPin.getMode()};
+			Master.writeData(context, Master.PINMODE, data);
 		} finally {
 			database.endTransaction();
 		}
@@ -332,7 +335,7 @@ public class ArduinoPinsDataSource {
 		String triggerClass = cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.TRIGGER_CLASS));
 		String triggerName = cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.TRIGGER_NAME));
 		if (triggerClass != null) {
-			Trigger trigger = (Trigger) createClass(ArduinoPinsOpenHelper.TRIGGERS_TABLE, triggerClass);
+			Trigger trigger = (Trigger) createClass("outputTriggers", triggerClass);
 			trigger.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.TRIGGER_ID)));
 			trigger.setName(triggerName);
 			trigger.setClassName(triggerClass);

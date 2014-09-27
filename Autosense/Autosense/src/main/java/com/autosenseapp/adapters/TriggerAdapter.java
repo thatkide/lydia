@@ -1,7 +1,6 @@
 package com.autosenseapp.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.autosenseapp.R;
-import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.devices.outputTriggers.Trigger;
 import java.util.List;
 
 /**

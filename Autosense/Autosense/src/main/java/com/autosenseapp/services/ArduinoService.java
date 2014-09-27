@@ -15,7 +15,7 @@ import android.util.SparseArray;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.devices.*;
-import com.autosenseapp.devices.triggers.OnBootTrigger;
+import com.autosenseapp.devices.outputTriggers.OnBootTrigger;
 import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
 import com.autosenseapp.devices.usbInterfaces.ArduinoInterface;

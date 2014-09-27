@@ -18,7 +18,7 @@ import com.autosenseapp.adapters.TriggerAdapter;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.actions.Action;
-import com.autosenseapp.devices.triggers.Trigger;
+import com.autosenseapp.devices.outputTriggers.Trigger;
 import com.ikovac.timepickerwithseconds.view.MyTimePickerDialog;
 import com.ikovac.timepickerwithseconds.view.TimePicker;
 import java.util.ArrayList;
@@ -55,8 +55,8 @@ public class ArduinoPinEditor extends BaseActivity implements
 
 	private ArduinoPin selectedArduinoPin;
 
-	private List<Action> allActions;
-	private List<Trigger> allTriggers;
+	private List<Action> allOutputActions;
+	private List<Trigger> allOutputTriggers;
 	// we need these in the action callbacks.
 	private Action currentAction;
 	private Trigger currentTrigger;
@@ -75,8 +75,8 @@ public class ArduinoPinEditor extends BaseActivity implements
 		// inject all the views
 		ButterKnife.inject(this);
 		// get these lists once
-		allActions = pinTriggerController.getActions();
-		allTriggers = pinTriggerController.getTriggers();
+		allOutputActions = pinTriggerController.getOutputActions();
+		allOutputTriggers = pinTriggerController.getOutputTriggers();
 
 		pinTriggers.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		pinTriggers.setOnItemClickListener(this);
@@ -134,7 +134,6 @@ public class ArduinoPinEditor extends BaseActivity implements
 		// save the selected pin mode
 		pinTriggerController.updatePin(selectedArduinoPin);
 		// if we selected "output", show the next spinner
-
 		updateTriggerList(selectedArduinoPin);
 	}
 
@@ -191,20 +190,29 @@ public class ArduinoPinEditor extends BaseActivity implements
 	}
 
 	private void updateTriggerList(ArduinoPin selectedArduinoPin) {
-		if (selectedArduinoPin.getMode() == PinTriggerController.OUTPUT) {
-			pinSettingsTitle.setText(getString(R.string.trigger));
-			List<Trigger> selectedTriggers = pinTriggerController.getTriggers(selectedArduinoPin);
-			// pass the full list of triggers and the selected triggers for the selected pin
-			pinTriggers.setAdapter(new TriggerAdapter(ArduinoPinEditor.this, allTriggers, selectedTriggers));
-			if (selectedTriggers.size() > 0) {
-				// show the action for the top trigger
-				updateActions(selectedTriggers.get(0));
-			} else {
+		switch (selectedArduinoPin.getMode()) {
+			case PinTriggerController.OUTPUT: {
+				actionTitle.setVisibility(View.VISIBLE);
+				pinSettingsTitle.setText(getString(R.string.trigger));
+				List<Trigger> selectedTriggers = pinTriggerController.getTriggers(selectedArduinoPin);
+				// pass the full list of triggers and the selected triggers for the selected pin
+				pinTriggers.setAdapter(new TriggerAdapter(ArduinoPinEditor.this, allOutputTriggers, selectedTriggers));
+				if (selectedTriggers.size() > 0) {
+					// show the action for the top trigger
+					updateActions(selectedTriggers.get(0));
+				} else {
+					updateActions(null);
+				}
+				break;
+			}
+			case PinTriggerController.INPUT: {
+				actionTitle.setVisibility(View.GONE);
+				break;
+			}
+			default: {
+				pinTriggers.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{}));
 				updateActions(null);
 			}
-		} else {
-			pinTriggers.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{}));
-			updateActions(null);
 		}
 	}
 
@@ -218,7 +226,7 @@ public class ArduinoPinEditor extends BaseActivity implements
 		if (selectedArduinoPin.getMode() == PinTriggerController.OUTPUT) {
 			// populate available actions
 			// Loop over all the radio buttons
-			for (Action action : allActions) {
+			for (Action action : allOutputActions) {
 				// create a new button
 				RadioButton button = new RadioButton(this);
 				// set the text
