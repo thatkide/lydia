@@ -2,15 +2,12 @@ package com.autosenseapp.devices.configs;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.activities.settings.ArduinoPinEditor;
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 
 /**
@@ -21,14 +18,6 @@ public class ArduinoDue implements ArduinoConfig {
 	private static final String TAG = ArduinoDue.class.getSimpleName();
 
 	@Inject PinTriggerController pinTriggerController;
-
-	private static final int BLACK = -13226195;
-	private static final int RED = -65536;
-	private static final int GREEN = -16711936;
-	private static final int BLUE = -16776961;
-	private static final int PINK = -1310580;
-	private static final int ORANGE = -551907;
-	private static final int YELLOW = -256;
 
 	private Activity activity;
 

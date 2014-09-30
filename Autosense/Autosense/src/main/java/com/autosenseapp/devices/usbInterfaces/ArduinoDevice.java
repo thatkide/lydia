@@ -2,22 +2,28 @@ package com.autosenseapp.devices.usbInterfaces;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.includes.ConstantsStk500v1;
 import com.autosenseapp.includes.Hex;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 2014-08-26.
@@ -28,18 +34,35 @@ public class ArduinoDevice implements ArduinoInterface {
 
 	private Context context;
 	private UsbSerialPort port;
+	@Inject UsbManager usbManager;
+	@Inject	SharedPreferences sharedPreferences;
 
 	// upgrading firmware stuff
 	private AtomicBoolean upgradingFirmware = new AtomicBoolean();
 	private volatile byte[] upgradingInput;
 	private AtomicBoolean waitingForSerialData = new AtomicBoolean();
 	private Boolean checkFirmware = false;
+	private Boolean force = false;
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private SerialInputOutputManager serialInputOutputManager;
 
+	private final SerialInputOutputManager.Listener listener = new SerialInputOutputManager.Listener() {
+		@Override
+		public void onNewData(byte[] data) {
+			upgradingInput = new byte[data.length];
+			upgradingInput = data;
+			waitingForSerialData.getAndSet(false);
+		}
+
+		@Override
+		public void onRunError(Exception e) {	}
+	};
 
 	@Override
 	public void onCreate(Context context, Intent intent) {
+		Log.d(TAG, "device on create");
 		this.context = context;
-		UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+		((AutosenseApplication)context.getApplicationContext()).inject(this);
 		UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 
 		List<UsbSerialDriver> drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
@@ -56,23 +79,33 @@ public class ArduinoDevice implements ArduinoInterface {
 
 			port = driver.getPorts().get(0);
 			try {
+				Log.d(TAG, "device open");
 				port.open(connection);
 				port.setParameters(115200, 8, 1, 0);
+				checkFirmware();
 
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
 			}
 		}
+
+		serialInputOutputManager = new SerialInputOutputManager(port, listener);
+		executorService.submit(serialInputOutputManager);
+
 	}
 
 	@Override
 	public void onDestroy() {
-		try {
-			port.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
+		if (!upgradingFirmware.get()) {
+			try {
+				port.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -81,14 +114,19 @@ public class ArduinoDevice implements ArduinoInterface {
 		if (!upgradingFirmware.get()) {
 			return port.read(buffer, 500);
 		}
-		return 0;
+		return 1;
 	}
 
 	@Override
 	public void write(byte[] data) {
 		if (!upgradingFirmware.get()) {
 			try {
-				port.write(data, 500);
+				// add a delimeter for the serial comms
+				byte[] del = {(byte) 0x7e};
+				byte[] output = new byte[data.length + del.length];
+				System.arraycopy(data, 0, output, 0, data.length);
+				System.arraycopy(del, 0, output, data.length, del.length);
+				port.write(output, 500);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -96,6 +134,7 @@ public class ArduinoDevice implements ArduinoInterface {
 	}
 
 	public void checkFirmware() {
+		Log.d(TAG, "check firmware");
 		try {
 			// start a new md5 digest
 			MessageDigest digester = MessageDigest.getInstance("MD5");
@@ -105,6 +144,7 @@ public class ArduinoDevice implements ArduinoInterface {
 			byte[] bytes = new byte[inputStream.available()];
 			int byteCount;
 			// read the stream and update the digester
+			Log.d(TAG, "read input stream");
 			while ((byteCount = inputStream.read()) > 0 ) {
 				digester.update(bytes, 0, byteCount);
 			}
@@ -116,24 +156,30 @@ public class ArduinoDevice implements ArduinoInterface {
 			for (int i=0; i<digest.length; i++) {
 				hexString.append(Integer.toHexString(0xFF & digest[i]));
 			}
+			Log.d(TAG, "digest " + hexString.toString());
+			Log.d(TAG, "storing in pref");
 			// store the hash in shared pref
-			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("currentFirmwareDigest", hexString.toString()).apply();
+			sharedPreferences.edit().putString("currentFirmwareDigest", hexString.toString()).apply();
 			// get the previous hash
-			String previousFirmware = PreferenceManager.getDefaultSharedPreferences(context).getString("previousFirmwareDigest", "");
+			String previousFirmware = sharedPreferences.getString("previousFirmwareDigest", "");
+			Log.d(TAG, "get prev pref " + previousFirmware);
 			// compare them, if they don't equal, update the firmware
-			if (!previousFirmware.equalsIgnoreCase(hexString.toString())) {
-				PreferenceManager.getDefaultSharedPreferences(context).edit().putString("previousFirmwareDigest", hexString.toString()).apply();
+			if (!previousFirmware.equalsIgnoreCase(hexString.toString()) || previousFirmware.equalsIgnoreCase("") || force) {
+				Log.d(TAG, "do upgrade");
+				sharedPreferences.edit().putString("previousFirmwareDigest", hexString.toString()).apply();
 				upgradeFirmware();
 			}
 
 		} catch (NoSuchAlgorithmException e) {
 			Log.e(TAG, "no such digest");
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.d(TAG, e.toString());
 		}
+		Log.d(TAG, "check complete");
 	}
 
 	public void upgradeFirmware() {
+		Log.d(TAG, "upgrading firmware");
 		upgradingFirmware.getAndSet(true);
 		Thread upgradeThread = new Thread(new Runnable() {
 			@Override
@@ -214,7 +260,7 @@ public class ArduinoDevice implements ArduinoInterface {
 		byte[] getSyncCommand = {ConstantsStk500v1.STK_GET_SYNC, ConstantsStk500v1.CRC_EOP};
 
 		for (int i=0; i<5; i++) {
-//			Log.d(TAG, "sending sync command.");
+			Log.d(TAG, "sending sync command.");
 			try {
 				port.write(getSyncCommand, 100);
 			} catch (IOException e) {
@@ -232,7 +278,7 @@ public class ArduinoDevice implements ArduinoInterface {
 		byte[] command = new byte[] {ConstantsStk500v1.STK_ENTER_PROGMODE, ConstantsStk500v1.CRC_EOP};
 		for (int i=0; i<2; i++) {
 			if (waitingForSerialData.get()) {
-//				Log.d(TAG, "sending enter programming mode command. try number " + i);
+				Log.d(TAG, "sending enter programming mode command. try number " + i);
 				try {
 					port.write(command, 100);
 				} catch (IOException e) {
@@ -254,7 +300,7 @@ public class ArduinoDevice implements ArduinoInterface {
 		}
 
 		byte[] loadAddress = {ConstantsStk500v1.STK_LOAD_ADDRESS, (byte)low, (byte)high, ConstantsStk500v1.CRC_EOP};
-//		Log.d(TAG, "loading address low " + Integer.toHexString(low) + " high " + Integer.toHexString(high) + " combined " + Integer.toHexString(low + high));
+		Log.d(TAG, "loading address low " + Integer.toHexString(low) + " high " + Integer.toHexString(high) + " combined " + Integer.toHexString(low + high));
 		try {
 			port.write(loadAddress, 100);
 		} catch (IOException e) {
@@ -272,11 +318,11 @@ public class ArduinoDevice implements ArduinoInterface {
 		// split data up into chunks of 123 bytes (plus 5 bytes overhead, makes 128 bytes)
 		int loops = (int)Math.ceil((double)data.length / (chunkSize));
 
-//		Log.d(TAG, "length of data " + data.length);
-//		Log.d(TAG, "number of loops " + loops);
+		Log.d(TAG, "length of data " + data.length);
+		Log.d(TAG, "number of loops " + loops);
 
 		for (int i=0; i<loops; i++) {
-//			Log.d(TAG, "loop number " + i);
+			Log.d(TAG, "loop number " + i);
 			// send the number to the address method
 			// this tells the bootloader where we want to send the data
 			loadAddress(i);
@@ -293,9 +339,9 @@ public class ArduinoDevice implements ArduinoInterface {
 			// get the overall length
 			int length = end - start + 1;
 
-//			Log.d(TAG, "start is " + start);
-//			Log.d(TAG, "end is " + end);
-//			Log.d(TAG, "length is " + length);
+			Log.d(TAG, "start is " + start);
+			Log.d(TAG, "end is " + end);
+			Log.d(TAG, "length is " + length);
 
 			// create a new array the proper length
 			byte[] programPage = new byte[length+5];
@@ -317,7 +363,7 @@ public class ArduinoDevice implements ArduinoInterface {
 			// add crc byte to the end
 			programPage[length+5-1] = ConstantsStk500v1.CRC_EOP;
 
-//			Log.d(TAG, "programPage is " + programPage.length + " bytes long");
+			Log.d(TAG, "programPage is " + programPage.length + " bytes long");
 			try {
 				port.write(programPage, 100);
 				try {
@@ -326,7 +372,7 @@ public class ArduinoDevice implements ArduinoInterface {
 					e.printStackTrace();
 				}
 			} catch (IOException e) {
-//				Log.d(TAG, e.toString());
+				Log.d(TAG, e.toString());
 				e.printStackTrace();
 				return;
 			}

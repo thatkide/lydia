@@ -6,7 +6,7 @@
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/libraryFragmentTransactionExtended/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="bea05f7a363ce645a14dc4a5e8f7b5ed35e71850"/>
+        sha1="61f939e619ed27d7c05aee4857b8aeecc37bdc4f"/>
     <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/sqliteassethelper-2.0.1-beb54e5e81b9a0d39ad4abc5fb23c1ef6120f622.jar"
         jar="/Users/eric/.gradle/caches/modules-2/files-2.1/com.readystatesoftware.sqliteasset/sqliteassethelper/2.0.1/d5f02e4a4d65ec0fbb339f2e4228723d1540bb9f/sqliteassethelper-2.0.1.jar"
@@ -14,23 +14,59 @@
         revision="20.0.0"
         sha1="d5f02e4a4d65ec0fbb339f2e4228723d1540bb9f"/>
     <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/updatechecker-3072ccc59b4eaee266069477c57bc2680fb65660.jar"
-        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/libs/updatechecker.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="adee4bc9198a4a5fb73b318ab339057d850f9097"/>
-    <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/butterknife-5.1.2-9d3596282fb12f92ce5da28c0dcf1b14754a5777.jar"
         jar="/Users/eric/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/5.1.2/daf5472b0df6dabaceb6ad755b3812535863965a/butterknife-5.1.2.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="daf5472b0df6dabaceb6ad755b3812535863965a"/>
     <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/updatechecker-3072ccc59b4eaee266069477c57bc2680fb65660.jar"
+        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/libs/updatechecker.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="adee4bc9198a4a5fb73b318ab339057d850f9097"/>
+    <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-f9b12cc34f04aecb5e805beab6ef4edf9c8f1c5d.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/yWeatherGetter4a/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="1bf616d95aa185e89c9f33bcb802bdd4f8114e90"/>
+        sha1="018a71818a05f99cbd688f0b1c989046e56fd630"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-fb0c4de1d86c501545055ffb37dbd39a07424d3f.jar"
+        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/ambilWarna/unspecified/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="c42b12da5a75e753c99122bdde6e9e642ce94035"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-24abf76f7d88d3e9efb6f462aa069b722b524fa4.jar"
+        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/timePickerWithSeconds/unspecified/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="15fc40eda6dc5ccd7c33b69028a25053c9de7628"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/support-annotations-20.0.0-d324c0b6e3044eb03133cd0d3fcebc4a790f465d.jar"
+        jar="/Users/eric/android-sdk-macosx/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-9d635a96c54d62178b2ec46298d361fe648b7c00.jar"
+        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/library/unspecified/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="1a8c1c534bdd39dc22b494952feab2d262191a4e"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-714bbe772a0e9ef0b2adfc64d8da17a2c9c20920.jar"
+        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/sliderPreference/unspecified/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="9d3af0f3207c52256de35d68ec65df541a1ea4a1"/>
+    <item
+        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/dagger-1.2.2-1b4afd8c0b4c2cedc1f9a622989bf19d57367bb1.jar"
+        jar="/Users/eric/.gradle/caches/modules-2/files-2.1/com.squareup.dagger/dagger/1.2.2/e8f912ee19ad84958510883ea191135276b091f8/dagger-1.2.2.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="e8f912ee19ad84958510883ea191135276b091f8"/>
     <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-473a900d79e347fbe957679ff56ff2ac0a98a333.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
@@ -44,35 +80,17 @@
         revision="20.0.0"
         sha1="3928cf9ff54683b522cee09da9034106c53fea91"/>
     <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-fb0c4de1d86c501545055ffb37dbd39a07424d3f.jar"
-        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/ambilWarna/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="c1dee3ce8df52d2a9ea38666d7a8d6928b284ecd"/>
-    <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-24abf76f7d88d3e9efb6f462aa069b722b524fa4.jar"
-        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/timePickerWithSeconds/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="80998cdd65d85f8b359216885cbabc16c197c409"/>
-    <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-9bca70e39c40a0f887de704f9b42efde073eb0db.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/lydia_common/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="ebf5bcb59dcf486c6c7337961ad5f348e9bdda9e"/>
+        sha1="b1baab2902f7e41102464b57bfb200f3cdb64f78"/>
     <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/javax.inject-1-79cbe569e725ca72101515948a778ebaae450383.jar"
         jar="/Users/eric/.gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="6975da39a7040257bd51d21a231b76c915872d38"/>
-    <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/support-annotations-20.0.0-d324c0b6e3044eb03133cd0d3fcebc4a790f465d.jar"
-        jar="/Users/eric/android-sdk-macosx/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
     <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-8cbd7eaf952b9f4c1110cd822353f5dc4a205dbc.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/com.google.android.gms/play-services/5.0.89/classes.jar"
@@ -84,7 +102,7 @@
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/usbSerialForAndroid/unspecified/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="04d55b1e88c92c4a2cacfefd75f9785c3e490c4b"/>
+        sha1="e6663e5458f9ea022c49282c6a0d97b5c54bef5d"/>
     <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/internal_impl-20.0.0-93bd93d4e61077afacececf0ebcd27292b127e3d.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
@@ -92,28 +110,10 @@
         revision="20.0.0"
         sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
     <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-9d635a96c54d62178b2ec46298d361fe648b7c00.jar"
-        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/library/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="438eaa1bfdd8df29b4a650ae72541536e3055f73"/>
-    <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/classes-714bbe772a0e9ef0b2adfc64d8da17a2c9c20920.jar"
-        jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/exploded-aar/Autosense/sliderPreference/unspecified/classes.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="294e72bce4dcb90de87f9bd8319aca436ba22ef8"/>
-    <item
         dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/lastfm-java-0.1.2-8fc9bdaf998e81c22a8f499e8fa36b3ba89d6a77.jar"
         jar="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/libs/lastfm-java-0.1.2.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="b1d6f0040f614b09bebfde1cf346ab4a6ffff81d"/>
-    <item
-        dex="/Users/eric/Documents/~Lydia/Java/~Lydia-github/Autosense/Autosense/build/intermediates/pre-dexed/free/debug/dagger-1.2.2-1b4afd8c0b4c2cedc1f9a622989bf19d57367bb1.jar"
-        jar="/Users/eric/.gradle/caches/modules-2/files-2.1/com.squareup.dagger/dagger/1.2.2/e8f912ee19ad84958510883ea191135276b091f8/dagger-1.2.2.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="e8f912ee19ad84958510883ea191135276b091f8"/>
 
 </pre-dex-items>

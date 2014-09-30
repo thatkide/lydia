@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * Use {@link #getHexLine(int, int) getHexLine} to request chunks of bytes.
  */
 public class Hex {
-	private static final String TAG = "lydia Hex";
+	private static final String TAG = Hex.class.getSimpleName();
 	private ArrayList<ArrayList<Byte>> binList = new ArrayList<ArrayList<Byte>>();
 	
 	private ArrayList<Byte> dataList = new ArrayList<Byte>();

@@ -22,11 +22,6 @@ public class ArduinoUno implements ArduinoConfig {
 	@Inject
 	PinTriggerController pinTriggerController;
 
-	private static final int BLACK = -13226195;
-	private static final int RED = -65536;
-	private static final int GREEN = -16711936;
-	private static final int YELLOW = -256;
-
 	private Activity activity;
 
 	private ArrayList<ArduinoPin> greenList;

@@ -204,11 +204,11 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
 		if (accessory != null) {
-			Log.d(TAG, "got an accessory");
+//			Log.d(TAG, "got an accessory");
 			// if we have permission
 			if (usbManager.hasPermission(accessory)) {
 				// start the arduino service
-				Log.d(TAG, "start accessory");
+//				Log.d(TAG, "start accessory");
 				Intent i = new Intent(this, ArduinoService.class);
 				i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
 				startService(i);
@@ -222,7 +222,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 				}
 			}
 		} else {
-			Log.d(TAG, "usb device");
+//			Log.d(TAG, "usb device");
 			// else try device
 			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
@@ -234,11 +234,11 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 				String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
 				String PID = Integer.toHexString(device.getProductId()).toLowerCase();
 
-				Log.d(TAG, "vendor id " + VID + " product id " + PID);
+//				Log.d(TAG, "vendor id " + VID + " product id " + PID);
 				// Valid devices
 				//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
 				if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
-					Log.d(TAG, "start device");
+//					Log.d(TAG, "start device");
 					// We have a valid FTDI chip
 					Intent intent = new Intent(this, ArduinoService.class);
 					intent.putExtra(UsbManager.EXTRA_DEVICE, device);

@@ -9,7 +9,7 @@ import com.autosenseapp.services.ArduinoService;
  */
 public class Arduino {
 	// debug tag
-	private static final String TAG = "lydia Arduino";
+	private static final String TAG = Arduino.class.getSimpleName();
 
 	// array list of devices passed in
 	private SparseArray<Device> devices = new SparseArray<Device>();
