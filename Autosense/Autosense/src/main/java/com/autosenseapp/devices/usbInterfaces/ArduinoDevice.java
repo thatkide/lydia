@@ -134,7 +134,6 @@ public class ArduinoDevice implements ArduinoInterface {
 	}
 
 	public void checkFirmware() {
-		Log.d(TAG, "check firmware");
 		try {
 			// start a new md5 digest
 			MessageDigest digester = MessageDigest.getInstance("MD5");

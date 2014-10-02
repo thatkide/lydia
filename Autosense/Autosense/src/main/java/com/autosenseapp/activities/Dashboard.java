@@ -226,24 +226,12 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 			// else try device
 			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-			Iterator<String> iterator = devices.keySet().iterator();
-			while (iterator.hasNext()) {
-				String deviceName = iterator.next();
+			for (String deviceName : devices.keySet()) {
 				UsbDevice device = devices.get(deviceName);
 
-				String VID = Integer.toHexString(device.getVendorId()).toUpperCase();
-				String PID = Integer.toHexString(device.getProductId()).toLowerCase();
-
-//				Log.d(TAG, "vendor id " + VID + " product id " + PID);
-				// Valid devices
-				//			<!-- 0x0403 / 0x6001: FTDI FT232R UART -->
-				if (VID.equalsIgnoreCase("403") && PID.equalsIgnoreCase("6001")) {
-//					Log.d(TAG, "start device");
-					// We have a valid FTDI chip
-					Intent intent = new Intent(this, ArduinoService.class);
-					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
-					startService(intent);
-				}
+				Intent intent = new Intent(this, ArduinoService.class);
+				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+				startService(intent);
 			}
 		}
 	}
