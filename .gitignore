@@ -22,3 +22,4 @@ lydia/build/intermediates/dex-cache/cache.xml
 lydia/lydia/src/release/res/values/keys.xml
 Autosense/Autosense/src/main/res/values/keys.xml
 .DS_Store
+Autosense/build/intermediates/dex-cache/cache.xml
