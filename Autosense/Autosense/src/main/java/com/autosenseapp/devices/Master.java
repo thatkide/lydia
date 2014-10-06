@@ -43,6 +43,7 @@ public class Master extends Device {
 	public static final int TIMER = 143;
 
 	public static final int PINMODE = 144;
+	public static final int PINSTATE = 145;
 
 	private Context context;
 	private ArduinoService.ArduinoListener listener;
@@ -85,6 +86,14 @@ public class Master extends Device {
 				int outsideTemp = Helpers.word(data[1], data[2]);
 				context.sendBroadcast(new Intent(OUTSIDETEMPERATURE).putExtra(OUTSIDETEMPERATURE, outsideTemp));
 //				Log.d(TAG, "got outside temp: " + outsideTemp);
+				break;
+			}
+			case PINSTATE: {
+				int receivedData = Helpers.word(data[1], data[2]);
+				// extract the pin and state from the data sent
+				int pin = (byte) receivedData;
+				int state = receivedData >> 8;
+				context.sendBroadcast(new Intent(Arduino.PIN_STATE).putExtra("pin", pin).putExtra("state", state));
 				break;
 			}
 		}

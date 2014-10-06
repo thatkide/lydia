@@ -23,7 +23,6 @@ import com.autosenseapp.callbacks.DrawScreenCallback;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.ButtonConfigDataSource;
 import com.bugsense.trace.BugSenseHandler;
-
 import java.util.*;
 
 /**

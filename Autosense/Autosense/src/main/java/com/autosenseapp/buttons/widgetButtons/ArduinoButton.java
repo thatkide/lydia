@@ -35,7 +35,7 @@ public class ArduinoButton extends BaseButton {
 	@Override
 	// here we actually do our magic
 	public void onClick(View view, Button passed) {
-		pinTriggerController.doAction(Integer.parseInt(passed.getExtraData()));
+		pinTriggerController.doAction(view, Integer.parseInt(passed.getExtraData()));
 	}
 
 	@Override

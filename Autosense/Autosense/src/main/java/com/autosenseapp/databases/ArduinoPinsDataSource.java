@@ -175,6 +175,7 @@ public class ArduinoPinsDataSource {
 		// overwrite the id with the correct column
 		pin.setId(cursor.getInt(cursor.getColumnIndex(ArduinoPinsOpenHelper.PIN_ID)));
 		pin.setAction(cursorToAction(cursor));
+		pin.setExtraData(cursor.getString(cursor.getColumnIndex(ArduinoPinsOpenHelper.EXTRA_DATA)));
 		cursor.close();
 		return pin;
 	}
@@ -295,7 +296,7 @@ public class ArduinoPinsDataSource {
 			database.update(DEVICE_TABLE, values, ArduinoPinsOpenHelper.COLUMN_ID + " =? ", new String[]{String.valueOf(arduinoPin.getId())});
 			database.setTransactionSuccessful();
 			// write it out to the arduino if successful
-			byte data[] = {(byte) arduinoPin.getMode()};
+			byte data[] = {(byte) arduinoPin.getPinNumber(), (byte) arduinoPin.getMode()};
 			Master.writeData(context, Master.PINMODE, data);
 		} finally {
 			database.endTransaction();

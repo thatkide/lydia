@@ -11,6 +11,8 @@ public class Arduino {
 	// debug tag
 	private static final String TAG = Arduino.class.getSimpleName();
 
+	public static final String PIN_STATE = "arduinoPinState";
+
 	// array list of devices passed in
 	private SparseArray<Device> devices = new SparseArray<Device>();
 

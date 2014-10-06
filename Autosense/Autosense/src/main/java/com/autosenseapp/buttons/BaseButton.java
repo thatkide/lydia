@@ -2,10 +2,8 @@ package com.autosenseapp.buttons;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 import android.widget.ArrayAdapter;
-
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.buttons.appButtons.AirRideButton;
 import com.autosenseapp.buttons.appButtons.AndroidButton;
@@ -28,11 +26,8 @@ import com.autosenseapp.buttons.settingsButtons.MediaSettingsButton;
 import com.autosenseapp.buttons.settingsButtons.WeatherSettingsButton;
 import com.autosenseapp.buttons.widgetButtons.ArduinoButton;
 import com.autosenseapp.databases.Button;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 /**
  * Created by eric on 2014-06-14.

@@ -6,21 +6,25 @@ import android.os.Bundle;
 import android.preference.*;
 import com.autosenseapp.R;
 import com.autosenseapp.devices.Master;
+import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
+import com.autosenseapp.services.ArduinoService;
+
+import javax.inject.Inject;
 
 /**
  * Created by eric on 2013-08-01.
  */
-public class ArduinoSettingsFragment extends PreferenceFragment {
+public class ArduinoSettingsFragment extends BasePreferenceFragment {
 	public static final String TAG = ArduinoSettingsFragment.class.getSimpleName();
 
-	public SharedPreferences sharedPreferences;
+	@Inject	SharedPreferences sharedPreferences;
 
 	public Preference.OnPreferenceClickListener clickListener = new Preference.OnPreferenceClickListener() {
 		@Override
 		public boolean onPreferenceClick(Preference preference) {
 			String key = preference.getKey();
 			if (key.equalsIgnoreCase("upgradeFirmware")) {
-				getActivity().sendBroadcast(new Intent("upgradeFirmware"));
+				getActivity().sendBroadcast(new Intent(ArduinoDevice.UPGRADE_FIRMWARE));
 
 			} else if (key.equalsIgnoreCase("setupAlarm")) {
 				// load the alarm settings fragment
@@ -67,19 +71,22 @@ public class ArduinoSettingsFragment extends PreferenceFragment {
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 
-		sharedPreferences = getActivity().getSharedPreferences(getActivity().getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 		sharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
 
 		// set our internal preference for the bluetooth state
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		sharedPreferences.edit().putBoolean("systemBluetooth", adapter.isEnabled()).apply();
 
-		PreferenceManager manager = getPreferenceManager();
+		findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
+		findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
+		findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
+		findPreference("setupMasterIO").setOnPreferenceClickListener(clickListener);
 
-//		manager.findPreference("upgradeFirmware").setOnPreferenceClickListener(clickListener);
-		manager.findPreference("setupAlarm").setOnPreferenceClickListener(clickListener);
-		manager.findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
-		manager.findPreference("setupMasterIO").setOnPreferenceClickListener(clickListener);
+		if (sharedPreferences.getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE) != ArduinoService.ARDUINO_DEVICE) {
+			PreferenceCategory category = (PreferenceCategory) findPreference("arduino");
+			category.removePreference(findPreference("autoUpgradeFirmware"));
+			category.removePreference(findPreference("upgradeFirmware"));
+		}
 
 		getActivity().registerReceiver(lightValueReceiver, new IntentFilter(Master.LIGHTVALUE));
 	}

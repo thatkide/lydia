@@ -3,6 +3,8 @@ package com.autosenseapp.devices.actions;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Parcel;
+import android.view.View;
+
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.Master;
 
@@ -21,7 +23,7 @@ public class ActionLow extends Action {
 	}
 
 	@Override
-	public Dialog getExtraDialog(Context context) {
+	public Dialog getExtraDialog(Context context, ArduinoPin arduinoPin) {
 		return null;
 	}
 
@@ -39,6 +41,9 @@ public class ActionLow extends Action {
 	public String getExtraString() {
 		return null;
 	}
+
+	@Override
+	public void setView(Context context, View view, ArduinoPin pin) {}
 
 	@Override
 	public void doAction(Context context, ArduinoPin pin) {

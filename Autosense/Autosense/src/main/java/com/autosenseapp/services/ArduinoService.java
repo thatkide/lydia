@@ -224,6 +224,7 @@ public class ArduinoService extends BaseService {
 						// if the received checksum equals the calculated checksum, send the data off
 						if (checksum == getChecksum(sender, recipient, length, dataInt)) {
 							arduino.parseData(sender, length, dataInt, checksum);
+							buffer[0] = 0; // reset the first byte
 						}
 					}
 				} catch (IllegalArgumentException e) {

@@ -1,6 +1,10 @@
 package com.autosenseapp.controllers;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
+import android.view.View;
+
 import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPinsDataSource;
 import com.autosenseapp.databases.ArduinoPin;
@@ -69,7 +73,7 @@ public class PinTriggerController {
 		}
 	}
 
-	public void doAction(int pinTriggerId) {
+	public void doAction(View view, int pinTriggerId) {
 		ArduinoPin pin = arduinoPinsDataSource.getPinTriggerById(pinTriggerId);
 		String actionClass = pin.getAction().getClassName();
 		if (actionClass != null) {
@@ -78,7 +82,12 @@ public class PinTriggerController {
 				Constructor<?> constructor = clazz.getConstructor();
 				Action action = (Action) constructor.newInstance();
 				action.doAction(context, pin);
-			} catch (Exception e){ }
+				if (view != null) {
+					action.setView(context, view, pin);
+				}
+			} catch (Exception e){
+				Log.d(TAG, e.toString());
+			}
 		}
 	}
 

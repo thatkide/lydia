@@ -167,7 +167,7 @@ public class ArduinoPinEditor extends BaseActivity implements
 			Trigger trigger = (Trigger) selectedRadioButton.getTag(R.string.trigger);
 			// get the stored action from the radio button
 			if (action.hasExtra()) {
-				action.getExtraDialog(this).show();
+				action.getExtraDialog(this, selectedArduinoPin).show();
 				// save these for the extra data callback
 				currentAction = action;
 				currentTrigger = trigger;
@@ -232,7 +232,8 @@ public class ArduinoPinEditor extends BaseActivity implements
 				// set the text
 				button.setId(action.getId());
 				if (trigger != null && trigger.getAction() != null && trigger.getAction().hasExtra() && trigger.getAction().getId() == action.getId()) {
-					button.setText(action.getName(this) + " (" + trigger.getAction().getExtraString() + ")");
+					String extraString = (trigger.getAction().getExtraString() != null ? " (" + trigger.getAction().getExtraString() + ")" : "");
+					button.setText(action.getName(this) + extraString);
 				} else {
 					button.setText(action.getName(this));
 				}

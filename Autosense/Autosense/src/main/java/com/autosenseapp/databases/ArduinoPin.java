@@ -27,6 +27,7 @@ public class ArduinoPin implements Parcelable, ExtraDataSpinner {
 	private Action action;
 	private String comment;
 	private int pinTriggerId;
+	private String extraData;
 
 	public ArduinoPin() { }
 
@@ -109,6 +110,14 @@ public class ArduinoPin implements Parcelable, ExtraDataSpinner {
 		return pinTriggerId;
 	}
 
+	public void setExtraData(String extraData) {
+		this.extraData = extraData;
+	}
+
+	public String getExtraData() {
+		return extraData;
+	}
+
 	@Override
 	public String toString() {
 		return pinNumber + (name == null || name.isEmpty() ? "" : " (" + name + ")");
@@ -127,6 +136,7 @@ public class ArduinoPin implements Parcelable, ExtraDataSpinner {
 		this.pinType = in.readInt();
 		this.comment = in.readString();
 		this.pinTriggerId = in.readInt();
+		this.extraData = in.readString();
 		this.action = in.readParcelable(Action.class.getClassLoader());
 		triggerList = new ArrayList<Trigger>();
 		in.readList(triggerList, Trigger.class.getClassLoader());
@@ -141,6 +151,7 @@ public class ArduinoPin implements Parcelable, ExtraDataSpinner {
 		dest.writeInt(pinType);
 		dest.writeString(comment);
 		dest.writeInt(pinTriggerId);
+		dest.writeString(extraData);
 		dest.writeParcelable(action, flags);
 		dest.writeList(triggerList);
 	}

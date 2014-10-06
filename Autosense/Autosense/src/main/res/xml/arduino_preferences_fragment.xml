@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/arduino">
+	<PreferenceCategory android:title="@string/arduino" android:key="arduino">
 		<com.autosenseapp.includes.CustomSwitchPreference
-					android:key="useArduino"
-					android:title="@string/use_arduino"
-					android:defaultValue="true"/>
+			android:key="useArduino"
+			android:title="@string/use_arduino"
+			android:defaultValue="true"/>
 		<com.autosenseapp.includes.CustomSwitchPreference
-				android:key="autoFindSlaveDevices"
-				android:title="@string/auto_find_slaves"
-				android:defaultValue="true" />
-		<Preference android:key="setupMasterIO"
-					android:title="@string/setup_master_io" />
-		<!--<com.autosenseapp.lydia.includes.CustomSwitchPreference-->
-					<!--android:key="autoUpgradeFirmware"-->
-					<!--android:title="@string/auto_upgrade_firmware"-->
-					<!--android:defaultValue="true" />-->
-		<!--<Preference android:title="Upgrade Firmware"-->
-					<!--android:key="upgradeFirmware"-->
-					<!--android:summary="Upgrade the firmware on the Master Controller"/>-->
+			android:key="autoFindSlaveDevices"
+			android:title="@string/auto_find_slaves"
+			android:defaultValue="true" />
+		<com.autosenseapp.includes.CustomSwitchPreference
+			android:key="autoUpgradeFirmware"
+			android:title="@string/auto_upgrade_firmware"
+			android:defaultValue="true" />
+		<Preference android:title="Upgrade Firmware"
+			android:key="upgradeFirmware"
+			android:summary="Upgrade the firmware on the Master Controller"/>
+		<Preference
+			android:key="setupMasterIO"
+			android:title="@string/setup_master_io" />
 	</PreferenceCategory>
+
 	<PreferenceCategory android:title="@string/alarm">
 		<com.autosenseapp.includes.CustomSwitchPreference
-					android:key="useAlarmModule"
-					android:title="@string/use_alarm"
-					android:defaultValue="false" />
+			android:key="useAlarmModule"
+			android:title="@string/use_alarm"
+			android:defaultValue="false" />
 		<Preference	android:key="setupAlarm"
-					android:title="@string/setup_alarm"
-					android:dependency="useAlarmModule"/>
+			android:title="@string/setup_alarm"
+			android:dependency="useAlarmModule"/>
 	</PreferenceCategory>
+
 	<PreferenceCategory android:title="@string/gauge_cluster">
-		<Preference android:key="setupGaugeCluster"
-					android:title="@string/setup_gauge_cluster" />
+		<Preference
+			android:key="setupGaugeCluster"
+			android:title="@string/setup_gauge_cluster" />
 	</PreferenceCategory>
+
 	<!--<PreferenceCategory android:key="lightSensor" android:title="@string/external_light_sensor">-->
 		<!--<com.autosenseapp.lydia.includes.CustomSwitchPreference-->
 					<!--android:key="useLightSensor"-->

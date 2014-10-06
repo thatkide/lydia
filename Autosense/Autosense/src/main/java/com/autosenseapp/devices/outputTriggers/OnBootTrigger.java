@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcel;
+import android.view.View;
 
 import com.autosenseapp.controllers.PinTriggerController;
 import com.autosenseapp.databases.ArduinoPin;
@@ -72,7 +73,7 @@ public class OnBootTrigger extends Trigger {
 			// get the list of pins that we need to deal with
 			List<ArduinoPin> pinTriggers = pinTriggerController.getAllTriggersByClassName(ButtonTrigger.class.getSimpleName());
 			for (ArduinoPin pin : pinTriggers) {
-				pinTriggerController.doAction(pin.getPinTriggerId());
+				pinTriggerController.doAction(null, pin.getPinTriggerId());
 			}
 			triggerDone = true;
 		}

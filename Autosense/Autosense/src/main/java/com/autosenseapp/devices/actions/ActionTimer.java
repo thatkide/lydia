@@ -3,18 +3,11 @@ package com.autosenseapp.devices.actions;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Parcel;
-import android.util.Log;
+import android.view.View;
 
-import com.autosenseapp.R;
 import com.autosenseapp.databases.ArduinoPin;
-import com.autosenseapp.devices.Master;
 import com.ikovac.timepickerwithseconds.view.MyTimePickerDialog;
 import com.ikovac.timepickerwithseconds.view.TimePicker;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by eric on 2014-09-04.
@@ -34,7 +27,7 @@ public class ActionTimer extends Action {
 	}
 
 	@Override
-	public Dialog getExtraDialog(final Context context) {
+	public Dialog getExtraDialog(final Context context, ArduinoPin arduinoPin) {
 		return new MyTimePickerDialog(context, new MyTimePickerDialog.OnTimeSetListener() {
 			@Override
 			public void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds) {
@@ -70,6 +63,9 @@ public class ActionTimer extends Action {
 		}
 		return "";
 	}
+
+	@Override
+	public void setView(Context context, View view, ArduinoPin pin) {}
 
 	@Override
 	public void doAction(Context context, ArduinoPin pin) {

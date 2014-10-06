@@ -72,6 +72,7 @@
 	<string name="edit_button">Edit Button</string>
 	<string name="edit_pins">Edit Pins</string>
 	<string name="engine">Engine</string>
+	<string name="extras">Extras</string>
 	<string name="external_light_sensor">External Light Sensor</string>
 	<string name="external_temperature_sensor">External Temperature Sensor</string>
 	<string name="fast_forward">Fast Forward</string>
@@ -81,6 +82,7 @@
 	<string name="gauge_backlight">Brightness of Gauge Backlight</string>
 	<string name="gauge_cluster">Gauge Cluster</string>
 	<string name="google">Google</string>
+	<string name="high_color">High Color</string>
 	<string name="home">Home</string>
 	<string name="home_screen">Home Screen</string>
 	<string name="ignore">Ignore</string>
@@ -96,6 +98,7 @@
 	<string name="light_sensor">Light Sensor</string>
 	<string name="loading">Loading...</string>
 	<string name="loading_address">Loading address...</string>
+	<string name="low_color">Low Color</string>
 	<string name="map_use_metric">Use Metric</string>
 	<string name="maps">Maps</string>
 	<string name="max_light">Light level before switching high</string>
