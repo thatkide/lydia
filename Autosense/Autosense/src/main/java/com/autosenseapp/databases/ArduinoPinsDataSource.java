@@ -57,19 +57,6 @@ public class ArduinoPinsDataSource {
 		dbHelper.close();
 	}
 
-	public void addPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
-		removePinTrigger(arduinoPin, trigger);
-		open();
-		ContentValues values = new ContentValues();
-		values.put(ArduinoPinsOpenHelper.PIN_ID, arduinoPin.getId());
-		values.put(ArduinoPinsOpenHelper.ACTION_ID, action.getId());
-		values.put(ArduinoPinsOpenHelper.TRIGGER_ID, trigger.getId());
-		values.put(ArduinoPinsOpenHelper.EXTRA_DATA, "");
-
-//		store it in the db
-		database.insert(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, null, values);
-	}
-
 	public void editPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {
 		open();
 		ContentValues values = new ContentValues();
@@ -78,10 +65,15 @@ public class ArduinoPinsDataSource {
 		values.put(ArduinoPinsOpenHelper.TRIGGER_ID, trigger.getId());
 		values.put(ArduinoPinsOpenHelper.EXTRA_DATA, action.getExtraData());
 
-		database.update(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, values,
+		// try an update first
+		int numrows = database.update(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, values,
 				ArduinoPinsOpenHelper.PIN_ID + "=? AND " +
 				ArduinoPinsOpenHelper.TRIGGER_ID + " =?",
 				new String[]{String.valueOf(arduinoPin.getId()), String.valueOf(trigger.getId())});
+		// if we can't update, insert new
+		if (numrows == 0) {
+			database.insert(ArduinoPinsOpenHelper.PIN_TRIGGERS_TABLE, null, values);
+		}
 	}
 
 	public List<ArduinoPin> getAllTriggersByClassName(String name) {

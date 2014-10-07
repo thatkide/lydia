@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
 
@@ -34,8 +36,6 @@ import butterknife.OnTextChanged;
  * Created by eric on 2014-08-30.
  */
 public class ArduinoPinEditor extends BaseActivity implements
-		AdapterView.OnItemClickListener,
-		AdapterView.OnItemSelectedListener,
 		View.OnClickListener,
 		RadioGroup.OnCheckedChangeListener,
 		MyTimePickerDialog.OnTimeSetListener {
@@ -52,6 +52,7 @@ public class ArduinoPinEditor extends BaseActivity implements
 	@InjectView(R.id.pin_output_trigger) ListView pinTriggers;
 	@InjectView(R.id.arduino_actions) RadioGroup actionGroup;
 	@InjectView(R.id.arduino_pins_list) ListView pinList;
+	@InjectView(R.id.action_settings_button) View actionSettings;
 
 	private ArduinoPin selectedArduinoPin;
 
@@ -61,7 +62,8 @@ public class ArduinoPinEditor extends BaseActivity implements
 	private Action currentAction;
 	private Trigger currentTrigger;
 
-	@OnTextChanged(R.id.pin_comment) void onTextChanged(CharSequence text) {
+	@OnTextChanged(R.id.pin_comment)
+	void onTextChanged(CharSequence text) {
 		// get the text and save it
 		selectedArduinoPin.setComment(text.toString());
 		pinTriggerController.updatePin(selectedArduinoPin);
@@ -79,7 +81,6 @@ public class ArduinoPinEditor extends BaseActivity implements
 		allOutputTriggers = pinTriggerController.getOutputTriggers();
 
 		pinTriggers.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		pinTriggers.setOnItemClickListener(this);
 
 		actionGroup.setOnCheckedChangeListener(this);
 
@@ -88,7 +89,6 @@ public class ArduinoPinEditor extends BaseActivity implements
 			ArrayList<ArduinoPin> arduinoPins = getIntent().getParcelableArrayListExtra("pins");
 			// get the listview and pass the map adapter
 			pinList.setAdapter(new PinsAdapter(this, arduinoPins));
-			pinList.setOnItemClickListener(this);
 
 			pinModes.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, pinTriggerController.getPinModes()));
 
@@ -99,36 +99,31 @@ public class ArduinoPinEditor extends BaseActivity implements
 	}
 
 	// Called when an item in the list of pins, or trigger is clicked
-	@Override
-	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-		switch (adapter.getId()) {
-			// Get the pin that has been clicked
-			case R.id.arduino_pins_list: {
-				// get the pin clicked
-				selectedArduinoPin = (ArduinoPin) adapter.getItemAtPosition(position);
-				// update the title
-				pinEditTitle.setText(getString(R.string.pin) + " " + selectedArduinoPin.toString());
-				// set the text for the pin comment
-				pinComment.setText(selectedArduinoPin.getComment());
-				// save the selected pin.  we use this for saving and such
-				pinModes.setSelection(selectedArduinoPin.getMode());
-				// reset the action title
-				actionTitle.setText(getString(R.string.action));
-				updateTriggerList(selectedArduinoPin);
-				break;
-			}
-			// if the trigger has been changed
-			case R.id.pin_output_trigger: {
-				Trigger trigger = (Trigger) view.getTag(R.string.trigger);
-				// set the action title to include the trigger
-				updateActions(trigger);
-				break;
-			}
-		}
+	@OnItemClick(R.id.arduino_pins_list)
+	public void pinListClick(AdapterView<?> adapter, View view, int position, long id) {
+		// get the pin clicked
+		selectedArduinoPin = (ArduinoPin) adapter.getItemAtPosition(position);
+		// update the title
+		pinEditTitle.setText(getString(R.string.pin) + " " + selectedArduinoPin.toString());
+		// set the text for the pin comment
+		pinComment.setText(selectedArduinoPin.getComment());
+		// save the selected pin.  we use this for saving and such
+		pinModes.setSelection(selectedArduinoPin.getMode());
+		// reset the action title
+		actionTitle.setText(getString(R.string.action));
+		updateTriggerList(selectedArduinoPin);
+	}
+
+	@OnItemClick(R.id.pin_output_trigger)
+	public void pinTrigerClick(AdapterView<?> adapter, View view, int position, long id) {
+		Trigger trigger = (Trigger) view.getTag(R.string.trigger);
+		// set the action title to include the trigger
+		updateActions(trigger);
 	}
 
 	// called when pin mode is selected from the spinner
-	@OnItemSelected(R.id.pin_mode) public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+	@OnItemSelected(R.id.pin_mode)
+	public void onPinModeSelected(AdapterView<?> parent, View view, int position, long id) {
 		// save the pin mode, input, output, high impedance...
 		selectedArduinoPin.setMode(((Long) id).intValue());
 		// save the selected pin mode
@@ -136,9 +131,6 @@ public class ArduinoPinEditor extends BaseActivity implements
 		// if we selected "output", show the next spinner
 		updateTriggerList(selectedArduinoPin);
 	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {	}
 
 	// checkbox callback
 	@Override
@@ -158,6 +150,11 @@ public class ArduinoPinEditor extends BaseActivity implements
 		}
 	}
 
+	@OnClick(R.id.action_settings_button)
+	public void buttonClick() {
+		currentAction.getExtraDialog(this, selectedArduinoPin).show();
+	}
+
 	// Radio button listener
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -171,9 +168,12 @@ public class ArduinoPinEditor extends BaseActivity implements
 				// save these for the extra data callback
 				currentAction = action;
 				currentTrigger = trigger;
+				actionSettings.setVisibility(View.VISIBLE);
+			} else {
+				actionSettings.setVisibility(View.INVISIBLE);
 			}
 			if (selectedRadioButton.isChecked()) {
-				pinTriggerController.addPinTriggers(selectedArduinoPin, trigger, action);
+				pinTriggerController.editPinTrigger(selectedArduinoPin, trigger, action);
 			}
 		} catch (NullPointerException e) {}
 	}
@@ -207,6 +207,7 @@ public class ArduinoPinEditor extends BaseActivity implements
 			}
 			case PinTriggerController.INPUT: {
 				actionTitle.setVisibility(View.GONE);
+				updateActions(null);
 				break;
 			}
 			default: {
@@ -228,29 +229,34 @@ public class ArduinoPinEditor extends BaseActivity implements
 			// Loop over all the radio buttons
 			for (Action action : allOutputActions) {
 				// create a new button
-				RadioButton button = new RadioButton(this);
+				RadioButton radioButton = new RadioButton(this);
 				// set the text
-				button.setId(action.getId());
+				radioButton.setId(action.getId());
+				// if we have the needed info, show the extra data text in brackets
 				if (trigger != null && trigger.getAction() != null && trigger.getAction().hasExtra() && trigger.getAction().getId() == action.getId()) {
 					String extraString = (trigger.getAction().getExtraString() != null ? " (" + trigger.getAction().getExtraString() + ")" : "");
-					button.setText(action.getName(this) + extraString);
+					radioButton.setText(action.getName(this) + extraString);
 				} else {
-					button.setText(action.getName(this));
+					radioButton.setText(action.getName(this));
 				}
 				// add the action as the tag
 				// The reason we use R.string.action is we need a guaranteed unique id that is precompiled.  using already defined strings is easier than making new ids
-				button.setTag(R.string.action, action);
+				radioButton.setTag(R.string.action, action);
 				if (trigger != null && trigger.getAction() != null && trigger.getAction().getId() == action.getId()) {
-					button.setChecked(true);
+					radioButton.setChecked(true);
+					currentAction = trigger.getAction();
+					if (currentAction.hasExtra()) {
+						actionSettings.setVisibility(View.VISIBLE);
+					}
 				}
 				if (trigger == null) {
 					// disable it
-					button.setEnabled(false);
+					radioButton.setEnabled(false);
 				} else {
-					button.setTag(R.string.trigger, trigger);
+					radioButton.setTag(R.string.trigger, trigger);
 				}
 				// add it to the view
-				actionGroup.addView(button);
+				actionGroup.addView(radioButton);
 			}
 		}
 	}

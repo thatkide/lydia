@@ -81,10 +81,11 @@ public class PinTriggerController {
 				Class<?> clazz = Class.forName(context.getPackageName() + ".devices.actions." + actionClass);
 				Constructor<?> constructor = clazz.getConstructor();
 				Action action = (Action) constructor.newInstance();
-				action.doAction(context, pin);
+				// do this first so the broadcast receiver is waiting for the result to return
 				if (view != null) {
 					action.setView(context, view, pin);
 				}
+				action.doAction(context, pin);
 			} catch (Exception e){
 				Log.d(TAG, e.toString());
 			}
@@ -113,10 +114,6 @@ public class PinTriggerController {
 
 	public void updatePin(ArduinoPin arduinoPin) {
 		arduinoPinsDataSource.updatePin(arduinoPin);
-	}
-
-	public void addPinTriggers(ArduinoPin arduinoPin, Trigger trigger, Action action) {
-		arduinoPinsDataSource.addPinTrigger(arduinoPin, trigger, action);
 	}
 
 	public void editPinTrigger(ArduinoPin arduinoPin, Trigger trigger, Action action) {

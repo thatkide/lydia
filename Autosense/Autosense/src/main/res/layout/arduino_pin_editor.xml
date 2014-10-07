@@ -102,7 +102,7 @@
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="0dip"
-				android:layout_weight="3"
+				android:layout_weight="4"
 				android:padding="5dp"
 				android:orientation="vertical">
 				<TextView android:id="@+id/arduino_action_title"
@@ -111,6 +111,12 @@
 				<RadioGroup android:id="@+id/arduino_actions"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
+				<Button android:id="@+id/action_settings_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/settings"
+					android:visibility="invisible"
+					style="@style/ControlButtons"/>
 
 			</LinearLayout>
 		</LinearLayout>
