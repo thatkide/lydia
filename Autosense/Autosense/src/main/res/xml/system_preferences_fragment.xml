@@ -7,6 +7,7 @@
 			android:key="checkForUpdate">
 			<intent android:action=".activities.settings.UpdateActivity" />
 			</Preference>
+		<Preference android:key="versionNumber" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/home_screen">
 		<com.autosenseapp.includes.CustomSwitchPreference android:key="useHomeScreenButtons"

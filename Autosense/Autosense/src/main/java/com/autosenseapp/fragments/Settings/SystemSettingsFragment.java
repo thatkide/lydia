@@ -3,6 +3,8 @@ package com.autosenseapp.fragments.Settings;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -89,6 +91,17 @@ public class SystemSettingsFragment extends PreferenceFragment implements Fragme
 
 		Preference background = findPreference("background");
 		background.setOnPreferenceClickListener(this);
+
+		try {
+			PackageInfo info = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+			Preference versionNumber = findPreference("versionNumber");
+			versionNumber.setTitle(R.string.build_number);
+			versionNumber.setSummary(String.valueOf(info.versionCode));
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			Log.d(TAG, e.toString());
+		}
 	}
 
 	@Override

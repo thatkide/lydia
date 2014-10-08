@@ -25,6 +25,7 @@ import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
+import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragment;
 import com.autosenseapp.interfaces.NotificationInterface;
@@ -55,6 +56,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 	@Inject BackgroundController backgroundController;
 	@Inject NotificationController notificationController;
+	@Inject SharedPreferences sharedPreferences;
 
 	// plugins
 	private LastFM lastFm;
@@ -192,46 +194,48 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 //		}
 
 		// reset no no arduino.  if one is connected update the prefs so it will be available later on
-		this.getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).edit().putInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE).apply();
+		sharedPreferences.edit().putInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE).apply();
 
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
-		// Try to connect a USB accessory first
-		// get list of accessories
-		UsbAccessory[] accessories = usbManager.getAccessoryList();
-		// get first accessory
-		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		if (!isServiceRunning(ArduinoService.class)) {
+			// Try to connect a USB accessory first
+			// get list of accessories
+			UsbAccessory[] accessories = usbManager.getAccessoryList();
+			// get first accessory
+			UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
-		if (accessory != null) {
-//			Log.d(TAG, "got an accessory");
-			// if we have permission
-			if (usbManager.hasPermission(accessory)) {
-				// start the arduino service
-//				Log.d(TAG, "start accessory");
-				Intent i = new Intent(this, ArduinoService.class);
-				i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
-				startService(i);
-			// otherwise ask for permission
-			} else {
-				synchronized (mUsbReceiver) {
-					if (mPermissionRequestPending) {
-						usbManager.requestPermission(accessory, mPermissionIntent);
-						mPermissionRequestPending = true;
+			if (accessory != null) {
+				//			Log.d(TAG, "got an accessory");
+				// if we have permission
+				if (usbManager.hasPermission(accessory)) {
+					// start the arduino service
+					//				Log.d(TAG, "start accessory");
+					Intent i = new Intent(this, ArduinoService.class);
+					i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
+					startService(i);
+					// otherwise ask for permission
+				} else {
+					synchronized (mUsbReceiver) {
+						if (mPermissionRequestPending) {
+							usbManager.requestPermission(accessory, mPermissionIntent);
+							mPermissionRequestPending = true;
+						}
 					}
 				}
-			}
-		} else {
-//			Log.d(TAG, "usb device");
-			// else try device
-			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
+			} else {
+				//			Log.d(TAG, "usb device");
+				// else try device
+				HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-			for (String deviceName : devices.keySet()) {
-				UsbDevice device = devices.get(deviceName);
+				for (String deviceName : devices.keySet()) {
+					UsbDevice device = devices.get(deviceName);
 
-				Intent intent = new Intent(this, ArduinoService.class);
-				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
-				startService(intent);
+					Intent intent = new Intent(this, ArduinoService.class);
+					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+					startService(intent);
+				}
 			}
 		}
 	}
@@ -439,5 +443,15 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 	};
 
 	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
+
+	private boolean isServiceRunning(Class<?> serviceClass) {
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equalsIgnoreCase(serviceInfo.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

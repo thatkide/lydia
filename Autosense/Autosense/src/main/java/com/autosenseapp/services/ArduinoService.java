@@ -91,7 +91,6 @@ public class ArduinoService extends BaseService {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		Log.d(TAG, "onstartcommand");
 		if (intent == null) {
 			return START_STICKY;
 		}
