@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.includes.Helpers;
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.interfaces.ArduinoListener;
 
 /**
  * Created by eric on 2014-05-04.
@@ -44,13 +46,13 @@ public class IdiotLights extends Device {
 	// use the context for broadcasts
 	// don't use localbroadcast manager because the arduino service runs in it's own process, and it won't work
 	private Context context;
-	private ArduinoService.ArduinoListener listener;
+	private ArduinoListener listener;
 
 	public IdiotLights(Context context) {
 		super(context);
 		this.context = context;
 		context.registerReceiver(receiver, new IntentFilter(WRITE));
-		context.registerReceiver(accessoryReadyReceiver, new IntentFilter(ArduinoService.ACCESSORY_READY));
+		context.registerReceiver(accessoryReadyReceiver, new IntentFilter(ArduinoController.ACCESSORY_READY));
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class IdiotLights extends Device {
 	}
 
 	@Override
-	public void setListener(ArduinoService.ArduinoListener listener) {
+	public void setListener(ArduinoListener listener) {
 		this.listener = listener;
 	}
 

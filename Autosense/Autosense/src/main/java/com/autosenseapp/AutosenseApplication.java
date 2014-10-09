@@ -1,6 +1,10 @@
 package com.autosenseapp;
 
 import android.app.Application;
+import android.content.Intent;
+
+import com.autosenseapp.services.AutosenseService;
+
 import java.util.Arrays;
 import java.util.List;
 import dagger.ObjectGraph;
@@ -15,7 +19,10 @@ public class AutosenseApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		// this is for dependency injection
 		applicationGraph = ObjectGraph.create(getModules().toArray());
+
+		startService(new Intent(this, AutosenseService.class));
 	}
 
 	protected List<Object> getModules() {

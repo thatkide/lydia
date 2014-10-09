@@ -2,7 +2,7 @@ package com.autosenseapp.devices;
 
 import android.util.Log;
 import android.util.SparseArray;
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.interfaces.ArduinoListener;
 
 /**
  * Created by eric on 2013-05-28.
@@ -17,7 +17,7 @@ public class Arduino {
 	private SparseArray<Device> devices = new SparseArray<Device>();
 
 	// take the list of devices from the hardware manager, add them to our own list, and set the listener
-	public void setDevices(SparseArray<Device> devices, ArduinoService.ArduinoListener listener) {
+	public void setDevices(SparseArray<Device> devices, ArduinoListener listener) {
 		this.devices = devices;
 		for (int i=0, size=devices.size(); i<size; i++) {
 			devices.valueAt(i).setListener(listener);

@@ -3,8 +3,7 @@ package com.autosenseapp.devices;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import com.autosenseapp.services.ArduinoService;
-
+import com.autosenseapp.interfaces.ArduinoListener;
 import java.lang.reflect.Field;
 
 /**
@@ -24,7 +23,7 @@ abstract public class Device {
 	}
 
 	abstract public void cleanUp();
-	abstract public void setListener(ArduinoService.ArduinoListener listener);
+	abstract public void setListener(ArduinoListener listener);
 	abstract public void parseData(int sender, int length, int[] data, int checksum);
 
 	protected void getData(int value) {

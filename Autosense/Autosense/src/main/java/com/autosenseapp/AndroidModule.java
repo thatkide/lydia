@@ -18,13 +18,14 @@ import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.devices.actions.ActionToggle;
 import com.autosenseapp.devices.configs.ArduinoDue;
 import com.autosenseapp.devices.configs.ArduinoUno;
+import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
 import com.autosenseapp.dialogs.ActionToggleExtraDialog;
 import com.autosenseapp.fragments.HeaderFragment;
 import com.autosenseapp.fragments.Settings.ArduinoSettingsFragment;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
 import com.autosenseapp.fragments.Settings.MasterIoFragment;
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.services.AutosenseService;
 
 import javax.inject.Singleton;
 import dagger.Module;
@@ -38,13 +39,14 @@ import dagger.Provides;
 				ActionToggle.class,
 				ActionToggleExtraDialog.class,
 				AppLaunchButton.class,
+				ArduinoAccessory.class,
 				ArduinoButton.class,
 				ArduinoDevice.class,
 				ArduinoDue.class,
 				ArduinoUno.class,
-				ArduinoService.class,
 				ArduinoSettingsFragment.class,
 				ArduinoPinEditor.class,
+				AutosenseService.class,
 				BackgroundController.class,
 				BackgroundSettingsFragment.class,
 				BaseButton.class,

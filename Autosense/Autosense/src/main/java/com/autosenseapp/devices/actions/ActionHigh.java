@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Parcel;
 import android.view.View;
-
 import com.autosenseapp.databases.ArduinoPin;
 import com.autosenseapp.devices.Master;
 

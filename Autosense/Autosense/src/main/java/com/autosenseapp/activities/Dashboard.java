@@ -18,18 +18,16 @@ import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.*;
-import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.BuildConfig;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
+import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.controllers.BackgroundController;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
-import com.autosenseapp.devices.Arduino;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
 import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragment;
 import com.autosenseapp.interfaces.NotificationInterface;
-import com.autosenseapp.services.ArduinoService;
 import com.autosenseapp.fragments.*;
 import com.autosenseapp.plugins.LastFM;
 import com.autosenseapp.services.HardwareManagerService;
@@ -41,10 +39,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.inject.Inject;
 
 public class Dashboard extends BaseActivity implements GestureOverlayView.OnGesturePerformedListener {
@@ -54,6 +50,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 	private GestureLibrary gestureLibrary;
 	private GestureOverlayView gestureOverlayView;
 
+	@Inject	ArduinoController arduinoController;
 	@Inject BackgroundController backgroundController;
 	@Inject NotificationController notificationController;
 	@Inject SharedPreferences sharedPreferences;
@@ -63,11 +60,11 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 	//the first part of this string have to be the package name
 	private static final String ACTION_USB_PERMISSION = "com.autosenseapp.action.USB_PERMISSION";
-	private PendingIntent mPermissionIntent;
+	private PendingIntent usbPermissionIntent;
 	private boolean mPermissionRequestPending;
 
-	@Inject UsbManager usbManager;
 	@Inject LocalBroadcastManager localBroadcastManager;
+	@Inject UsbManager usbManager;
 
 	/**
 	 * Called when the activities is first created.
@@ -78,36 +75,14 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 		notificationController.onCreate(this);
 
-		if (BuildConfig.INCLUDE_UPDATER) {
-			final UpdateChecker checker = new UpdateChecker(this, true);
-			checker.addObserver(new Observer() {
-				@Override
-				public void update(Observable observable, Object o) {
-					if (checker.isUpdateAvailable()) {
-						checker.downloadAndInstall(getString(R.string.update_apk_url));
-					}
-				}
-			});
-
-			checker.checkForUpdateByVersionCode(getString(R.string.update_url));
-		}
+		setupUpdateChecker();
 
 		// don't include bug sense it the key hasn't been changed
 		if (BuildConfig.INCLUDE_BUGSENSE) {
 			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
-		gestureLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
-		gestureLibrary.load();
-
-		gestureOverlayView = new GestureOverlayView(this);
-		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
-
-		gestureOverlayView.addView(inflate);
-		gestureOverlayView.addOnGesturePerformedListener(this);
-		gestureOverlayView.setGestureColor(Color.TRANSPARENT);
-		gestureOverlayView.setUncertainGestureColor(Color.TRANSPARENT);
-
+		setupGestures();
 		setContentView(gestureOverlayView);
 
 		// start the hardware manager service
@@ -124,27 +99,18 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 			.replace(R.id.footer_fragment, new FooterFragment())
 			.commit();
 
-		// start with the default music notification
-		notificationController.addNotification(MusicNotificationFragment.class, NotificationInterface.PRIORITY_HIGH);
-		notificationController.addNotification(SystemNotificationFragment.class, NotificationInterface.PRIORITY_LOW);
-
-		// start with the music
-		notificationController.setNotification(MusicNotificationFragment.class);
+		setupNotifications();
 
 		// initialize all plugins
 		lastFm = new LastFM(this);
 
-		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
-		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-		registerReceiver(mUsbReceiver, filter);
+		usbPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+		IntentFilter intentFilter = new IntentFilter(ACTION_USB_PERMISSION);
+		intentFilter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+		registerReceiver(usbReceiver, intentFilter);
 
-		// ensure our admin buttons are up to date
-		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
-		dataSource.open();
-		dataSource.checkRequiredButtons(this);
-		dataSource.close();
+		checkHomescreenButtons();
 	}
 
 	@Override
@@ -193,49 +159,46 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 //			startActivityForResult(enableBt, 1);
 //		}
 
-		// reset no no arduino.  if one is connected update the prefs so it will be available later on
-		sharedPreferences.edit().putInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE).apply();
-
 		// bind to the hardware manager too
 		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
-		if (!isServiceRunning(ArduinoService.class)) {
-			// Try to connect a USB accessory first
-			// get list of accessories
-			UsbAccessory[] accessories = usbManager.getAccessoryList();
-			// get first accessory
-			UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		// reset no no arduino.  if one is connected update the prefs so it will be available later on
+		sharedPreferences.edit().putInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE).apply();
+		// Try to connect a USB accessory first
+		// get list of accessories
+		UsbAccessory[] accessories = usbManager.getAccessoryList();
+		// get first accessory
+		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
-			if (accessory != null) {
-				//			Log.d(TAG, "got an accessory");
-				// if we have permission
-				if (usbManager.hasPermission(accessory)) {
-					// start the arduino service
-					//				Log.d(TAG, "start accessory");
-					Intent i = new Intent(this, ArduinoService.class);
-					i.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
-					startService(i);
-					// otherwise ask for permission
-				} else {
-					synchronized (mUsbReceiver) {
-						if (mPermissionRequestPending) {
-							usbManager.requestPermission(accessory, mPermissionIntent);
-							mPermissionRequestPending = true;
-						}
+		if (accessory != null) {
+			// Log.d(TAG, "got an accessory");
+			// if we have permission
+			if (usbManager.hasPermission(accessory)) {
+				// start the arduino service
+				//	Log.d(TAG, "start accessory");
+				Intent arduinoIntent = new Intent();
+				arduinoIntent.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
+				arduinoController.onStart(arduinoIntent);
+				// otherwise ask for permission
+			} else {
+				synchronized (usbReceiver) {
+					if (mPermissionRequestPending) {
+						usbManager.requestPermission(accessory, usbPermissionIntent);
+						mPermissionRequestPending = true;
 					}
 				}
-			} else {
-				//			Log.d(TAG, "usb device");
-				// else try device
-				HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
+			}
+		} else {
+			// Log.d(TAG, "usb device");
+			// else try device
+			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-				for (String deviceName : devices.keySet()) {
-					UsbDevice device = devices.get(deviceName);
+			for (String deviceName : devices.keySet()) {
+				UsbDevice device = devices.get(deviceName);
 
-					Intent intent = new Intent(this, ArduinoService.class);
-					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
-					startService(intent);
-				}
+				Intent intent = new Intent();
+				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+				arduinoController.onStart(intent);
 			}
 		}
 	}
@@ -264,7 +227,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 			e.printStackTrace();
 		}
 		try {
-			unregisterReceiver(mUsbReceiver);
+			unregisterReceiver(usbReceiver);
 		} catch (Exception e) {}
 	}
 
@@ -418,22 +381,19 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 	// Receiver for the USB intents
 	// this is fired on attach and permission granted
-	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "got usb broadcast");
-			Log.d(TAG, "action is " + intent.getAction());
 			String action = intent.getAction();
 			// check if permission intent
 			if (ACTION_USB_PERMISSION.equals(action)) {
 				synchronized (this) {
 					// if permission was granted
 					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-						Log.d(TAG, "starting from broadcast receiver");
 						// start the service and pass the intent
-						Intent i = new Intent(getApplicationContext(), ArduinoService.class);
-						i.putExtras(intent);
-						startService(i);
+						Intent serviceIntent = new Intent();
+						serviceIntent.putExtras(intent);
+						arduinoController.onStart(serviceIntent);
 					}
 					mPermissionRequestPending = false;
 				}
@@ -444,14 +404,49 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 	public GestureOverlayView getGestureOverlayView() { return gestureOverlayView;}
 
-	private boolean isServiceRunning(Class<?> serviceClass) {
-		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (serviceClass.getName().equalsIgnoreCase(serviceInfo.service.getClassName())) {
-				return true;
-			}
-		}
-		return false;
+	private void checkHomescreenButtons() {
+		// ensure our admin buttons are up to date
+		ButtonConfigDataSource dataSource = new ButtonConfigDataSource(this);
+		dataSource.open();
+		dataSource.checkRequiredButtons(this);
+		dataSource.close();
 	}
 
+	private void setupGestures() {
+		gestureLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		gestureLibrary.load();
+
+		gestureOverlayView = new GestureOverlayView(this);
+		View inflate = getLayoutInflater().inflate(R.layout.dashboard, null);
+
+		gestureOverlayView.addView(inflate);
+		gestureOverlayView.addOnGesturePerformedListener(this);
+		gestureOverlayView.setGestureColor(Color.TRANSPARENT);
+		gestureOverlayView.setUncertainGestureColor(Color.TRANSPARENT);
+	}
+
+	private void setupNotifications() {
+		// start with the default music notification
+		notificationController.addNotification(MusicNotificationFragment.class, NotificationInterface.PRIORITY_HIGH);
+		notificationController.addNotification(SystemNotificationFragment.class, NotificationInterface.PRIORITY_LOW);
+
+		// start with the music
+		notificationController.setNotification(MusicNotificationFragment.class);
+	}
+
+	private void setupUpdateChecker() {
+		if (BuildConfig.INCLUDE_UPDATER) {
+			final UpdateChecker checker = new UpdateChecker(this, true);
+			checker.addObserver(new Observer() {
+				@Override
+				public void update(Observable observable, Object o) {
+					if (checker.isUpdateAvailable()) {
+						checker.downloadAndInstall(getString(R.string.update_apk_url));
+					}
+				}
+			});
+
+			checker.checkForUpdateByVersionCode(getString(R.string.update_url));
+		}
+	}
 }

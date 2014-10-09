@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import com.autosenseapp.includes.Helpers;
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.interfaces.ArduinoListener;
 
 /**
  * Created by eric on 2014-05-04.
@@ -46,7 +46,7 @@ public class Master extends Device {
 	public static final int PINSTATE = 145;
 
 	private Context context;
-	private ArduinoService.ArduinoListener listener;
+	private ArduinoListener listener;
 
 	public Master(Context context) {
 		super(context);
@@ -62,7 +62,7 @@ public class Master extends Device {
 	}
 
 	@Override
-	public void setListener(ArduinoService.ArduinoListener listener) {
+	public void setListener(ArduinoListener listener) {
 		this.listener = listener;
 	}
 

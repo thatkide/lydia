@@ -6,12 +6,14 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import com.autosenseapp.AutosenseApplication;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 2014-08-26.
@@ -20,13 +22,15 @@ public class ArduinoAccessory implements ArduinoInterface {
 
 	private static final String TAG = ArduinoAccessory.class.getSimpleName();
 
+	@Inject UsbManager usbManager;
 	private ParcelFileDescriptor mFileDescriptor;
 	private InputStream mInputStream;
 	private OutputStream mOutputStream;
 
 	@Override
 	public void onCreate(Context context, Intent intent) {
-		UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+		// Inject our self to the DI graph
+		((AutosenseApplication)context.getApplicationContext()).inject(this);
 		UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 
 		if (accessory != null) {

@@ -1,7 +1,6 @@
 package com.autosenseapp.fragments.Settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -12,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.autosenseapp.R;
+import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.devices.configs.ArduinoConfig;
 import com.autosenseapp.devices.configs.ArduinoDue;
 import com.autosenseapp.devices.configs.ArduinoUno;
 import com.autosenseapp.fragments.BaseFragment;
-import com.autosenseapp.services.ArduinoService;
 
 import javax.inject.Inject;
 
@@ -58,15 +57,15 @@ public class MasterIoFragment extends BaseFragment implements View.OnTouchListen
 		super.onActivityCreated(saved);
 		Activity activity = getActivity();
 
-		int arduinoType = sharedPreferences.getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
+		int arduinoType = sharedPreferences.getInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE);
 
 		switch (arduinoType) {
-			case ArduinoService.ARDUINO_ACCESSORY: {
+			case ArduinoController.ARDUINO_ACCESSORY: {
 				arduinoImage.setImageResource(R.drawable.arduino_due);
 				arduinoConfig = new ArduinoDue(activity);
 				break;
 			}
-			case ArduinoService.ARDUINO_DEVICE: {
+			case ArduinoController.ARDUINO_DEVICE: {
 				arduinoImage.setImageResource(R.drawable.arduino_uno);
 				arduinoConfig = new ArduinoUno(activity);
 				break;

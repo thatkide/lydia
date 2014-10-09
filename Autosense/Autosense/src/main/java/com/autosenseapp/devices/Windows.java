@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.interfaces.ArduinoListener;
 import ca.efriesen.lydia_common.includes.Intents;
-//import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 
 /**
@@ -42,7 +40,7 @@ public class Windows extends Device {
 	}
 
 	@Override
-	public void setListener(ArduinoService.ArduinoListener listener) {
+	public void setListener(ArduinoListener listener) {
 
 	}
 

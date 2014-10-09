@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import com.autosenseapp.services.ArduinoService;
+import com.autosenseapp.interfaces.ArduinoListener;
 import ca.efriesen.lydia_common.includes.Constants;
 
 /**
@@ -15,7 +15,7 @@ public class Defroster extends Device {
 
 	// application context.  we need this for the broadcast receiver
 	private Context context;
-	private ArduinoService.ArduinoListener listener;
+	private ArduinoListener listener;
 
 	// constructor.  get the required info and pass it to the super class
 	public Defroster(Context context, String intentFilter) {
@@ -37,7 +37,7 @@ public class Defroster extends Device {
 	}
 
 	@Override
-	public void setListener(ArduinoService.ArduinoListener listener) {
+	public void setListener(ArduinoListener listener) {
 		this.listener = listener;
 	}
 

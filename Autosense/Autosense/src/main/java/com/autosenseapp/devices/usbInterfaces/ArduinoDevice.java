@@ -133,7 +133,7 @@ public class ArduinoDevice implements ArduinoInterface {
 	public void write(byte[] data) {
 		if (!upgradingFirmware.get()) {
 			try {
-				// add a delimeter for the serial comms
+				// add a delimiter for the serial comms
 				byte[] del = {(byte) 0x7e};
 				byte[] output = new byte[data.length + del.length];
 				System.arraycopy(data, 0, output, 0, data.length);

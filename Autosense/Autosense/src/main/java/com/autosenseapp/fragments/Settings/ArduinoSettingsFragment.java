@@ -5,10 +5,9 @@ import android.content.*;
 import android.os.Bundle;
 import android.preference.*;
 import com.autosenseapp.R;
+import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.devices.Master;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
-import com.autosenseapp.services.ArduinoService;
-
 import javax.inject.Inject;
 
 /**
@@ -82,7 +81,7 @@ public class ArduinoSettingsFragment extends BasePreferenceFragment {
 		findPreference("setupGaugeCluster").setOnPreferenceClickListener(clickListener);
 		findPreference("setupMasterIO").setOnPreferenceClickListener(clickListener);
 
-		if (sharedPreferences.getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE) != ArduinoService.ARDUINO_DEVICE) {
+		if (sharedPreferences.getInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE) != ArduinoController.ARDUINO_DEVICE) {
 			PreferenceCategory category = (PreferenceCategory) findPreference("arduino");
 			category.removePreference(findPreference("autoUpgradeFirmware"));
 			category.removePreference(findPreference("upgradeFirmware"));

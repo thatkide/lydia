@@ -2,7 +2,6 @@ package com.autosenseapp.devices.usbInterfaces;
 
 import android.content.Context;
 import android.content.Intent;
-
 import java.io.IOException;
 
 /**

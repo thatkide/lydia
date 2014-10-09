@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+
+import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.devices.Master;
 import com.autosenseapp.devices.actions.Action;
 import com.autosenseapp.devices.outputTriggers.Trigger;
-import com.autosenseapp.services.ArduinoService;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,17 +37,17 @@ public class ArduinoPinsDataSource {
 		if (database == null || !database.isOpen()) {
 			database = dbHelper.getWritableDatabase();
 		}
-		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
-		if (deviceType == ArduinoService.ARDUINO_ACCESSORY) {
+		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE);
+		if (deviceType == ArduinoController.ARDUINO_ACCESSORY) {
 			this.DEVICE_TABLE = ArduinoPinsOpenHelper.ACCESSORY_TABLE;
-		} else if (deviceType == ArduinoService.ARDUINO_DEVICE) {
+		} else if (deviceType == ArduinoController.ARDUINO_DEVICE) {
 			this.DEVICE_TABLE = ArduinoPinsOpenHelper.DEVICE_TABLE;
 		}
 	}
 
 	private boolean hasValidDevice() {
-		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoService.ARDUINO_TYPE, ArduinoService.ARDUINO_NONE);
-		if (deviceType != ArduinoService.ARDUINO_NONE) {
+		int deviceType = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS).getInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE);
+		if (deviceType != ArduinoController.ARDUINO_NONE) {
 			return true;
 		} else {
 			return false;
