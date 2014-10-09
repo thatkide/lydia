@@ -1,44 +1,41 @@
-package com.autosenseapp.services;
+package com.autosenseapp.controllers;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Binder;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
-
 import com.autosenseapp.R;
-import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.services.media_states.MediaState;
 import com.autosenseapp.services.media_states.PausedState;
 import com.autosenseapp.services.media_states.PlayState;
 import com.autosenseapp.services.media_states.StoppedState;
-import ca.efriesen.lydia_common.includes.Constants;
-import ca.efriesen.lydia_common.media.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import ca.efriesen.lydia_common.includes.Constants;
+import ca.efriesen.lydia_common.media.Album;
+import ca.efriesen.lydia_common.media.MediaUtils;
+import ca.efriesen.lydia_common.media.Song;
 
 /**
- * Created by eric on 2013-06-16.
+ * Created by eric on 2014-10-08.
  */
-public class MediaService extends Service implements
+@Singleton
+public class MediaController implements
 		MediaPlayer.OnCompletionListener,
 		MediaPlayer.OnErrorListener,
 		MediaPlayer.OnPreparedListener,
 		AudioManager.OnAudioFocusChangeListener {
 
-	public static final String TAG = MediaService.class.getSimpleName();
-
-	// other services
-	private AudioManager audioManager = null;
-	private MediaPlayer mMediaPlayer = null;
+	private static final String TAG = MediaController.class.getSimpleName();
 
 	// Intent strings
 	public static final String GET_CURRENT_SONG = "com.autosenseapp.lydia.MediaService.GetCurrentSong";
@@ -61,16 +58,11 @@ public class MediaService extends Service implements
 	public static final String STOP = "com.autosenseapp.lydia.MediaService.Stop";
 	public static final String UPDATE_MEDIA_INFO = "com.autosenseapp.lydia.MediaService.UpdateMediaInfo";
 
-	// service bindings
-	private final IBinder mBinder = new MediaServiceBinder();
-
-	// notification vars
-	private Notification.Builder builder;
-	private NotificationManager notificationManager;
-	private int notificationId = 12;
-
-	// other stuff
-	private SharedPreferences sharedPreferences;
+	@Inject AudioManager audioManager;
+	@Inject Context context;
+	private MediaPlayer mMediaPlayer;
+	@Inject LocalBroadcastManager localBroadcastManager;
+	@Inject SharedPreferences sharedPreferences;
 
 	private MediaState pausedState;
 	private MediaState playState;
@@ -84,81 +76,34 @@ public class MediaService extends Service implements
 	public int playlistPosition = 0;
 	public boolean repeatAll;
 	public boolean shuffle;
-
 	public Handler mHandler = new Handler();
 
-	public LocalBroadcastManager localBroadcastManager;
+	@Inject
+	public MediaController() { }
 
-	public class MediaServiceBinder extends Binder {
-		public MediaService getService() {
-			return MediaService.this;
-		}
-	}
-
-	// Binding method
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-
-	@Override
-	public void onCreate() {
-		super.onCreate();
-
-		sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
-		localBroadcastManager = LocalBroadcastManager.getInstance(this);
-
-		// start it in the foreground so it doesn't get killed
-		builder = new Notification.Builder(this)
-				.setSmallIcon(R.drawable.av_play)
-				.setContentTitle("Music")
-				.setOnlyAlertOnce(true)
-				.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, Dashboard.class), PendingIntent.FLAG_UPDATE_CURRENT));
-
-		startForeground(notificationId, builder.build());
-
-		// Add a notification
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.notify(notificationId, builder.build());
-
+	public void onStart() {
 		// default state for repeat and shuffle
 		repeatAll = sharedPreferences.getBoolean(Constants.REPEATALL, false);
 		shuffle = sharedPreferences.getBoolean(Constants.SHUFFLE, false);
 
 		localBroadcastManager.registerReceiver(getCurrentSongReceiver, new IntentFilter(GET_CURRENT_SONG));
 		localBroadcastManager.registerReceiver(CommandReceiver, new IntentFilter(MEDIA_COMMAND));
-	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		try {
-			localBroadcastManager.unregisterReceiver(CommandReceiver);
-		} catch (Exception e) {}
-		try {
-			localBroadcastManager.unregisterReceiver(getCurrentSongReceiver);
-		} catch (Exception e) {}
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
 		// setup the media player
 		mMediaPlayer = new MediaPlayer();
 		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		mMediaPlayer.setOnCompletionListener(this);
 		mMediaPlayer.setOnPreparedListener(this);
-		mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+		mMediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 
 		// setup the states
-		pausedState = new PausedState(getApplicationContext(), this, mMediaPlayer);
-		playState = new PlayState(getApplicationContext(), this, mMediaPlayer);
-		stoppedState = new StoppedState(getApplicationContext(), this, mMediaPlayer);
+		pausedState = new PausedState(context, this, mMediaPlayer);
+		playState = new PlayState(context, this, mMediaPlayer);
+		stoppedState = new StoppedState(context, this, mMediaPlayer);
 
 		// default to the stopped state
 		mediaState = stoppedState;
 
-		// get the audio manager
-		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		// request audio focus
 		int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 		// if we aren't granted access
@@ -168,44 +113,8 @@ public class MediaService extends Service implements
 			mediaState.stop();
 		}
 
-		return START_NOT_STICKY;
 	}
 
-	// Media player specific methods
-
-	public void onAudioFocusChange(int focusChange) {
-//		switch (focusChange) {
-//			case AudioManager.AUDIOFOCUS_GAIN: {
-////				if (getState() == State.Playing) {
-//					// resume playback
-//					if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-//						mMediaPlayer.start();
-//					}
-//					mMediaPlayer.setVolume(1.0f, 1.0f);
-////				}
-//				break;
-//			}
-//			case AudioManager.AUDIOFOCUS_LOSS: {
-//				// we've lost focus, so stop
-//				stop();
-//				cleanUp();
-//				break;
-//			}
-//			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: {
-//				// lost focus for a short time, so we have to stop playback
-//				// we call pause directly to keep the state "playing"
-//				mMediaPlayer.pause();
-//				break;
-//			}
-//			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: {
-//				// lost focus for a short time, but we can duck
-//				if (mMediaPlayer.isPlaying()) {
-//					mMediaPlayer.setVolume(0.1f, 0.1f);
-//				}
-//				break;
-//			}
-//		}
-	}
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
@@ -233,8 +142,8 @@ public class MediaService extends Service implements
 		// get the song to send to the notification and broadcast
 		Song song = playlist.get(playlistPosition);
 
-		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
-		notificationManager.notify(notificationId, builder.build());
+//		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
+//		notificationManager.notify(notificationId, builder.build());
 
 		// set the duration in the song
 		playlist.get(playlistPosition).setDuration(mediaPlayer.getDuration());
@@ -243,9 +152,13 @@ public class MediaService extends Service implements
 		// send the new song as the update media info intent
 		localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra(IS_PLAYING, mMediaPlayer.isPlaying()).putExtra(SONG, song));
 		mHandler.postDelayed(mUpdateTime, 25);
+
 	}
 
-	// get state helper methods
+	@Override
+	public void onAudioFocusChange(int focusChange) {
+
+	}
 
 	public MediaState getPausedState() {
 		return pausedState;
@@ -269,8 +182,8 @@ public class MediaService extends Service implements
 		mHandler.removeCallbacks(mUpdateTime);
 
 		// remove note text on cleanup
-		builder.setContentText("");
-		notificationManager.notify(notificationId, builder.build());
+//		builder.setContentText("");
+//		notificationManager.notify(notificationId, builder.build());
 		// release media player resources
 		try {
 			mMediaPlayer.release();
@@ -306,7 +219,7 @@ public class MediaService extends Service implements
 	private void shufflePlay() {
 		setShuffle(true);
 		stop();
-		ArrayList<Song> songs = Album.getAllSongs(this, getShuffle());
+		ArrayList<Song> songs = Album.getAllSongs(context, getShuffle());
 		setPlaylist(songs, 0);
 		play();
 	}
@@ -367,8 +280,8 @@ public class MediaService extends Service implements
 			public void run() {
 				stop();
 				// make a new album and name "all songs"
-				Album album = new Album(getApplicationContext());
-				album.setName(getString(R.string.all_songs));
+				Album album = new Album(context);
+				album.setName(context.getString(R.string.all_songs));
 				// get a list of all the songs
 //				ArrayList<Song> allSongs = getAllSongsInAlbum(album);
 				if (shuffle) {

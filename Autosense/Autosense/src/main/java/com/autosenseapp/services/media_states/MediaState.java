@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 
-import com.autosenseapp.services.MediaService;
+import com.autosenseapp.AutosenseApplication;
+import com.autosenseapp.controllers.MediaController;
 import ca.efriesen.lydia_common.media.Song;
-
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 /**
  * Created by eric on 1/3/2014.
@@ -18,26 +21,28 @@ import java.io.IOException;
 public abstract class MediaState {
 	private static final String TAG = "lydia mediastate";
 
+	@Inject LocalBroadcastManager localBroadcastManager;
 	private Context context;
-	private MediaService mediaService;
+	private MediaController mediaController;
 	private MediaPlayer mediaPlayer;
 
-	public MediaState(Context context, MediaService mediaService, MediaPlayer mediaPlayer) {
+	public MediaState(Context context, MediaController MediaController, MediaPlayer mediaPlayer) {
 		this.context = context;
+		((AutosenseApplication)context.getApplicationContext()).inject(this);
 		this.mediaPlayer = mediaPlayer;
-		this.mediaService = mediaService;
+		this.mediaController = MediaController;
 	}
 
 	public void next() {
 		try {
 			// move to next item in playlist
-			if (mediaService.playlistPosition < mediaService.playlist.size()-1) {
-				mediaService.playlistPosition++;
+			if (mediaController.playlistPosition < mediaController.playlist.size()-1) {
+				mediaController.playlistPosition++;
 				// if we've reached the end
 				// start at the beginning again (if repeat is on)
 			} else {
-				if (mediaService.repeatAll) {
-					mediaService.playlistPosition = 0;
+				if (mediaController.repeatAll) {
+					mediaController.playlistPosition = 0;
 				}
 			}
 		} catch (NullPointerException e) { }
@@ -47,20 +52,20 @@ public abstract class MediaState {
 
 	public void playPause() {
 		try {
-			mediaService.localBroadcastManager.sendBroadcast(new Intent(MediaService.UPDATE_MEDIA_INFO).putExtra(MediaService.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaService.SONG, mediaService.playlist.get(mediaService.playlistPosition)));
+			localBroadcastManager.sendBroadcast(new Intent(MediaController.UPDATE_MEDIA_INFO).putExtra(MediaController.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaController.SONG, mediaController.playlist.get(mediaController.playlistPosition)));
 		} catch (NullPointerException e) {}
 	};
 
 	public void previous() {
 		try {
 			// move to next item in playlist
-			if (mediaService.playlistPosition > 0) {
-				mediaService.playlistPosition--;
+			if (mediaController.playlistPosition > 0) {
+				mediaController.playlistPosition--;
 				// if we've reached the end
 				// start at the beginning again (if repeat is on)
 			} else {
-				if (mediaService.repeatAll) {
-					mediaService.playlistPosition = mediaService.playlist.size()-1;
+				if (mediaController.repeatAll) {
+					mediaController.playlistPosition = mediaController.playlist.size()-1;
 				}
 			}
 		} catch (NullPointerException e) { }
@@ -79,8 +84,8 @@ public abstract class MediaState {
 	}
 
 	public void stop() {
-		mediaService.mHandler.removeCallbacks(mediaService.mUpdateTime);
-		mediaService.setState(mediaService.getStoppedState());
+		mediaController.mHandler.removeCallbacks(mediaController.mUpdateTime);
+		mediaController.setState(mediaController.getStoppedState());
 		mediaPlayer.stop();
 		mediaPlayer.reset();
 //		mediaPlayer.release();

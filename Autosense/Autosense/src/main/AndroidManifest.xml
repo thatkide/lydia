@@ -168,7 +168,7 @@
 				  android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
 				  android:windowSoftInputMode="stateHidden" />
 
-		<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.autosenseapp.hardwareManager" />
+		<!--<service android:name="com.autosenseapp.services.HardwareManagerService" android:process="com.autosenseapp.hardwareManager" />-->
 
 		<service android:name="com.autosenseapp.services.MediaService" />
 

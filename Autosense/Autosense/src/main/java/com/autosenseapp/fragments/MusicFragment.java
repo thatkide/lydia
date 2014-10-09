@@ -1,20 +1,32 @@
 package com.autosenseapp.fragments;
 
-import android.app.*;
-import android.content.*;
+import android.app.ListFragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.EditText;
+import android.widget.ListView;
+
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragmentStates.*;
+
+import javax.inject.Inject;
+
 import ca.efriesen.lydia_common.media.*;
-import com.autosenseapp.services.MediaService;
 
 /**
  * User: eric
@@ -24,7 +36,7 @@ import com.autosenseapp.services.MediaService;
 public class MusicFragment extends ListFragment implements FragmentOnBackPressedCallback{
 
 	// bind to the media service
-	public MediaService mediaService;
+	@Inject MediaController mediaController;
 
 	private static final String TAG = MusicFragment.class.getSimpleName();
 
@@ -110,14 +122,14 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
 		// bind to the media service
-		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
+//		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		// send a broadcast to the media service asking if anything is playing.  the listview will get the info and update accordingly
-		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+		localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 	}
 
 	@Override
@@ -133,11 +145,6 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		playlistState.onDestroy();
 		allSongState.onDestroy();
 		nowPlayingState.onDestroy();
-		try {
-			getActivity().unbindService(mediaServiceConnection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -186,16 +193,4 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 			musicFragmentState.onBackPressed();
 		}
 	}
-
-	private ServiceConnection mediaServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder iBinder) {
-			mediaService = ((MediaService.MediaServiceBinder) iBinder).getService();
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mediaService = null;
-		}
-	};
 }

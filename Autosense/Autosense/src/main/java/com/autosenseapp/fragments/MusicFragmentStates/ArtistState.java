@@ -6,12 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
-import com.autosenseapp.services.MediaService;
 import ca.efriesen.lydia_common.media.Artist;
 import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
@@ -35,7 +39,7 @@ public class ArtistState implements MusicFragmentState {
 	public ArtistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 	}
 
 	@Override
@@ -111,8 +115,8 @@ public class ArtistState implements MusicFragmentState {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			try {
-				if (intent.hasExtra(MediaService.SONG)) {
-					currentArtist = ((Song)intent.getSerializableExtra(MediaService.SONG)).getAlbum().getArtist();
+				if (intent.hasExtra(MediaController.SONG)) {
+					currentArtist = ((Song)intent.getSerializableExtra(MediaController.SONG)).getAlbum().getArtist();
 					adapter.notifyDataSetChanged();
 				}
 			} catch (NullPointerException e) {

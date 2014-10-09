@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.databases.BluetoothDeviceDataSource;
 import ca.efriesen.lydia_common.BluetoothService;
 import ca.efriesen.lydia_common.messages.PhoneCall;
@@ -97,7 +98,7 @@ public class HardwareManagerService extends Service {
 		notificationManager.notify(1, builder.build());
 
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
-		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 		registerReceiver(bluetoothManagerReceiver, new IntentFilter(Intents.BLUETOOTHMANAGER));
 	}
 
@@ -322,22 +323,5 @@ public class HardwareManagerService extends Service {
 			}
 		}
 	};
-//	private BroadcastReceiver updateBrightnessReceiver = new BroadcastReceiver() {
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			if (ioioBound) {
-//				OutputStream outputStream = ioioService.getOutputStream();
-//				try {
-//					outputStream.write(myIOIOService.UPDATEBRIGHTNESS);
-//					outputStream.write(intent.getIntExtra("light", 0));
-//					outputStream.write(intent.getIntExtra("brightness", 25));
-//				} catch (IOException e) {
-//				} catch (NullPointerException e) {
-//				}
-//			}
-//		}
-//	};
-//
-//
 //
 }

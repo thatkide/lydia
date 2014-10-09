@@ -6,16 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.R;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
-import com.autosenseapp.services.MediaService;
 import ca.efriesen.lydia_common.media.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 1/5/2014.
@@ -24,6 +30,7 @@ abstract public class SongState implements MusicFragmentState {
 
 	private static final String TAG = SongState.class.getSimpleName();
 
+	@Inject	MediaController mediaController;
 	protected Activity activity;
 	protected MusicFragment musicFragment;
 	protected Artist artist;
@@ -34,9 +41,10 @@ abstract public class SongState implements MusicFragmentState {
 	private ListView view;
 
 	public SongState(MusicFragment musicFragment) {
+		((AutosenseApplication)musicFragment.getActivity().getApplication().getApplicationContext()).inject(this);
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 	}
 
 	@Override
@@ -61,14 +69,14 @@ abstract public class SongState implements MusicFragmentState {
 
 	@Override
 	public void onListItemClick(ListView list, View v, int position, long id) {
-		musicFragment.mediaService.setPlaylist(songs, position);
-		musicFragment.mediaService.play();
+		mediaController.setPlaylist(songs, position);
+		mediaController.play();
 	}
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 		// send a request to update the song info
-		musicFragment.localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+		musicFragment.localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 		songs = new ArrayList<Media>(Arrays.asList(medias));
 		view = (ListView) activity.findViewById(android.R.id.list);
 		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
@@ -102,8 +110,8 @@ abstract public class SongState implements MusicFragmentState {
 		public void onReceive(Context context, Intent intent) {
 			try {
 				if (musicFragment.getState() == musicFragment.getAlbumSongState()) {
-					if (intent.hasExtra(MediaService.SONG)) {
-						currentSong = (Song)intent.getSerializableExtra(MediaService.SONG);
+					if (intent.hasExtra(MediaController.SONG)) {
+						currentSong = (Song)intent.getSerializableExtra(MediaController.SONG);
 						adapter.setCurrentSong(currentSong);
 						int pos = songs.indexOf(currentSong);
 						adapter.notifyDataSetChanged();

@@ -23,6 +23,7 @@ import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
 import com.autosenseapp.controllers.ArduinoController;
 import com.autosenseapp.controllers.BackgroundController;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.databases.ButtonConfigDataSource;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
@@ -30,8 +31,7 @@ import com.autosenseapp.fragments.NotificationFragments.SystemNotificationFragme
 import com.autosenseapp.interfaces.NotificationInterface;
 import com.autosenseapp.fragments.*;
 import com.autosenseapp.plugins.LastFM;
-import com.autosenseapp.services.HardwareManagerService;
-import com.autosenseapp.services.MediaService;
+//import com.autosenseapp.services.HardwareManagerService;
 import ca.efriesen.lydia_common.includes.Intents;
 import com.appaholics.updatechecker.UpdateChecker;
 import com.bugsense.trace.BugSenseHandler;
@@ -86,10 +86,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		setContentView(gestureOverlayView);
 
 		// start the hardware manager service
-		startService(new Intent(this, HardwareManagerService.class));
-
-		// start the media service
-		startService(new Intent(this, MediaService.class));
+//		startService(new Intent(this, HardwareManagerService.class));
 
 		getFragmentManager().beginTransaction()
 			.replace(R.id.header_fragment, new HeaderFragment())
@@ -160,7 +157,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 //		}
 
 		// bind to the hardware manager too
-		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
+//		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
 		// reset no no arduino.  if one is connected update the prefs so it will be available later on
 		sharedPreferences.edit().putInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE).apply();
@@ -212,9 +209,9 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 	@Override
 	public void onStop() {
 		super.onStop();
-		try {
-			unbindService(hardwareServiceConnection);
-		} catch (Exception e) {	}
+//		try {
+//			unbindService(hardwareServiceConnection);
+//		} catch (Exception e) {	}
 	}
 
 	@Override
@@ -313,18 +310,18 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 /* ------------------ End View Updaters ------------------ */
 
-	private ServiceConnection hardwareServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder iBinder) {
-			// send the broadcast to the service to force a temperature update
-			Intent updateTemp = new Intent(Intents.GETTEMPERATURE);
-			sendBroadcast(updateTemp);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-		}
-	};
+//	private ServiceConnection hardwareServiceConnection = new ServiceConnection() {
+//		@Override
+//		public void onServiceConnected(ComponentName name, IBinder iBinder) {
+//			// send the broadcast to the service to force a temperature update
+//			Intent updateTemp = new Intent(Intents.GETTEMPERATURE);
+//			sendBroadcast(updateTemp);
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName name) {
+//		}
+//	};
 
 
 /* ------------------ End Fragment callbacks ------------------ */
@@ -350,11 +347,11 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		for (Prediction prediction : predictions) {
 			if (prediction.score > 1.0) {
 				if (prediction.name.equalsIgnoreCase("right")) {
-					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
+					localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.NEXT));
 					// show the music bar on change
 					notificationController.setNotification(MusicNotificationFragment.class);
 				} else {
-					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
+					localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PREVIOUS));
 					notificationController.setNotification(MusicNotificationFragment.class);
 				}
 			}

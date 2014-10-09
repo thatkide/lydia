@@ -1,15 +1,17 @@
 package com.autosenseapp.fragments;
 
-import android.content.*;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import com.autosenseapp.R;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.controllers.NotificationController;
 import com.autosenseapp.fragments.NotificationFragments.MusicNotificationFragment;
-import com.autosenseapp.services.MediaService;
 import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -27,7 +29,8 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 	@Inject NotificationController notificationController;
 	@Inject AudioManager audioManager;
 
-	@InjectView(R.id.mute) ImageButton mute;
+	@InjectView(R.id.mute)
+	ImageButton mute;
 	@InjectView(R.id.play_pause) ImageButton playPause;
 	@InjectView(R.id.previous) ImageButton previous;
 	@InjectView(R.id.next) ImageButton next;
@@ -75,14 +78,14 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 		playPause.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PLAY_PAUSE));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PLAY_PAUSE));
 			}
 		});
 
 		next.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.NEXT));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.NEXT));
 				// show the music bar on change
 				notificationController.setNotification(MusicNotificationFragment.class);
 			}
@@ -91,7 +94,7 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 		previous.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.PREVIOUS));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PREVIOUS));
 				notificationController.setNotification(MusicNotificationFragment.class);
 			}
 		});

@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import com.autosenseapp.R;
 import com.autosenseapp.includes.Helpers;
-import com.autosenseapp.services.MediaService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import ca.efriesen.lydia_common.media.Song;
@@ -47,7 +46,7 @@ public class BackgroundController {
 	public BackgroundController(LocalBroadcastManager localBroadcastManager) {
 		this.localBroadcastManager = localBroadcastManager;
 
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 	}
 
 	public void onDestroy() {
@@ -209,7 +208,7 @@ public class BackgroundController {
 			// if we want to use the album art as the background
 			if (sharedPreferences.getBoolean("useAlbumArtBg", false)) {
 				// get the bitmap from the song
-				Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(context);
+				Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaController.SONG)).getAlbum()).getAlbumArt(context);
 				// if it's valid
 				if (bitmap != null) {
 					// set the background

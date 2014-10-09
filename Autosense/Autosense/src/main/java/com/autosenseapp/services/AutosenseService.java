@@ -9,6 +9,7 @@ import android.util.Log;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.controllers.ArduinoController;
+import com.autosenseapp.controllers.MediaController;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ public class AutosenseService extends BaseService {
 	private static final String TAG = AutosenseService.class.getSimpleName();
 
 	@Inject ArduinoController arduinoController;
+	@Inject MediaController mediaController;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -45,6 +47,7 @@ public class AutosenseService extends BaseService {
 		// Add a notification
 		notificationManager.notify(4, builder.build());
 
+		mediaController.onStart();
 	}
 
 	@Override

@@ -8,8 +8,9 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.autosenseapp.R;
+import com.autosenseapp.controllers.MediaController;
+
 import ca.efriesen.lydia_common.media.Song;
-import com.autosenseapp.services.MediaService;
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
 import de.umass.lastfm.Session;
@@ -40,8 +41,8 @@ public class LastFM extends Plugin {
 
 		localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
-		localBroadcastManager.registerReceiver(songFinishedReceiver, new IntentFilter(MediaService.SONG_FINISHED));
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(songFinishedReceiver, new IntentFilter(MediaController.SONG_FINISHED));
 
 		Thread thread = new Thread(new Runnable() {
 			@Override
@@ -96,8 +97,8 @@ public class LastFM extends Plugin {
 			if (updateTrackThread != null) {
 				updateTrackThread.interrupt();
 			}
-			final Song song = (Song) intent.getSerializableExtra(MediaService.SONG);
-			isPlaying = intent.getBooleanExtra(MediaService.IS_PLAYING, false);
+			final Song song = (Song) intent.getSerializableExtra(MediaController.SONG);
+			isPlaying = intent.getBooleanExtra(MediaController.IS_PLAYING, false);
 
 			// send to last.fm in a new thread
 			updateTrackThread = new Thread(new Runnable() {

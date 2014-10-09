@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.interfaces.NotificationInterface;
-import com.autosenseapp.services.MediaService;
 import ca.efriesen.lydia_common.includes.Constants;
 import ca.efriesen.lydia_common.media.Song;
 
@@ -78,7 +78,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
-					localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SET_POSITION).putExtra(MediaService.SET_POSITION, progress));
+					localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.SET_POSITION).putExtra(MediaController.SET_POSITION, progress));
 				}
 			}
 
@@ -105,7 +105,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 		repeat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.REPEAT));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.REPEAT));
 			}
 		});
 
@@ -119,7 +119,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 			@Override
 			public boolean onLongClick(View v) {
 				Toast.makeText(activity, getText(R.string.shuffle_all), Toast.LENGTH_SHORT).show();
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SHUFFLE_PLAY));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.SHUFFLE_PLAY));
 				// we return true, saying we've handled this.. don't let anybody else do anything
 				return true;
 			}
@@ -129,18 +129,18 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 		shuffle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaService.MEDIA_COMMAND).putExtra(MediaService.MEDIA_COMMAND, MediaService.SHUFFLE));
+				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.SHUFFLE));
 			}
 		});
 
 		// register a receiver to update the media info
-		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(mMusicInfo, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 
 		// register the local broadcasts from the service
-		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaService.PROGRESS));
-		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaService.REPEAT_STATE));
-		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaService.SHUFFLE_STATE));
-		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(mediaProgressReceiver, new IntentFilter(MediaController.PROGRESS));
+		localBroadcastManager.registerReceiver(mediaRepeatState, new IntentFilter(MediaController.REPEAT_STATE));
+		localBroadcastManager.registerReceiver(mediaShuffleState, new IntentFilter(MediaController.SHUFFLE_STATE));
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 	private BroadcastReceiver mMusicInfo = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			song = (Song) intent.getSerializableExtra(MediaService.SONG);
+			song = (Song) intent.getSerializableExtra(MediaController.SONG);
 
 			// update the internal vars about the artist and album. so when we click the text it takes us to the correct listing
 //			artistId = String.valueOf(song.getArtistId());
@@ -220,7 +220,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 		public void onReceive(Context context, Intent intent) {
 			final ImageButton repeat = (ImageButton) activity.findViewById(R.id.repeat);
 
-			if (intent.getBooleanExtra(MediaService.REPEAT_STATE, false)) {
+			if (intent.getBooleanExtra(MediaController.REPEAT_STATE, false)) {
 				repeat.setColorFilter(blueFilter);
 			} else {
 				repeat.setColorFilter(whiteFilter);
@@ -233,7 +233,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 		public void onReceive(Context context, Intent intent) {
 			final ImageButton shuffle = (ImageButton) activity.findViewById(R.id.shuffle);
 
-			if (intent.getBooleanExtra(MediaService.SHUFFLE_STATE, false)) {
+			if (intent.getBooleanExtra(MediaController.SHUFFLE_STATE, false)) {
 				shuffle.setColorFilter(blueFilter);
 			} else {
 				shuffle.setColorFilter(whiteFilter);
@@ -245,7 +245,7 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			ImageButton pp = (ImageButton) activity.findViewById(R.id.play_pause);
-			if (intent.getBooleanExtra(MediaService.IS_PLAYING, false)) {
+			if (intent.getBooleanExtra(MediaController.IS_PLAYING, false)) {
 				pp.setImageResource(R.drawable.av_pause);
 			} else {
 				pp.setImageResource(R.drawable.av_play);
@@ -261,6 +261,6 @@ public class MusicNotificationFragment extends Fragment implements NotificationI
 	public void restoreFragment(Bundle bundle) {
 		song = (Song) bundle.getSerializable("song");
 		// send a broadcast asking for the current song. we'll get it and update
-		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+		localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 	}
 }

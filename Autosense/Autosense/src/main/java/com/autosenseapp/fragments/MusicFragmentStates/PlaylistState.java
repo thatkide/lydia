@@ -4,15 +4,27 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.*;
-import android.widget.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.R;
 import com.autosenseapp.alertDialogs.NewPlaylistAlert;
 import ca.efriesen.lydia_common.media.Playlist;
+
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Media;
-
 import java.util.ArrayList;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 1/11/2014.
@@ -21,6 +33,7 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 
 	private static final String TAG = "lydia playlist state";
 
+	@Inject MediaController mediaController;
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayAdapter<Playlist> adapter;
@@ -32,6 +45,7 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 	private static final int ClearId = 3;
 
 	public PlaylistState(MusicFragment musicFragment) {
+		((AutosenseApplication)musicFragment.getActivity().getApplication().getApplicationContext()).inject(this);
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
 	}
@@ -105,8 +119,8 @@ public class PlaylistState implements MusicFragmentState, DialogInterface.OnDism
 			}
 			case PlayId: {
 				// play the selected list
-				musicFragment.mediaService.setPlaylist(playlist.getSongs(), 0);
-				musicFragment.mediaService.play();
+				mediaController.setPlaylist(playlist.getSongs(), 0);
+				mediaController.play();
 				break;
 			}
 			case ClearId: {

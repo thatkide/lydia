@@ -15,6 +15,7 @@ import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.buttons.appButtons.AppLaunchButton;
 import com.autosenseapp.buttons.widgetButtons.ArduinoButton;
 import com.autosenseapp.controllers.BackgroundController;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.devices.actions.ActionToggle;
 import com.autosenseapp.devices.configs.ArduinoDue;
 import com.autosenseapp.devices.configs.ArduinoUno;
@@ -22,10 +23,18 @@ import com.autosenseapp.devices.usbInterfaces.ArduinoAccessory;
 import com.autosenseapp.devices.usbInterfaces.ArduinoDevice;
 import com.autosenseapp.dialogs.ActionToggleExtraDialog;
 import com.autosenseapp.fragments.HeaderFragment;
+import com.autosenseapp.fragments.MusicFragmentStates.AlbumSongState;
+import com.autosenseapp.fragments.MusicFragmentStates.AllSongsState;
+import com.autosenseapp.fragments.MusicFragmentStates.NowPlayingState;
+import com.autosenseapp.fragments.MusicFragmentStates.PlaylistSongState;
+import com.autosenseapp.fragments.MusicFragmentStates.PlaylistState;
 import com.autosenseapp.fragments.Settings.ArduinoSettingsFragment;
 import com.autosenseapp.fragments.Settings.BackgroundSettingsFragment;
 import com.autosenseapp.fragments.Settings.MasterIoFragment;
 import com.autosenseapp.services.AutosenseService;
+import com.autosenseapp.services.media_states.PausedState;
+import com.autosenseapp.services.media_states.PlayState;
+import com.autosenseapp.services.media_states.StoppedState;
 
 import javax.inject.Singleton;
 import dagger.Module;
@@ -38,6 +47,8 @@ import dagger.Provides;
 		injects = {
 				ActionToggle.class,
 				ActionToggleExtraDialog.class,
+				AlbumSongState.class,
+				AllSongsState.class,
 				AppLaunchButton.class,
 				ArduinoAccessory.class,
 				ArduinoButton.class,
@@ -54,6 +65,13 @@ import dagger.Provides;
 				Dashboard.class,
 				HeaderFragment.class,
 				MasterIoFragment.class,
+				MediaController.class,
+				NowPlayingState.class,
+				PausedState.class,
+				PlayState.class,
+				PlaylistState.class,
+				PlaylistSongState.class,
+				StoppedState.class,
 		},
 		library = true,
 		complete =  false

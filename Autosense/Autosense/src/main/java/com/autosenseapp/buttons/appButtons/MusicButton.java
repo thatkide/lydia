@@ -13,9 +13,9 @@ import android.view.View;
 import com.autosenseapp.R;
 import com.autosenseapp.activities.Dashboard;
 import com.autosenseapp.buttons.BaseButton;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.databases.Button;
 import com.autosenseapp.fragments.MusicFragment;
-import com.autosenseapp.services.MediaService;
 import ca.efriesen.lydia_common.media.Song;
 
 /**
@@ -34,8 +34,8 @@ public class MusicButton extends BaseButton {
 		super(activity);
 		this.activity = activity;
 		localBroadcastManager = LocalBroadcastManager.getInstance(activity);
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaService.UPDATE_MEDIA_INFO));
-		localBroadcastManager.sendBroadcast(new Intent(MediaService.GET_CURRENT_SONG));
+		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 		sharedPreferences = activity.getSharedPreferences(activity.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS);
 	}
 
@@ -78,7 +78,7 @@ public class MusicButton extends BaseButton {
 					if (button.getButtonType() == TYPE_HOMESCREEN && button.getAction().equalsIgnoreCase(getAction())) {
 						try {
 							// set the background of the button to the album art
-							Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaService.SONG)).getAlbum()).getAlbumArt(activity);
+							Bitmap bitmap = (((Song) intent.getSerializableExtra(MediaController.SONG)).getAlbum()).getAlbumArt(activity);
 
 							if (bitmap != null) {
 								BitmapDrawable bitmapDrawable = new BitmapDrawable(activity.getResources(), bitmap);

@@ -45,7 +45,7 @@ public class ArduinoController {
 	@Inject
 	public ArduinoController() { }
 
-	public void onStart( Intent intent) {
+	public void onStart(Intent intent) {
 		// test if we received an accessory or a device and start the proper mode
 		if (intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
 			Log.d(TAG, "accessory found");

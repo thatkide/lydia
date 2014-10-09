@@ -5,10 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-
 import java.util.ArrayList;
+import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
-import com.autosenseapp.services.MediaService;
 import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
 
@@ -40,8 +39,8 @@ public class NowPlayingState extends SongState {
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
 		if (!fromSearch) {
-			// bind to the media service, get the playlist, update the view and unbind
-			activity.bindService(new Intent(activity, MediaService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+//			// bind to the media service, get the playlist, update the view and unbind
+//			activity.bindService(new Intent(activity, MediaController.class), serviceConnection, Context.BIND_AUTO_CREATE);
 		} else {
 			super.setView(true, medias);
 		}
@@ -64,21 +63,4 @@ public class NowPlayingState extends SongState {
 			super.setView(false, playlist.toArray(new Song[playlist.size()]));
 		} catch (NullPointerException e) { }
 	}
-
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			MediaService.MediaServiceBinder binder = (MediaService.MediaServiceBinder) service;
-			MediaService mediaService = binder.getService();
-			playlist = mediaService.getPlaylist();
-			updateView();
-			// after getting the playlist, unbind
-			activity.unbindService(this);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-
-		}
-	};
 }
