@@ -41,6 +41,7 @@ public class ArduinoController {
 	@Inject SharedPreferences sharedPreferences;
 	private Thread thread;
 	private boolean accessoryReadyBroadcastSent = false;
+	private boolean accessoryRunning = false;
 
 	@Inject
 	public ArduinoController() { }
@@ -97,6 +98,10 @@ public class ArduinoController {
 		arduino.setDevices(devices, listener);
 	}
 
+	public boolean isAccessoryRunning() {
+		return accessoryRunning;
+	}
+
 	// create a new listener to pass to all the sensors.  they use this to send data out via the arduino
 	private ArduinoListener listener = new ArduinoListener() {
 		@Override
@@ -150,10 +155,12 @@ public class ArduinoController {
 			int length;
 			int checksum;
 			while (ret >= 0) {
+				accessoryRunning = true;
 				try {
 					ret = arduinoInterface.read(buffer);
 				} catch (Exception e) {
 					Log.d(TAG, "stopping");
+					accessoryRunning = false;
 					e.printStackTrace();
 					arduinoInterface.onDestroy();
 					thread.interrupt();

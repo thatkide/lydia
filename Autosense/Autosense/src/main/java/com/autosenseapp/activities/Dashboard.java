@@ -160,43 +160,45 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		// bind to the hardware manager too
 //		bindService(new Intent(this, HardwareManagerService.class), hardwareServiceConnection, Context.BIND_AUTO_CREATE);
 
-		// reset no no arduino.  if one is connected update the prefs so it will be available later on
-		sharedPreferences.edit().putInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE).apply();
-		// Try to connect a USB accessory first
-		// get list of accessories
-		UsbAccessory[] accessories = usbManager.getAccessoryList();
-		// get first accessory
-		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		if (!arduinoController.isAccessoryRunning()) {
+			// reset no no arduino.  if one is connected update the prefs so it will be available later on
+			sharedPreferences.edit().putInt(ArduinoController.ARDUINO_TYPE, ArduinoController.ARDUINO_NONE).apply();
+			// Try to connect a USB accessory first
+			// get list of accessories
+			UsbAccessory[] accessories = usbManager.getAccessoryList();
+			// get first accessory
+			UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
-		if (accessory != null) {
-			// Log.d(TAG, "got an accessory");
-			// if we have permission
-			if (usbManager.hasPermission(accessory)) {
-				// start the arduino service
-				//	Log.d(TAG, "start accessory");
-				Intent arduinoIntent = new Intent();
-				arduinoIntent.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
-				arduinoController.onStart(arduinoIntent);
-				// otherwise ask for permission
-			} else {
-				synchronized (usbReceiver) {
-					if (mPermissionRequestPending) {
-						usbManager.requestPermission(accessory, usbPermissionIntent);
-						mPermissionRequestPending = true;
+			if (accessory != null) {
+				// Log.d(TAG, "got an accessory");
+				// if we have permission
+				if (usbManager.hasPermission(accessory)) {
+					// start the arduino service
+					//	Log.d(TAG, "start accessory");
+					Intent arduinoIntent = new Intent();
+					arduinoIntent.putExtra(UsbManager.EXTRA_ACCESSORY, accessory);
+					arduinoController.onStart(arduinoIntent);
+					// otherwise ask for permission
+				} else {
+					synchronized (usbReceiver) {
+						if (mPermissionRequestPending) {
+							usbManager.requestPermission(accessory, usbPermissionIntent);
+							mPermissionRequestPending = true;
+						}
 					}
 				}
-			}
-		} else {
-			// Log.d(TAG, "usb device");
-			// else try device
-			HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
+			} else {
+				// Log.d(TAG, "usb device");
+				// else try device
+				HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-			for (String deviceName : devices.keySet()) {
-				UsbDevice device = devices.get(deviceName);
+				for (String deviceName : devices.keySet()) {
+					UsbDevice device = devices.get(deviceName);
 
-				Intent intent = new Intent();
-				intent.putExtra(UsbManager.EXTRA_DEVICE, device);
-				arduinoController.onStart(intent);
+					Intent intent = new Intent();
+					intent.putExtra(UsbManager.EXTRA_DEVICE, device);
+					arduinoController.onStart(intent);
+				}
 			}
 		}
 	}

@@ -141,6 +141,8 @@ public class ArduinoDevice implements ArduinoInterface {
 				port.write(output, 500);
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
 			}
 		}
 	}
