@@ -5,17 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.R;
+import com.autosenseapp.adapters.SongAdapter;
 import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.*;
@@ -30,21 +28,23 @@ abstract public class SongState implements MusicFragmentState {
 
 	private static final String TAG = SongState.class.getSimpleName();
 
+	@Inject LocalBroadcastManager localBroadcastManager;
 	@Inject	MediaController mediaController;
+
 	protected Activity activity;
 	protected MusicFragment musicFragment;
 	protected Artist artist;
 	protected Album album;
 	private ArrayList songs;
 	private SongAdapter adapter;
-	private Song currentSong;
-	private ListView view;
+	private Song currentSong, previousSong;
+	private ListView listView;
 
 	public SongState(MusicFragment musicFragment) {
-		((AutosenseApplication)musicFragment.getActivity().getApplication().getApplicationContext()).inject(this);
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		((AutosenseApplication) activity.getApplication().getApplicationContext()).inject(this);
+		localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.MEDIA_INFO));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ abstract public class SongState implements MusicFragmentState {
 	@Override
 	public void onDestroy() {
 		try {
-			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
+			localBroadcastManager.unregisterReceiver(mediaStateReceiver);
 		} catch (Exception e) {}
 	}
 
@@ -75,19 +75,26 @@ abstract public class SongState implements MusicFragmentState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-		// send a request to update the song info
-		musicFragment.localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 		songs = new ArrayList<Media>(Arrays.asList(medias));
-		view = (ListView) activity.findViewById(android.R.id.list);
+		listView = (ListView) activity.findViewById(android.R.id.list);
+
 		adapter = new SongAdapter(activity, R.layout.music_songview_row, songs);
-		view.setAdapter(adapter);
-		// get the list and register a menu listener for it
-		musicFragment.registerForContextMenu(view);
+
+		try {
+			currentSong = mediaController.getCurrentSong();
+			adapter.setCurrentSong(currentSong);
+		} catch (Exception e) {
+			Log.d(TAG, e.toString());
+		}
+
+		listView.setAdapter(adapter);
+		musicFragment.registerForContextMenu(listView);
 	}
 
 	protected void updateView(ArrayList<Song> songs) {
 		this.songs.clear();
 		this.songs.addAll(songs);
+		adapter.setCurrentSong(currentSong);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -108,79 +115,20 @@ abstract public class SongState implements MusicFragmentState {
 	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				if (musicFragment.getState() == musicFragment.getAlbumSongState()) {
-					if (intent.hasExtra(MediaController.SONG)) {
-						currentSong = (Song)intent.getSerializableExtra(MediaController.SONG);
-						adapter.setCurrentSong(currentSong);
-						int pos = songs.indexOf(currentSong);
-						adapter.notifyDataSetChanged();
-						view.setSelection(pos);
+			currentSong = (Song)intent.getSerializableExtra(MediaController.SONG);
+			if (currentSong != previousSong) {
+				previousSong = currentSong;
+				try {
+					if (musicFragment.stateIsSong()) {
+						if (intent.hasExtra(MediaController.SONG)) {
+							adapter.setCurrentSong(currentSong);
+							int pos = songs.indexOf(currentSong);
+							adapter.notifyDataSetChanged();
+							listView.setSelection(pos);
+						}
 					}
-				}
-			} catch (Exception e) {
-//				e.printStackTrace();
+				} catch (Exception e) { }
 			}
 		}
 	};
-
-	public class SongAdapter extends ArrayAdapter<Song> {
-
-		private final Context context;
-		private final ArrayList<Song> songs;
-		private final int layoutId;
-		private Song currentSong;
-
-		public SongAdapter(Context context, int layoutId, ArrayList<Song> songs) {
-			super(context, layoutId, songs);
-			this.context = context;
-			this.layoutId = layoutId;
-			this.songs = songs;
-		}
-
-		public void setCurrentSong(Song song) {
-			currentSong = song;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder;
-
-			if (convertView == null) {
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = inflater.inflate(layoutId, parent, false);
-
-				viewHolder = new ViewHolder();
-				viewHolder.songTrack = (TextView) convertView.findViewById(R.id.row_song_track);
-				viewHolder.songTitle = (TextView) convertView.findViewById(R.id.row_song_title);
-				viewHolder.songDuration = (TextView) convertView.findViewById(R.id.row_song_duration);
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (ViewHolder) convertView.getTag();
-			}
-
-			Song song = songs.get(position);
-			try {
-				viewHolder.songTrack.setText(song.getTrack().substring(2, 4));
-			} catch (StringIndexOutOfBoundsException e) {}
-
-			viewHolder.songTitle.setText(song.getName());
-			// If we populate all the songs, it's SLOW
-			// If we don't we get one at a time, so it's turned off for now
-//		viewHolder.songDuration.setText(song.getDurationString());
-
-			if (currentSong != null && song.getId() == currentSong.getId()) {
-				viewHolder.songTitle.setTypeface(null, Typeface.BOLD_ITALIC);
-			} else {
-				viewHolder.songTitle.setTypeface(null, Typeface.NORMAL);
-			}
-			return convertView;
-		}
-	}
-
-	private static class ViewHolder {
-		TextView songTrack;
-		TextView songTitle;
-		TextView songDuration;
-	}
 }

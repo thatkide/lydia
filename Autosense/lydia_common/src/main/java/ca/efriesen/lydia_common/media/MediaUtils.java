@@ -54,7 +54,7 @@ public class MediaUtils {
 		return list;
 	}
 
-	public static String convertMillis(long duration) {
+	public static String convertMillisToMinutesAndSeconds(long duration) {
 		Date date = new Date(duration);
 		DateFormat formatter;
 		// if the duration is over an hour add the hour format

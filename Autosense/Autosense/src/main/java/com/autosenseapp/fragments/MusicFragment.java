@@ -1,13 +1,8 @@
 package com.autosenseapp.fragments;
 
 import android.app.ListFragment;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -18,14 +13,12 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.R;
 import com.autosenseapp.callbacks.FragmentOnBackPressedCallback;
-import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragmentStates.*;
-
-import javax.inject.Inject;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import ca.efriesen.lydia_common.media.*;
 
 /**
@@ -34,9 +27,6 @@ import ca.efriesen.lydia_common.media.*;
  * Time: 8:07 PM
  */
 public class MusicFragment extends ListFragment implements FragmentOnBackPressedCallback{
-
-	// bind to the media service
-	@Inject MediaController mediaController;
 
 	private static final String TAG = MusicFragment.class.getSimpleName();
 
@@ -50,8 +40,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	private MusicFragmentState nowPlayingState;
 	private MusicFragmentState musicFragmentState;
 
-	public LocalBroadcastManager localBroadcastManager;
-	private EditText search;
+	@InjectView(R.id.filter) EditText search;
 	private TextWatcher textWatcher;
 
 	public void setState(MusicFragmentState musicFragmentState) {
@@ -81,11 +70,17 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 
 	public MusicFragmentState getState() { return musicFragmentState; }
 
+	public boolean stateIsSong() {
+		if (getState() instanceof SongState) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
 		super.onActivityCreated(savedInstance);
-
-		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 
 		homeState = new HomeState(this);
 		artistState = new ArtistState(this);
@@ -99,7 +94,6 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		// set to the home view
 		musicFragmentState.setView(false);
 
-		search = (EditText) getActivity().findViewById(R.id.filter);
 		textWatcher = new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -121,15 +115,12 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 	@Override
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
-		// bind to the media service
-//		getActivity().bindService(new Intent(getActivity(), MediaService.class), mediaServiceConnection, Context.BIND_AUTO_CREATE);
+		((AutosenseApplication)getActivity().getApplicationContext()).inject(this);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		// send a broadcast to the media service asking if anything is playing.  the listview will get the info and update accordingly
-		localBroadcastManager.sendBroadcast(new Intent(MediaController.GET_CURRENT_SONG));
 	}
 
 	@Override
@@ -149,7 +140,9 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-		return inflater.inflate(R.layout.media_list_fragment, container, false);
+		View view = inflater.inflate(R.layout.media_list_fragment, container, false);
+		ButterKnife.inject(this, view);
+		return view;
 	}
 
 	@Override
@@ -186,7 +179,7 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		if (getState() == homeState) {
 			getFragmentManager().beginTransaction()
 					.setCustomAnimations(R.anim.container_slide_in_down, R.anim.container_slide_out_down)
-					.replace(R.id.home_screen_fragment, new HomeScreenFragment(), "homeScreenFragment")
+					.replace(R.id.home_screen_fragment, new HomeScreenFragment())
 					.addToBackStack(null)
 					.commit();
 		} else {

@@ -98,7 +98,7 @@ public class HardwareManagerService extends Service {
 		notificationManager.notify(1, builder.build());
 
 		registerReceiver(smsReplyReceiver, new IntentFilter(Intents.SMSREPLY));
-		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+//		registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
 		registerReceiver(bluetoothManagerReceiver, new IntentFilter(Intents.BLUETOOTHMANAGER));
 	}
 

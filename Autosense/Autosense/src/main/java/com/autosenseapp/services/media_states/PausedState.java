@@ -20,11 +20,8 @@ public class PausedState extends MediaState {
 
 	@Override
 	public void next() {
-		// run the super class of next
 		super.next();
-		// then stop the playback
 		mediaController.stop();
-		// set teh state to paused
 		mediaController.setState(mediaController.getPausedState());
 		// set the song.  this will check the state and not play in the paused state
 		mediaController.getState().setSong(mediaController.playlist.get(mediaController.playlistPosition));
@@ -38,7 +35,6 @@ public class PausedState extends MediaState {
 
 	@Override
 	public void previous() {
-		// exact same as next, only previous song
 		super.previous();
 		mediaController.stop();
 		mediaController.setState(mediaController.getPausedState());

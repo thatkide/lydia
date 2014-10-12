@@ -5,15 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+import com.autosenseapp.AutosenseApplication;
+import com.autosenseapp.adapters.MediaAdapter;
 import com.autosenseapp.controllers.MediaController;
 import com.autosenseapp.fragments.MusicFragment;
 import ca.efriesen.lydia_common.media.Artist;
@@ -21,6 +19,7 @@ import ca.efriesen.lydia_common.media.Media;
 import ca.efriesen.lydia_common.media.Song;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.inject.Inject;
 
 /**
  * Created by eric on 1/5/2014.
@@ -29,17 +28,20 @@ public class ArtistState implements MusicFragmentState {
 
 	private final String TAG = ArtistState.class.getSimpleName();
 
+	@Inject LocalBroadcastManager localBroadcastManager;
+	@Inject MediaController mediaController;
 	private Activity activity;
 	private MusicFragment musicFragment;
 	private ArrayList artists;
 	private int artistListPosition;
-	private Artist currentArtist;
-	private ArtistAdapter adapter;
+	private Artist currentArtist, previousArtist;
+	private MediaAdapter artistAdapter;
 
 	public ArtistState(MusicFragment musicFragment) {
 		this.musicFragment = musicFragment;
 		this.activity = musicFragment.getActivity();
-		musicFragment.localBroadcastManager.registerReceiver(mediaStateReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		((AutosenseApplication)activity.getApplicationContext()).inject(this);
+		localBroadcastManager.registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.MEDIA_INFO));
 	}
 
 	@Override
@@ -59,10 +61,8 @@ public class ArtistState implements MusicFragmentState {
 
 	public void onDestroy() {
 		try {
-			musicFragment.localBroadcastManager.unregisterReceiver(mediaStateReceiver);
-		} catch (Exception e) {
-
-		}
+			localBroadcastManager.unregisterReceiver(mediaInfoReceiver);
+		} catch (Exception e) {	}
 	}
 
 	@Override
@@ -78,7 +78,6 @@ public class ArtistState implements MusicFragmentState {
 
 	@Override
 	public void setView(Boolean fromSearch, Media... medias) {
-
 		// we only use medias if we're searching
 		if (!fromSearch) {
 			// default is to get all artists available
@@ -88,13 +87,15 @@ public class ArtistState implements MusicFragmentState {
 			artists = new ArrayList<Media>(Arrays.asList(medias));
 		}
 
-		// find the listview
-		ListView view = (ListView) activity.findViewById(android.R.id.list);
-		// set the adapter to a new array adapter of artists, and get them from the media service
-		adapter = new ArtistAdapter(activity, android.R.layout.simple_list_item_1, artists);
-		view.setAdapter(adapter);
-		// set the list to the saved position
-		view.setSelection(artistListPosition);
+		ListView listView = (ListView) activity.findViewById(android.R.id.list);
+		artistAdapter = new MediaAdapter(activity, android.R.layout.simple_list_item_1, artists);
+
+		try {
+			currentArtist = mediaController.getCurrentSong().getAlbum().getArtist();
+			artistAdapter.setCurrentMedia(currentArtist);
+		} catch (NullPointerException e) {}
+		listView.setAdapter(artistAdapter);
+		listView.setSelection(artistListPosition);
 	}
 
 	@Override
@@ -102,67 +103,22 @@ public class ArtistState implements MusicFragmentState {
 		try {
 			ArrayList<String> search = new ArrayList<String>();
 			search.add(text);
-			// search for artists like our string
 			ArrayList<Artist> artists = Media.getAllLike(Artist.class, activity, search);
-			// set the view to the returned array
 			setView(true, artists.toArray(new Artist[artists.size()]));
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		} catch (ClassNotFoundException e) { }
 	}
 
-	private BroadcastReceiver mediaStateReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver mediaInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				if (intent.hasExtra(MediaController.SONG)) {
-					currentArtist = ((Song)intent.getSerializableExtra(MediaController.SONG)).getAlbum().getArtist();
-					adapter.notifyDataSetChanged();
-				}
-			} catch (NullPointerException e) {
-				e.printStackTrace();
+			currentArtist = ((Song)intent.getSerializableExtra(MediaController.SONG)).getAlbum().getArtist();
+			if (currentArtist != previousArtist) {
+				previousArtist = currentArtist;
+				try {
+					artistAdapter.setCurrentMedia(currentArtist);
+					artistAdapter.notifyDataSetChanged();
+				} catch (NullPointerException e) { }
 			}
 		}
 	};
-
-	class ArtistAdapter extends ArrayAdapter<Artist> {
-
-		private final Context context;
-		private final ArrayList<Artist> artists;
-
-		public ArtistAdapter(Context context, int textViewResourceId, ArrayList<Artist> artists) {
-			super(context, textViewResourceId, artists);
-			this.context = context;
-			this.artists = artists;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder;
-
-			if (convertView == null) {
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-
-				viewHolder = new ViewHolder();
-				viewHolder.artistView = (TextView) convertView.findViewById(android.R.id.text1);
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (ViewHolder) convertView.getTag();
-			}
-
-			Artist artist = artists.get(position);
-			viewHolder.artistView.setText(artist.getName());
-			if (currentArtist != null && artist.getId() == currentArtist.getId()) {
-				viewHolder.artistView.setTypeface(null, Typeface.BOLD_ITALIC);
-			} else {
-				viewHolder.artistView.setTypeface(null, Typeface.NORMAL);
-			}
-			return convertView;
-		}
-	}
-
-	private static class ViewHolder {
-		TextView artistView;
-	}
 }

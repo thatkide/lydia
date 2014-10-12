@@ -3,11 +3,9 @@ package ca.efriesen.lydia_common.media;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -16,7 +14,7 @@ import java.util.ArrayList;
  * Created by eric on 2013-06-25.
  */
 public class Song extends Media implements Serializable {
-	private static final String TAG = "lydia Song";
+	private static final String TAG = Song.class.getSimpleName();
 	private Context context;
 	private Album album;
 	private Artist artist;
@@ -28,7 +26,10 @@ public class Song extends Media implements Serializable {
 	private String name;
 	private String track;
 	private static Uri mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
+	// Playing info
+	private boolean isPlaying = false;
+	private int currentPosition = 0;
+	private String currentPositionString = "";
 
 	public Song(Context context) {
 		super(context);
@@ -85,7 +86,7 @@ public class Song extends Media implements Serializable {
 		try {
 			retriever.setDataSource(context, uri);
 			this.duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-			this.durationString = MediaUtils.convertMillis(this.duration);
+			this.durationString = MediaUtils.convertMillisToMinutesAndSeconds(this.duration);
 
 		} catch (Exception e) {
 		e.printStackTrace();}
@@ -123,6 +124,27 @@ public class Song extends Media implements Serializable {
 
 	public void setTrack(String track) {
 		this.track = track;
+	}
+
+	public boolean getIsPlaying() {
+		return isPlaying;
+	}
+
+	public void setIsPlaying(boolean isPlaying) {
+		this.isPlaying = isPlaying;
+	}
+
+	public int getCurrentPosition() {
+		return currentPosition;
+	}
+
+	public void setCurrentPosition(int currentPosition) {
+		this.currentPosition = currentPosition;
+		this.currentPositionString = MediaUtils.convertMillisToMinutesAndSeconds(currentPosition);
+	}
+
+	public String getCurrentPositionString() {
+		return currentPositionString;
 	}
 
 	public static ArrayList<Song> getAllSongs(Context context) {

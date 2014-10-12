@@ -1,9 +1,7 @@
 package com.autosenseapp.fragments;
 
-import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +23,11 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 
 	public static final String TAG = HeaderFragment.class.getSimpleName();
 
-	@Inject	LocalBroadcastManager localBroadcastManager;
 	@Inject NotificationController notificationController;
 	@Inject AudioManager audioManager;
+	@Inject MediaController mediaController;
 
-	@InjectView(R.id.mute)
-	ImageButton mute;
+	@InjectView(R.id.mute) ImageButton mute;
 	@InjectView(R.id.play_pause) ImageButton playPause;
 	@InjectView(R.id.previous) ImageButton previous;
 	@InjectView(R.id.next) ImageButton next;
@@ -78,14 +75,14 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 		playPause.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PLAY_PAUSE));
+				mediaController.playPause();
 			}
 		});
 
 		next.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.NEXT));
+				mediaController.next();
 				// show the music bar on change
 				notificationController.setNotification(MusicNotificationFragment.class);
 			}
@@ -94,7 +91,7 @@ public class HeaderFragment extends BaseFragment { //implements View.OnTouchList
 		previous.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PREVIOUS));
+				mediaController.previous();
 				notificationController.setNotification(MusicNotificationFragment.class);
 			}
 		});

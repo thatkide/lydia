@@ -1,9 +1,7 @@
 package com.autosenseapp.controllers;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -38,29 +36,13 @@ public class MediaController implements
 	private static final String TAG = MediaController.class.getSimpleName();
 
 	// Intent strings
-	public static final String GET_CURRENT_SONG = "com.autosenseapp.lydia.MediaService.GetCurrentSong";
-	public static final String IS_PLAYING = "com.autosenseapp.lydia.MediaService.IsPlaying";
-	public static final String MEDIA_COMMAND = "com.autosenseapp.lydia.MediaService.MediaCommand";
-	public static final String NEXT = "com.autosenseapp.lydia.MediaService.Next";
-	public static final String PLAY = "com.autosenseapp.lydia.MediaService.Play";
-	public static final String PLAY_PAUSE = "com.autosenseapp.lydia.MediaService.PlayPause";
-	public static final String PREVIOUS = "com.autosenseapp.lydia.MediaService.Previous";
-	public static final String PROGRESS = "com.autosenseapp.lydia.MediaService.Progress";
-	public static final String REPEAT = "com.autosenseapp.lydia.MediaService.Repeat";
-	public static final String REPEAT_STATE = "com.autosenseapp.lydia.MediaService.RepeatState";
-	public static final String SET_PLAYLIST = "com.autosenseapp.lydia.MediaService.SetPlaylist";
-	public static final String SET_POSITION = "com.autosenseapp.lydia.MediaService.SetPosition";
-	public static final String SHUFFLE = "com.autosenseapp.lydia.MediaService.Shuffle";
-	public static final String SHUFFLE_PLAY = "com.autosenseapp.lydia.MediaService.ShufflePlay";
-	public static final String SHUFFLE_STATE = "com.autosenseapp.lydia.MediaService.ShuffleState";
 	public static final String SONG = "com.autosenseapp.Song";
 	public static final String SONG_FINISHED = "com.autosenseapp.lydia.MediaService.SongFinished";
-	public static final String STOP = "com.autosenseapp.lydia.MediaService.Stop";
-	public static final String UPDATE_MEDIA_INFO = "com.autosenseapp.lydia.MediaService.UpdateMediaInfo";
+	public static final String MEDIA_INFO = "com.autosenseapp.MediaService.MediaInfo";
 
 	@Inject AudioManager audioManager;
 	@Inject Context context;
-	private MediaPlayer mMediaPlayer;
+	private MediaPlayer mediaPlayer;
 	@Inject LocalBroadcastManager localBroadcastManager;
 	@Inject SharedPreferences sharedPreferences;
 
@@ -86,35 +68,28 @@ public class MediaController implements
 		repeatAll = sharedPreferences.getBoolean(Constants.REPEATALL, false);
 		shuffle = sharedPreferences.getBoolean(Constants.SHUFFLE, false);
 
-		localBroadcastManager.registerReceiver(getCurrentSongReceiver, new IntentFilter(GET_CURRENT_SONG));
-		localBroadcastManager.registerReceiver(CommandReceiver, new IntentFilter(MEDIA_COMMAND));
-
 		// setup the media player
-		mMediaPlayer = new MediaPlayer();
-		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		mMediaPlayer.setOnCompletionListener(this);
-		mMediaPlayer.setOnPreparedListener(this);
-		mMediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
+		mediaPlayer = new MediaPlayer();
+		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mediaPlayer.setOnCompletionListener(this);
+		mediaPlayer.setOnPreparedListener(this);
+		mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
 
 		// setup the states
-		pausedState = new PausedState(context, this, mMediaPlayer);
-		playState = new PlayState(context, this, mMediaPlayer);
-		stoppedState = new StoppedState(context, this, mMediaPlayer);
+		pausedState = new PausedState(context, this, mediaPlayer);
+		playState = new PlayState(context, this, mediaPlayer);
+		stoppedState = new StoppedState(context, this, mediaPlayer);
 
 		// default to the stopped state
 		mediaState = stoppedState;
 
-		// request audio focus
 		int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 		// if we aren't granted access
 		if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-			// so stop everything
 			// we're in the stopped state already, this will release all media player resources
 			mediaState.stop();
 		}
-
 	}
-
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
@@ -140,24 +115,19 @@ public class MediaController implements
 			mediaPlayer.start();
 		}
 		// get the song to send to the notification and broadcast
-		Song song = playlist.get(playlistPosition);
-
-//		builder.setContentText(song.getAlbum().getArtist().getName() + " - " + song.getName());
-//		notificationManager.notify(notificationId, builder.build());
+		Song currentSong = playlist.get(playlistPosition);
 
 		// set the duration in the song
-		playlist.get(playlistPosition).setDuration(mediaPlayer.getDuration());
-		playlist.get(playlistPosition).setDurationString(MediaUtils.convertMillis(mMediaPlayer.getDuration()));
+		currentSong.setDuration(mediaPlayer.getDuration());
+		currentSong.setDurationString(MediaUtils.convertMillisToMinutesAndSeconds(this.mediaPlayer.getDuration()));
 
 		// send the new song as the update media info intent
-		localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra(IS_PLAYING, mMediaPlayer.isPlaying()).putExtra(SONG, song));
+//		localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra(IS_PLAYING, mediaPlayer.isPlaying()).putExtra(SONG, currentSong));
 		mHandler.postDelayed(mUpdateTime, 25);
-
 	}
 
 	@Override
 	public void onAudioFocusChange(int focusChange) {
-
 	}
 
 	public MediaState getPausedState() {
@@ -168,55 +138,63 @@ public class MediaController implements
 		return playState;
 	}
 
-	public ArrayList<Song> getPlaylist() {
-		return playlist;
-	}
-
 	public MediaState getStoppedState() {
 		return stoppedState;
 	}
 
+	public MediaState getState() {
+		return mediaState;
+	}
+
+	public void setState(MediaState state) {
+		mediaState = state;
+	}
+
+	public ArrayList<Song> getPlaylist() {
+		return playlist;
+	}
+
 	private void cleanUp() {
-		//Log.d(TAG, "cleanup");
 		// stop sending broadcasts
 		mHandler.removeCallbacks(mUpdateTime);
 
-		// remove note text on cleanup
-//		builder.setContentText("");
-//		notificationManager.notify(notificationId, builder.build());
 		// release media player resources
 		try {
-			mMediaPlayer.release();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		}
+			mediaPlayer.release();
+		} catch (Exception e) { }
 		// reset media player completely
 		try {
-			mMediaPlayer.reset();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		}
+			mediaPlayer.reset();
+		} catch (Exception e) { }
 		// nullify the object
-		mMediaPlayer = null;
+		mediaPlayer = null;
 		// declare it dead
 		setState(getStoppedState());
 	}
 
+	public void playPause() {
+		mediaState.playPause();
+	}
+
 	public void play() {
-		//Log.d(TAG, "play " + getClass().getName());
+		getCurrentSong().setIsPlaying(mediaPlayer.isPlaying());
 		mediaState.play();
 	}
 
 	public void stop() {
-		//Log.d(TAG, "stop " + getClass().getName());
+		getCurrentSong().setIsPlaying(mediaPlayer.isPlaying());
 		mediaState.stop();
 	}
 
-	private void shufflePlay() {
+	public void next() {
+		mediaState.next();
+	}
+
+	public void previous() {
+		mediaState.previous();
+	}
+
+	public void shufflePlay() {
 		setShuffle(true);
 		stop();
 		ArrayList<Song> songs = Album.getAllSongs(context, getShuffle());
@@ -226,7 +204,6 @@ public class MediaController implements
 
 	public void setPlaylist(ArrayList<Song> playlist, int playlistStartPosition) {
 		if (playlist.size() > 0) {
-			//Log.d(TAG, "setplaylist " + getClass().getName());
 			playlistOrdered = playlist;
 			// copy the playlist into a new object.
 			ArrayList<Song> shuffled = new ArrayList<Song>(playlist);
@@ -252,25 +229,12 @@ public class MediaController implements
 		}
 	}
 
-	public String getCurrentPositionString() {
-		return MediaUtils.convertMillis(mMediaPlayer.getCurrentPosition());
-	}
-
 	public int getCurrentPosition() {
-		return mMediaPlayer.getCurrentPosition();
+		return mediaPlayer.getCurrentPosition();
 	}
 
 	public void setCurrentPosition(int position) {
-		mMediaPlayer.seekTo(position);
-	}
-
-	public MediaState getState() {
-		return mediaState;
-	}
-
-	public void setState(MediaState state) {
-		//Log.d(TAG, "setState " + state.getClass().getName());
-		mediaState = state;
+		mediaPlayer.seekTo(position);
 	}
 
 	public void playAll() {
@@ -304,8 +268,11 @@ public class MediaController implements
 
 	public void toggleRepeat() {
 		repeatAll = !repeatAll;
-		sharedPreferences.edit().putBoolean(Constants.REPEATALL, repeatAll).commit();
-		localBroadcastManager.sendBroadcast(new Intent(REPEAT_STATE).putExtra(REPEAT_STATE, repeatAll));
+		sharedPreferences.edit().putBoolean(Constants.REPEATALL, repeatAll).apply();
+	}
+
+	public boolean getRepeat() {
+		return repeatAll;
 	}
 
 	public boolean getShuffle() {
@@ -314,13 +281,11 @@ public class MediaController implements
 
 	private void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
-		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).commit();
-		localBroadcastManager.sendBroadcast(new Intent(SHUFFLE_STATE).putExtra(SHUFFLE_STATE, shuffle));
+		sharedPreferences.edit().putBoolean(Constants.SHUFFLE, shuffle).apply();
 	}
 
 	public void toggleShuffle() {
 		setShuffle(!shuffle);
-		localBroadcastManager.sendBroadcast(new Intent(SHUFFLE_STATE).putExtra(SHUFFLE_STATE, shuffle));
 		if (shuffle) {
 			this.playlist = playlistShuffled;
 		} else {
@@ -337,50 +302,23 @@ public class MediaController implements
 		}
 	}
 
+	public Song getCurrentSong() {
+		if (playlist != null) {
+			return playlist.get(playlistPosition);
+		} else {
+			return null;
+		}
+	}
+
 	public Runnable mUpdateTime = new Runnable() {
 		@Override
 		public void run() {
-			localBroadcastManager.sendBroadcast(new Intent(PROGRESS).putExtra("currentPositionString", getCurrentPositionString()).putExtra("currentPositionInt" ,getCurrentPosition()));
+			Song currentSong = getCurrentSong();
+			currentSong.setCurrentPosition(getCurrentPosition());
+			currentSong.setIsPlaying(mediaPlayer.isPlaying());
+
+			localBroadcastManager.sendBroadcast(new Intent(MEDIA_INFO).putExtra(SONG, currentSong));
 			mHandler.postDelayed(mUpdateTime, 250);
-		}
-	};
-
-	private BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String command = intent.getStringExtra(MEDIA_COMMAND);
-			if (command.equals(NEXT)) {
-				mediaState.next();
-			} else if (command.equals(PREVIOUS)) {
-				mediaState.previous();
-			} else if (command.equals(PLAY)) {
-				mediaState.play();
-			} else if (command.equals(PLAY_PAUSE)) {
-				mediaState.playPause();
-			} else if (command.equals(REPEAT)) {
-				toggleRepeat();
-			} else if (command.equals(SET_PLAYLIST)) {
-//				setPlaylist(intent.getIntegerArrayListExtra("playlist"), intent.getIntExtra("position", 0));
-			} else if (command.equals(SET_POSITION)) {
-				setCurrentPosition(intent.getIntExtra(SET_POSITION, 0));
-			} else if (command.equals(SHUFFLE)) {
-				toggleShuffle();
-			} else if (command.equals(SHUFFLE_PLAY)) {
-				shufflePlay();
-			} else if (command.equals(STOP)) {
-				stop();
-			}
-		}
-	};
-
-	private BroadcastReceiver getCurrentSongReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			try {
-				Song song = playlist.get(playlistPosition);
-				// send the new song as the update media info intent
-				localBroadcastManager.sendBroadcast(new Intent(UPDATE_MEDIA_INFO).putExtra(IS_PLAYING, mMediaPlayer.isPlaying()).putExtra(SONG, song));
-			} catch (NullPointerException e) {}
 		}
 	};
 }

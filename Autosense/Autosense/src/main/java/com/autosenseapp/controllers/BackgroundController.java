@@ -45,12 +45,11 @@ public class BackgroundController {
 	@Inject
 	public BackgroundController(LocalBroadcastManager localBroadcastManager) {
 		this.localBroadcastManager = localBroadcastManager;
-
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.MEDIA_INFO));
 	}
 
 	public void onDestroy() {
-		localBroadcastManager.unregisterReceiver(updateMusicReceiver);
+		localBroadcastManager.unregisterReceiver(mediaInfoReceiver);
 	}
 
 	public void applyBackground(Activity activity) {
@@ -112,7 +111,6 @@ public class BackgroundController {
 
 		colorMask.setBackgroundColor(Color.argb(Helpers.map(brightness, 0, 1, 255, 0), 0x00, 0x00, 0x00));
 		sharedPreferences.edit().putFloat(BG_BRIGHTNESS, brightness).apply();
-
 	}
 
 	public void setDefaultBackground() {
@@ -202,7 +200,7 @@ public class BackgroundController {
 		}
 	}
 
-	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver mediaInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// if we want to use the album art as the background
@@ -217,5 +215,4 @@ public class BackgroundController {
 			}
 		}
 	};
-
 }

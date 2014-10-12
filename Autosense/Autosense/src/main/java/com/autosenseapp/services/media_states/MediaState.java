@@ -7,21 +7,18 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
-
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.controllers.MediaController;
 import ca.efriesen.lydia_common.media.Song;
 import java.io.IOException;
-
 import javax.inject.Inject;
 
 /**
  * Created by eric on 1/3/2014.
  */
 public abstract class MediaState {
-	private static final String TAG = "lydia mediastate";
+	private static final String TAG = MediaState.class.getSimpleName();
 
-	@Inject LocalBroadcastManager localBroadcastManager;
 	private Context context;
 	private MediaController mediaController;
 	private MediaPlayer mediaPlayer;
@@ -50,11 +47,7 @@ public abstract class MediaState {
 
 	public void play() {};
 
-	public void playPause() {
-		try {
-			localBroadcastManager.sendBroadcast(new Intent(MediaController.UPDATE_MEDIA_INFO).putExtra(MediaController.IS_PLAYING, mediaPlayer.isPlaying()).putExtra(MediaController.SONG, mediaController.playlist.get(mediaController.playlistPosition)));
-		} catch (NullPointerException e) {}
-	};
+	public void playPause() {};
 
 	public void previous() {
 		try {

@@ -9,7 +9,7 @@ android {
 	buildToolsVersion '20.0.0'
 	defaultConfig {
 		applicationId 'com.autosenseapp'
-		minSdkVersion 16
+		minSdkVersion 17
 		targetSdkVersion 19
 		versionCode = versionNumber
 	}

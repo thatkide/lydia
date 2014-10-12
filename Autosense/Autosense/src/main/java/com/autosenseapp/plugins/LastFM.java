@@ -9,7 +9,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.autosenseapp.R;
 import com.autosenseapp.controllers.MediaController;
-
 import ca.efriesen.lydia_common.media.Song;
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
@@ -21,7 +20,7 @@ import de.umass.lastfm.Track;
  */
 public class LastFM extends Plugin {
 
-	private static final String TAG = "lydia LastFM";
+	private static final String TAG = LastFM.class.getSimpleName();
 	private Context context;
 
 	LocalBroadcastManager localBroadcastManager;
@@ -41,7 +40,7 @@ public class LastFM extends Plugin {
 
 		localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
-		localBroadcastManager.registerReceiver(updateMusicReceiver, new IntentFilter(MediaController.UPDATE_MEDIA_INFO));
+		localBroadcastManager.registerReceiver(mediaInfoReceiver, new IntentFilter(MediaController.MEDIA_INFO));
 		localBroadcastManager.registerReceiver(songFinishedReceiver, new IntentFilter(MediaController.SONG_FINISHED));
 
 		Thread thread = new Thread(new Runnable() {
@@ -76,7 +75,7 @@ public class LastFM extends Plugin {
 
 	public void destroy() {
 		try {
-			context.unregisterReceiver(updateMusicReceiver);
+			context.unregisterReceiver(mediaInfoReceiver);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,7 +86,7 @@ public class LastFM extends Plugin {
 		}
 	}
 
-	private BroadcastReceiver updateMusicReceiver = new BroadcastReceiver() {
+	private BroadcastReceiver mediaInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (!validSession) {
@@ -98,7 +97,7 @@ public class LastFM extends Plugin {
 				updateTrackThread.interrupt();
 			}
 			final Song song = (Song) intent.getSerializableExtra(MediaController.SONG);
-			isPlaying = intent.getBooleanExtra(MediaController.IS_PLAYING, false);
+			isPlaying = song.getIsPlaying();
 
 			// send to last.fm in a new thread
 			updateTrackThread = new Thread(new Runnable() {

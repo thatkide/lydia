@@ -52,6 +52,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 
 	@Inject	ArduinoController arduinoController;
 	@Inject BackgroundController backgroundController;
+	@Inject MediaController mediaController;
 	@Inject NotificationController notificationController;
 	@Inject SharedPreferences sharedPreferences;
 
@@ -347,11 +348,11 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		for (Prediction prediction : predictions) {
 			if (prediction.score > 1.0) {
 				if (prediction.name.equalsIgnoreCase("right")) {
-					localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.NEXT));
+					mediaController.next();
 					// show the music bar on change
 					notificationController.setNotification(MusicNotificationFragment.class);
 				} else {
-					localBroadcastManager.sendBroadcast(new Intent(MediaController.MEDIA_COMMAND).putExtra(MediaController.MEDIA_COMMAND, MediaController.PREVIOUS));
+					mediaController.previous();
 					notificationController.setNotification(MusicNotificationFragment.class);
 				}
 			}

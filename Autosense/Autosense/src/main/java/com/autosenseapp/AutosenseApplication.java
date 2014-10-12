@@ -2,9 +2,7 @@ package com.autosenseapp;
 
 import android.app.Application;
 import android.content.Intent;
-
 import com.autosenseapp.services.AutosenseService;
-
 import java.util.Arrays;
 import java.util.List;
 import dagger.ObjectGraph;
