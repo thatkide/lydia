@@ -4,8 +4,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
+import android.view.View;
+import android.view.Window;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +22,20 @@ import java.util.Map;
  * Created by eric on 2013-06-01.
  */
 public class Helpers {
+
+	public static void setupFullScreen(Window window) {
+		// on android versions greater than or equal to kitkat, use immersive mode for the view.  this will truly make the app fullscreen
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			window.getDecorView().setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+			);
+		}
+	}
 
 	public static String getContactDisplayNameByNumber(Context context, String number) {
 		Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
@@ -66,21 +83,4 @@ public class Helpers {
 		Y = (value-fromLow)/(fromHigh-fromLow) * (toHigh-toLow) + toLow;
 		return (int)Y;
 	}
-
-	// sort a map by value
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(Map<K, V> map) {
-		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>( map.entrySet() );
-		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
-			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				return (o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-
-		Map<K, V> result = new LinkedHashMap<K, V>();
-		for (Map.Entry<K, V> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-		return result;
-	}
-
 }

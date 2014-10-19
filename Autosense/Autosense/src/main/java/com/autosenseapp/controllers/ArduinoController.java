@@ -37,7 +37,7 @@ public class ArduinoController {
 	private Arduino arduino;
 	private ArduinoInterface arduinoInterface;
 	@Inject Context context;
-	private SparseArray<Device> devices;
+	private SparseArray<Device> devices; // Use sparsearray because it allows gaps in indices
 	@Inject SharedPreferences sharedPreferences;
 	private Thread thread;
 	private boolean accessoryReadyBroadcastSent = false;
@@ -49,52 +49,42 @@ public class ArduinoController {
 	public void onStart(Intent intent) {
 		// test if we received an accessory or a device and start the proper mode
 		if (intent.hasExtra(UsbManager.EXTRA_ACCESSORY)) {
-			Log.d(TAG, "accessory found");
 			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_ACCESSORY).apply();
 			arduinoInterface = new ArduinoAccessory();
 		} else if (intent.hasExtra(UsbManager.EXTRA_DEVICE)) {
-			Log.d(TAG, "device found");
 			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_DEVICE).apply();
 			arduinoInterface = new ArduinoDevice();
 		} else {
-			Log.d(TAG, "nothing found");
 			sharedPreferences.edit().putInt(ARDUINO_TYPE, ARDUINO_NONE).apply();
+			return;
 		}
 
-		// create the new device
 		arduinoInterface.onCreate(context, intent);
 
 		thread = new Thread(null, arduinoRunnable, TAG);
 		thread.start();
 
 		arduino = new Arduino();
-		// populate the devices array
 		populateArduinoWithDevices();
 	}
 
 	public void onDestroy() {
-		Log.d(TAG, "on destroy");
 		accessoryReadyBroadcastSent = false;
 		arduinoInterface.onDestroy();
 		if (thread != null && thread.isAlive()) {
 			thread.interrupt();
 		}
 
-		// tell each sensor to cleanup
 		for (int i=0, size = devices.size(); i<size; i++) {
 			devices.valueAt(i).cleanUp();
 		}
 	}
 
 	private void populateArduinoWithDevices() {
-		// The device constructor takes a context, the constant that defines the device on the arduino side (just a number) and an intent to fire when data received
 		devices = new SparseArray<Device>();
-		// populate the devices array with the devices, using their id as the key and the object as the value
 		devices.put(Master.id, new Master(context));
 		devices.put(IdiotLights.id, new IdiotLights(context));
 
-		// pass in the devices to the arduino.
-		// set al devices to use the listener in this class.
 		arduino.setDevices(devices, listener);
 	}
 
@@ -106,18 +96,12 @@ public class ArduinoController {
 	private ArduinoListener listener = new ArduinoListener() {
 		@Override
 		public void writeData(Intent intent, int from) {
-			// get the bundle from the intent
 			Bundle bundle = intent.getExtras();
-			// get the command in the bundle
 			byte command = bundle.getByte("command");
-			// get the values array
 			byte values[] = bundle.getByteArray("values");
 
-			// data has "I have this much data, here it is."  It's missing the "hey you, it's me part"
-			// create new array three bytes bigger
 			byte dataToSend[] = new byte[values.length+5];
 
-			// copy the array, and move up two positions
 			dataToSend[0] = (byte)from; // hey you (we need the recipient first)
 			dataToSend[1] = Device.id; // it's me
 			dataToSend[2] = (byte)(values.length+1); // I have this much data
@@ -136,7 +120,6 @@ public class ArduinoController {
 			// copy the checksum into our array to be sent over the wire
 			dataToSend[dataToSend.length-1] = (byte)getChecksum(from, Device.id, values.length+1, getIntArray(checksum));
 
-			// send the data over the wire
 			arduinoInterface.write(dataToSend);
 		}
 	};
@@ -181,14 +164,13 @@ public class ArduinoController {
 						length = buffer[3];
 						// the data starts at position 3, so the end is 3 plus the length.
 						byte data[] = Arrays.copyOfRange(buffer, 4, 4 + length);
-						// get the checksum
 						checksum = buffer[length + 4] & 0xFF;
 						// get an int array from the bytes.  this "converts" to our unsigned version
 						int dataInt[] = getIntArray(data);
 						// if the received checksum equals the calculated checksum, send the data off
 						if (checksum == getChecksum(sender, recipient, length, dataInt)) {
 							arduino.parseData(sender, length, dataInt, checksum);
-							buffer[0] = 0; // reset the first byte
+							buffer[0] = 0; // reset the first byte.  This will invalidate the current data and wait until new data has arrived
 						}
 					}
 				} catch (IllegalArgumentException e) {
