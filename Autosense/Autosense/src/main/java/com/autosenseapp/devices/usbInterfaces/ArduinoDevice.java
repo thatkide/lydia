@@ -67,35 +67,39 @@ public class ArduinoDevice implements ArduinoInterface {
 
 		List<UsbSerialDriver> drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
 
-		UsbSerialDriver driver = drivers.get(0);
+		try {
+			UsbSerialDriver driver = drivers.get(0);
 
-		if (driver.getDevice().getDeviceId() == usbDevice.getDeviceId()) {
-			UsbDeviceConnection connection = usbManager.openDevice(usbDevice);
+			if (driver.getDevice().getDeviceId() == usbDevice.getDeviceId()) {
+				UsbDeviceConnection connection = usbManager.openDevice(usbDevice);
 
-			if (connection == null) {
-				// error
-				Log.e(TAG, "no connection");
-			}
-
-			port = driver.getPorts().get(0);
-			try {
-//				Log.d(TAG, "device open");
-				port.open(connection);
-				port.setParameters(115200, 8, 1, 0);
-				if (sharedPreferences.getBoolean("autoUpgradeFirmware", true)) {
-					checkFirmware();
+				if (connection == null) {
+					// error
+					Log.e(TAG, "no connection");
 				}
 
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NullPointerException e) {
-				e.printStackTrace();
+				port = driver.getPorts().get(0);
+				try {
+					//				Log.d(TAG, "device open");
+					port.open(connection);
+					port.setParameters(115200, 8, 1, 0);
+					if (sharedPreferences.getBoolean("autoUpgradeFirmware", true)) {
+						checkFirmware();
+					}
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+				}
 			}
+			serialInputOutputManager = new SerialInputOutputManager(port, listener);
+
+			context.registerReceiver(updateReceiver, new IntentFilter(UPGRADE_FIRMWARE));
+		} catch (IndexOutOfBoundsException e) {
+			// Can't get a device... do nothing
 		}
 
-		serialInputOutputManager = new SerialInputOutputManager(port, listener);
-
-		context.registerReceiver(updateReceiver, new IntentFilter(UPGRADE_FIRMWARE));
 	}
 
 	@Override

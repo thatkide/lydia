@@ -1,5 +1,6 @@
 package com.autosenseapp;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -98,7 +99,7 @@ public class AndroidModule {
 	}
 
 	@Provides @Singleton
-	AudioManager proivideAudioManager() {
+	AudioManager provideAudioManager() {
 		// setup the audio manager from the main activity
 		return (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
 	}
@@ -106,6 +107,11 @@ public class AndroidModule {
 	@Provides @Singleton
 	Context provideApplicationContext() {
 		return application;
+	}
+
+	@Provides @Singleton
+	BluetoothAdapter provideBluetoothAdapter() {
+		return BluetoothAdapter.getDefaultAdapter();
 	}
 
 	@Provides @Singleton
