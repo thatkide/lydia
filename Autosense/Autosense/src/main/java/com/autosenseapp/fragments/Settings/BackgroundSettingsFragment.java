@@ -10,9 +10,9 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.widget.Toast;
 import com.autosenseapp.controllers.BackgroundController;
-import com.bugsense.trace.BugSenseHandler;
 import net.jayschwa.android.preference.SliderPreference;
 import com.autosenseapp.R;
+import com.splunk.mint.Mint;
 import javax.inject.Inject;
 import yuku.ambilwarna.widget.AmbilWarnaPreference;
 
@@ -117,7 +117,7 @@ public class BackgroundSettingsFragment extends BasePreferenceFragment implement
 					} catch (NullPointerException e) {
 						Toast.makeText(getActivity(), "Error, Sending Bug Report", Toast.LENGTH_SHORT).show();
 						e.printStackTrace();
-						BugSenseHandler.sendException(e);
+						Mint.logException(e);
 					}
 				}
 			}

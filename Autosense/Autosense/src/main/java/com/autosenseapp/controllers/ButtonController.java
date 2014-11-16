@@ -22,8 +22,15 @@ import com.autosenseapp.buttons.appButtons.AppLaunchButton;
 import com.autosenseapp.callbacks.DrawScreenCallback;
 import com.autosenseapp.buttons.BaseButton;
 import com.autosenseapp.databases.ButtonConfigDataSource;
-import com.bugsense.trace.BugSenseHandler;
-import java.util.*;
+import com.splunk.mint.Mint;
+import com.splunk.mint.MintLog;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eric on 2014-06-14.
@@ -360,7 +367,7 @@ public class ButtonController implements View.OnClickListener, View.OnLongClickL
 				}
 				button.setTag(myButton);
 			} catch (NullPointerException e) {
-				BugSenseHandler.sendException(e);
+				Mint.logException(e);
 			}
 		}
 	}

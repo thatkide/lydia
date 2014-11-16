@@ -40,9 +40,9 @@ import com.autosenseapp.includes.Helpers;
 import com.autosenseapp.interfaces.NotificationInterface;
 import com.autosenseapp.plugins.LastFM;
 import com.appaholics.updatechecker.UpdateChecker;
-import com.bugsense.trace.BugSenseHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.splunk.mint.Mint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
@@ -84,7 +84,7 @@ public class Dashboard extends BaseActivity implements GestureOverlayView.OnGest
 		setupUpdateChecker();
 
 		if (BuildConfig.INCLUDE_BUGSENSE) {
-			BugSenseHandler.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
+			Mint.initAndStartSession(Dashboard.this, getString(R.string.bugsenseApiKey));
 		}
 
 		setupGestures();

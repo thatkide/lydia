@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 
-versionNumber = 49
+def versionNumber = 49
+
+//android.applicationVariants.all {
+//    variant -> variant.processResources.manifestFile = file('src/main/AndroidManifest.xml')
+//        variant.processManifest.enabled=false
+//}
 
 android {
 	signingConfigs {
@@ -46,6 +51,12 @@ android {
 	}
 }
 
+repositories {
+	maven {
+		url "https://mint.splunk.com/gradle/"
+	}
+}
+
 dependencies {
 	compile project(':lydia_common')
 	compile project(':yWeatherGetter4a')
@@ -58,16 +69,15 @@ dependencies {
 	compile 'com.android.support:support-v4:20.0.0'
 	compile 'com.google.android.gms:play-services:5.0.89'
 	compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
-	compile files('libs/bugsense-3.6.jar')
 	compile files('libs/lastfm-java-0.1.2.jar')
 	compile files('libs/updatechecker.jar')
 	compile 'com.jakewharton:butterknife:5.1.2'
 	compile 'com.squareup.dagger:dagger:1.2.+'
 	provided 'com.squareup.dagger:dagger-compiler:1.2.+'
-
+	compile 'com.splunk.mint:mint:4.0.5'
 }
 
-outputFile = file("src/main/assets/apk_version.txt")
+def outputFile = file("src/main/assets/apk_version.txt")
 task generateVersionFile << {
 	if (!outputFile.isFile()) {
 		outputFile.parentFile.mkdirs()
