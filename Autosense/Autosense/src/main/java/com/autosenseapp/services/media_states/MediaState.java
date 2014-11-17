@@ -2,16 +2,13 @@ package com.autosenseapp.services.media_states;
 
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.content.LocalBroadcastManager;
 import com.autosenseapp.AutosenseApplication;
 import com.autosenseapp.controllers.MediaController;
 import ca.efriesen.lydia_common.media.Song;
 import java.io.IOException;
-import javax.inject.Inject;
 
 /**
  * Created by eric on 1/3/2014.

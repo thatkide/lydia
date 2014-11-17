@@ -1,7 +1,9 @@
 package com.autosenseapp.controllers;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -39,6 +41,11 @@ public class MediaController implements
 	public static final String SONG = "com.autosenseapp.Song";
 	public static final String SONG_FINISHED = "com.autosenseapp.lydia.MediaService.SongFinished";
 	public static final String MEDIA_INFO = "com.autosenseapp.MediaService.MediaInfo";
+	public static final String MEDIA_NEXT = "com.autosenseapp.com.MediaService.Next";
+	public static final String MEDIA_PLAY = "com.autosenseapp.com.MediaService.Play";
+	public static final String MEDIA_PLAYPAUSE = "com.autosenseapp.com.MediaService.PlayPause";
+	public static final String MEDIA_PREV = "com.autosenseapp.com.MediaService.Previous";
+	public static final String MEDIA_STOP = "com.autosenseapp.com.MediaService.Stop";
 
 	@Inject AudioManager audioManager;
 	@Inject Context context;
@@ -89,6 +96,48 @@ public class MediaController implements
 			// we're in the stopped state already, this will release all media player resources
 			mediaState.stop();
 		}
+
+		try {
+			context.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					next();
+				}
+			}, new IntentFilter(MEDIA_NEXT));
+		} catch (Exception e) {}
+		try {
+			context.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					play();
+				}
+			}, new IntentFilter(MEDIA_PLAY));
+		} catch (Exception e) {}
+		try {
+			context.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					playPause();
+				}
+			}, new IntentFilter(MEDIA_PLAYPAUSE));
+		} catch (Exception e) {}
+		try {
+			context.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					previous();
+				}
+			}, new IntentFilter(MEDIA_PREV));
+		} catch (Exception e) {}
+		try {
+			context.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					stop();
+				}
+			}, new IntentFilter(MEDIA_STOP));
+		} catch (Exception e) {}
+
 	}
 
 	@Override
