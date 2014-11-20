@@ -36,7 +36,7 @@ public class EditTextExtended extends EditText {
 		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
 			if (mOnImeBack != null) mOnImeBack.onImeBack(this, this.getText().toString());
 			// reenter immersive mode on back pressed
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && context instanceof Dashboard) {
 				((Dashboard)context).getWindow().getDecorView().setSystemUiVisibility(
 						View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 								| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

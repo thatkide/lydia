@@ -128,14 +128,30 @@ public class MusicFragment extends ListFragment implements FragmentOnBackPressed
 		try {
 			super.onDestroy();
 		} catch (NullPointerException e) {}
-		homeState.onDestroy();
-		artistState.onDestroy();
-		albumState.onDestroy();
-		albumSongState.onDestroy();
-		playlistSongState.onDestroy();
-		playlistState.onDestroy();
-		allSongState.onDestroy();
-		nowPlayingState.onDestroy();
+		try {
+			homeState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			artistState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			albumState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			albumSongState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			playlistSongState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			playlistState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			allSongState.onDestroy();
+		} catch (NullPointerException e) {}
+		try {
+			nowPlayingState.onDestroy();
+		} catch (NullPointerException e) {}
 	}
 
 	@Override

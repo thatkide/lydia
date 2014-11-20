@@ -231,7 +231,9 @@ public class MapFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mapView.onDestroy();
+		try {
+			mapView.onDestroy();
+		} catch (NullPointerException e) {}
 		locationClient.disconnect();
 	}
 
