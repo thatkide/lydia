@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+def versionNumber = 51
+
+android {
+	signingConfigs {
+	}
+	compileSdkVersion 19
+	buildToolsVersion '20.0.0'
+	defaultConfig {
+		applicationId 'com.autosenseapp'
+		minSdkVersion 17
+		targetSdkVersion 19
+		versionCode = versionNumber
+	}
+	buildTypes {
+		debug {
+			buildConfigField "boolean", "INCLUDE_BUGSENSE", "false"
+			buildConfigField "boolean", "INCLUDE_UPDATER", "false"
+			buildConfigField "boolean", "DONATE", "false"
+		}
+		gitHub {
+			buildConfigField "boolean", "INCLUDE_BUGSENSE", "true"
+			buildConfigField "boolean", "INCLUDE_UPDATER", "true"
+			buildConfigField "boolean", "DONATE", "true"
+		}
+		release {
+			runProguard false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+			buildConfigField "boolean", "INCLUDE_BUGSENSE", "true"
+			buildConfigField "boolean", "INCLUDE_UPDATER", "false"
+			buildConfigField "boolean", "DONATE", "false"
+		}
+	}
+	lintOptions {
+		abortOnError false
+		disable "MockLocation"
+	}
+	productFlavors {
+		free {
+			buildConfigField "boolean", "SHOW_ADS", "true"
+		}
+		paid {
+			buildConfigField "boolean", "SHOW_ADS", "false"
+		}
+	}
+}
+
+repositories {
+	maven {
+		url "https://mint.splunk.com/gradle/"
+	}
+}
+
+dependencies {
+	compile project(':lydia_common')
+	compile project(':yWeatherGetter4a')
+	compile project(':sliderPreference')
+	compile project(':library')
+	compile project(':libraryFragmentTransactionExtended')
+	compile project(':ambilWarna')
+	compile project(':usbSerialForAndroid')
+	compile project(':timePickerWithSeconds')
+	compile 'com.android.support:support-v4:20.0.0'
+	compile 'com.google.android.gms:play-services:5.0.89'
+	compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
+	compile files('libs/lastfm-java-0.1.2.jar')
+	compile files('libs/updatechecker.jar')
+	compile 'com.jakewharton:butterknife:5.1.2'
+	compile 'com.squareup.dagger:dagger:1.2.2'
+	provided 'com.squareup.dagger:dagger-compiler:1.2.2'
+	compile 'com.splunk.mint:mint:4.0.5'
+}
+
+def outputFile = file("src/main/assets/apk_version.txt")
+task generateVersionFile << {
+	if (!outputFile.isFile()) {
+		outputFile.parentFile.mkdirs()
+		outputFile.createNewFile()
+	}
+	outputFile.write "$versionNumber"
+}

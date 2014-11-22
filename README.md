@@ -1,6 +1,8 @@
 lydia
 =====
 
+For updates and support please visit is at http://www.autosenseapp.com/
+
 Android front end for in car use.  Currently it has only been tested on a Nexus 7 first gen.   
 
 "lydia" is the tablet portion.

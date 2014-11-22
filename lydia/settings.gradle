@@ -1,7 +1,0 @@
-include ':ambilWarna'
-include ':libraryFragmentTransactionExtended'
-include ':sliderPreference'
-include ':yWeatherGetter4a'
-include ':library'
-include ':lydia_common'
-include ':lydia'

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="@string/navigation">
+		<com.autosenseapp.includes.CustomSwitchPreference
+				android:key="mapUseMetric"
+				android:title="@string/map_use_metric"
+				android:defaultValue="true" />
+	</PreferenceCategory>
+</PreferenceScreen>
